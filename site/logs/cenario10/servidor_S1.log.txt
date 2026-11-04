@@ -1,0 +1,15 @@
+2026-11-02 15:52:00.691 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-02 15:52:00.692 [S1 127.0.0.1:6001] INFO    ESTADO recebido de S2: saldo=150 (2 escritas ja aplicadas)
+2026-11-02 15:52:00.892 [S1 127.0.0.1:6001] INFO    VIVOS = [1]
+2026-11-02 15:52:01.693 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-02 15:52:01.693 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-02 15:52:01.693 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
+2026-11-02 15:52:03.695 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-02 15:52:05.686 [S1 127.0.0.1:6001] INFO    REQ C1-277728 SALDO  de 127.0.0.1:49428: SOU O LIDER (vivos=[1, 2, 3])
+2026-11-02 15:52:05.686 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-277728 -> 127.0.0.1:49428: saldo=150
+2026-11-02 15:52:05.724 [S1 127.0.0.1:6001] INFO    REQ C1-7fbe2a SAQUE 25 de 127.0.0.1:57768: SOU O LIDER (vivos=[1, 2, 3])
+2026-11-02 15:52:05.724 [S1 127.0.0.1:6001] INFO    ESCRITA C1-7fbe2a executada localmente: saque de 25 realizado, saldo=125
+2026-11-02 15:52:05.724 [S1 127.0.0.1:6001] INFO    REPLICA C1-7fbe2a enviada ao grupo; aguardando ACK de {S2, S3}
+2026-11-02 15:52:05.725 [S1 127.0.0.1:6001] INFO    ACK recebido de S3 para C1-7fbe2a
+2026-11-02 15:52:05.725 [S1 127.0.0.1:6001] INFO    ACK recebido de S2 para C1-7fbe2a
+2026-11-02 15:52:05.725 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-7fbe2a -> 127.0.0.1:57768: saque de 25 realizado, saldo=125 (replicado em {S1, S2, S3})
