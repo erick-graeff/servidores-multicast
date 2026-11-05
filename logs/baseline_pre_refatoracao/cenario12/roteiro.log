@@ -1,0 +1,13 @@
+2026-11-04 14:20:25.663 [ROTEIRO] ===== CENARIO 12: Todos os servidores falhos: cliente fica sem resposta =====
+2026-11-04 14:20:25.664 [ROTEIRO] inicia S1 (pid 206516)
+2026-11-04 14:20:25.665 [ROTEIRO] inicia S2 (pid 206517)
+2026-11-04 14:20:25.665 [ROTEIRO] inicia S3 (pid 206518)
+2026-11-04 14:20:25.665 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:20:29.665 [ROTEIRO] cliente C1: DEPOSITO 30
+2026-11-04 14:20:29.746 [ROTEIRO]   -> esperado: S1, saldo=30 | obtido: S1, saldo=30 | OK
+2026-11-04 14:20:29.746 [ROTEIRO] kill -9 206516  -> S1 sofre PARADA TOTAL
+2026-11-04 14:20:29.748 [ROTEIRO] kill -9 206517  -> S2 sofre PARADA TOTAL
+2026-11-04 14:20:29.749 [ROTEIRO] kill -9 206518  -> S3 sofre PARADA TOTAL
+2026-11-04 14:20:29.750 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:20:41.813 [ROTEIRO]   -> esperado: nenhuma resposta | obtido: nenhuma resposta | OK
+2026-11-04 14:20:41.813 [ROTEIRO] fim do cenario

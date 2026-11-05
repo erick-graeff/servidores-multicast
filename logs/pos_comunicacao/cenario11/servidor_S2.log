@@ -1,0 +1,40 @@
+2026-11-04 14:35:38.719 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:35:38.922 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:35:38.922 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:35:38.923 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:35:41.725 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:35:41.725 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:35:42.695 [S2 127.0.0.1:6002] INFO    REQ C2-1eac11 DEPOSITO 10 de 127.0.0.1:39350: lider e S1, nao respondo
+2026-11-04 14:35:42.695 [S2 127.0.0.1:6002] INFO    REPLICA C2-1eac11 de S1: deposito de 10 realizado, saldo=10
+2026-11-04 14:35:42.695 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C2-1eac11
+2026-11-04 14:35:43.774 [S2 127.0.0.1:6002] INFO    REQ C2-e51a58 DEPOSITO 10 de 127.0.0.1:34916: lider e S1, nao respondo
+2026-11-04 14:35:45.729 [S2 127.0.0.1:6002] WARNING FALHA detectada: S1 sem heartbeat ha mais de 3.0s
+2026-11-04 14:35:45.729 [S2 127.0.0.1:6002] INFO    VIVOS = [2, 3]
+2026-11-04 14:35:45.730 [S2 127.0.0.1:6002] INFO    LIDER eleito = S2 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-04 14:35:45.777 [S2 127.0.0.1:6002] INFO    REQ C2-e51a58 DEPOSITO 10 de 127.0.0.1:34916: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:35:45.777 [S2 127.0.0.1:6002] INFO    ESCRITA C2-e51a58 executada localmente: deposito de 10 realizado, saldo=20
+2026-11-04 14:35:45.777 [S2 127.0.0.1:6002] INFO    REPLICA C2-e51a58 enviada ao grupo; aguardando ACK de {S3}
+2026-11-04 14:35:45.778 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C2-e51a58
+2026-11-04 14:35:45.778 [S2 127.0.0.1:6002] INFO    RESPOSTA C2-e51a58 -> 127.0.0.1:34916: deposito de 10 realizado, saldo=20 (replicado em {S2, S3})
+2026-11-04 14:35:46.875 [S2 127.0.0.1:6002] INFO    REQ C2-386a64 DEPOSITO 10 de 127.0.0.1:36301: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:35:46.876 [S2 127.0.0.1:6002] INFO    ESCRITA C2-386a64 executada localmente: deposito de 10 realizado, saldo=30
+2026-11-04 14:35:46.876 [S2 127.0.0.1:6002] INFO    REPLICA C2-386a64 enviada ao grupo; aguardando ACK de {S3}
+2026-11-04 14:35:46.877 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C2-386a64
+2026-11-04 14:35:46.877 [S2 127.0.0.1:6002] INFO    RESPOSTA C2-386a64 -> 127.0.0.1:36301: deposito de 10 realizado, saldo=30 (replicado em {S2, S3})
+2026-11-04 14:35:47.961 [S2 127.0.0.1:6002] INFO    REQ C2-af6a73 DEPOSITO 10 de 127.0.0.1:55780: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:35:47.961 [S2 127.0.0.1:6002] INFO    ESCRITA C2-af6a73 executada localmente: deposito de 10 realizado, saldo=40
+2026-11-04 14:35:47.961 [S2 127.0.0.1:6002] INFO    REPLICA C2-af6a73 enviada ao grupo; aguardando ACK de {S3}
+2026-11-04 14:35:47.962 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C2-af6a73
+2026-11-04 14:35:47.962 [S2 127.0.0.1:6002] INFO    RESPOSTA C2-af6a73 -> 127.0.0.1:55780: deposito de 10 realizado, saldo=40 (replicado em {S2, S3})
+2026-11-04 14:35:49.039 [S2 127.0.0.1:6002] INFO    REQ C2-0cb1db DEPOSITO 10 de 127.0.0.1:35673: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:35:49.040 [S2 127.0.0.1:6002] INFO    ESCRITA C2-0cb1db executada localmente: deposito de 10 realizado, saldo=50
+2026-11-04 14:35:49.040 [S2 127.0.0.1:6002] INFO    REPLICA C2-0cb1db enviada ao grupo; aguardando ACK de {S3}
+2026-11-04 14:35:49.041 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C2-0cb1db
+2026-11-04 14:35:49.041 [S2 127.0.0.1:6002] INFO    RESPOSTA C2-0cb1db -> 127.0.0.1:35673: deposito de 10 realizado, saldo=50 (replicado em {S2, S3})
+2026-11-04 14:35:50.135 [S2 127.0.0.1:6002] INFO    REQ C2-d87412 DEPOSITO 10 de 127.0.0.1:42520: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:35:50.135 [S2 127.0.0.1:6002] INFO    ESCRITA C2-d87412 executada localmente: deposito de 10 realizado, saldo=60
+2026-11-04 14:35:50.136 [S2 127.0.0.1:6002] INFO    REPLICA C2-d87412 enviada ao grupo; aguardando ACK de {S3}
+2026-11-04 14:35:50.136 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C2-d87412
+2026-11-04 14:35:50.137 [S2 127.0.0.1:6002] INFO    RESPOSTA C2-d87412 -> 127.0.0.1:42520: deposito de 10 realizado, saldo=60 (replicado em {S2, S3})
+2026-11-04 14:35:51.231 [S2 127.0.0.1:6002] INFO    REQ C1-e61c1b SALDO  de 127.0.0.1:40686: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:35:51.231 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-e61c1b -> 127.0.0.1:40686: saldo=60

@@ -1,0 +1,8 @@
+2026-11-04 15:00:49.796 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 15:00:49.798 [S2 127.0.0.1:6002] INFO    ESTADO recebido de S1: saldo=175 versao=3 (3 escritas ja aplicadas)
+2026-11-04 15:00:49.998 [S2 127.0.0.1:6002] INFO    VIVOS = [2]
+2026-11-04 15:00:50.599 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 15:00:50.600 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 15:00:50.600 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 15:00:52.802 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 15:00:54.842 [S2 127.0.0.1:6002] INFO    REQ C1-ab04eb SALDO  de 127.0.0.1:52152: lider e S1, nao respondo

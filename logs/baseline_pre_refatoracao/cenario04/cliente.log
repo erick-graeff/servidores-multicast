@@ -1,0 +1,9 @@
+2026-11-04 14:19:04.277 [C1] cliente em 127.0.0.1:49272, grupo 224.1.1.1:5007
+2026-11-04 14:19:04.278 [C1] ENVIA C1-25485c 'DEPOSITO 200' ao grupo (tentativa 1/6)
+2026-11-04 14:19:04.280 [C1] RESPOSTA C1-25485c do servidor S1 (127.0.0.1:6001): OK - deposito de 200 realizado, saldo=200, replicado em ['S1', 'S2', 'S3']
+2026-11-04 14:19:08.397 [C1] cliente em 127.0.0.1:48650, grupo 224.1.1.1:5007
+2026-11-04 14:19:08.397 [C1] ENVIA C1-c4645a 'SAQUE 20' ao grupo (tentativa 1/6)
+2026-11-04 14:19:08.399 [C1] RESPOSTA C1-c4645a do servidor S1 (127.0.0.1:6001): OK - saque de 20 realizado, saldo=180, replicado em ['S1', 'S3']
+2026-11-04 14:19:08.458 [C1] cliente em 127.0.0.1:36681, grupo 224.1.1.1:5007
+2026-11-04 14:19:08.458 [C1] ENVIA C1-600ca2 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 14:19:08.458 [C1] RESPOSTA C1-600ca2 do servidor S1 (127.0.0.1:6001): OK - consulta de saldo, saldo=180

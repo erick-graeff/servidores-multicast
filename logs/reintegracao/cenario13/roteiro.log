@@ -1,0 +1,22 @@
+2026-11-04 14:55:14.152 [ROTEIRO] ===== CENARIO 13: S2 volta e recebe escrita durante a sincronizacao =====
+2026-11-04 14:55:14.153 [ROTEIRO] inicia S1 (pid 251396)
+2026-11-04 14:55:14.153 [ROTEIRO] inicia S2 (pid 251397)
+2026-11-04 14:55:14.153 [ROTEIRO] inicia S3 (pid 251398)
+2026-11-04 14:55:14.154 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:55:18.154 [ROTEIRO] cliente C1: DEPOSITO 100
+2026-11-04 14:55:18.251 [ROTEIRO]   -> esperado: S1, saldo=100 | obtido: S1, saldo=100 | OK
+2026-11-04 14:55:18.251 [ROTEIRO] kill -9 251397  -> S2 sofre PARADA TOTAL
+2026-11-04 14:55:18.253 [ROTEIRO] aguarda 4s (S2 morto; os demais detectam a falha)
+2026-11-04 14:55:22.254 [ROTEIRO] cliente C1: DEPOSITO 50
+2026-11-04 14:55:22.338 [ROTEIRO]   -> esperado: S1, saldo=150 | obtido: S1, saldo=150 | OK
+2026-11-04 14:55:22.340 [ROTEIRO] inicia S2 (pid 251589)
+2026-11-04 14:55:22.340 [ROTEIRO] S2 reinicia e o cliente escreve durante sua sincronizacao
+2026-11-04 14:55:22.340 [ROTEIRO] cliente C1: DEPOSITO 25
+2026-11-04 14:55:22.438 [ROTEIRO]   -> esperado: S1, saldo=175 | obtido: S1, saldo=175 | OK
+2026-11-04 14:55:22.438 [ROTEIRO] aguarda 5s (S2 recebe o estado e processa retransmissoes)
+2026-11-04 14:55:27.438 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:55:27.534 [ROTEIRO]   -> esperado: S1, saldo=175 | obtido: S1, saldo=175 | OK
+2026-11-04 14:55:28.035 [ROTEIRO] estado de S1: saldo=175 (esperado 175) OK
+2026-11-04 14:55:28.036 [ROTEIRO] estado de S2: saldo=175 (esperado 175) OK
+2026-11-04 14:55:28.036 [ROTEIRO] estado de S3: saldo=175 (esperado 175) OK
+2026-11-04 14:55:28.043 [ROTEIRO] fim do cenario

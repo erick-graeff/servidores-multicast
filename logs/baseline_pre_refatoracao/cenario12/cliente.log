@@ -1,0 +1,17 @@
+2026-11-04 14:20:29.733 [C1] cliente em 127.0.0.1:39852, grupo 224.1.1.1:5007
+2026-11-04 14:20:29.733 [C1] ENVIA C1-2f9b75 'DEPOSITO 30' ao grupo (tentativa 1/6)
+2026-11-04 14:20:29.736 [C1] RESPOSTA C1-2f9b75 do servidor S1 (127.0.0.1:6001): OK - deposito de 30 realizado, saldo=30, replicado em ['S1', 'S2', 'S3']
+2026-11-04 14:20:29.790 [C1] cliente em 127.0.0.1:52632, grupo 224.1.1.1:5007
+2026-11-04 14:20:29.790 [C1] ENVIA C1-6ec5a9 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 14:20:31.792 [C1] sem resposta em 2.0s para C1-6ec5a9
+2026-11-04 14:20:31.792 [C1] ENVIA C1-6ec5a9 'SALDO' ao grupo (tentativa 2/6)
+2026-11-04 14:20:33.794 [C1] sem resposta em 2.0s para C1-6ec5a9
+2026-11-04 14:20:33.794 [C1] ENVIA C1-6ec5a9 'SALDO' ao grupo (tentativa 3/6)
+2026-11-04 14:20:35.796 [C1] sem resposta em 2.0s para C1-6ec5a9
+2026-11-04 14:20:35.796 [C1] ENVIA C1-6ec5a9 'SALDO' ao grupo (tentativa 4/6)
+2026-11-04 14:20:37.797 [C1] sem resposta em 2.0s para C1-6ec5a9
+2026-11-04 14:20:37.797 [C1] ENVIA C1-6ec5a9 'SALDO' ao grupo (tentativa 5/6)
+2026-11-04 14:20:39.799 [C1] sem resposta em 2.0s para C1-6ec5a9
+2026-11-04 14:20:39.799 [C1] ENVIA C1-6ec5a9 'SALDO' ao grupo (tentativa 6/6)
+2026-11-04 14:20:41.801 [C1] sem resposta em 2.0s para C1-6ec5a9
+2026-11-04 14:20:41.801 [C1] FALHA: nenhum servidor respondeu a C1-6ec5a9 apos 6 tentativas

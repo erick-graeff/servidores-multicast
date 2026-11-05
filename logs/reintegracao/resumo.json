@@ -1,0 +1,100 @@
+[
+  {
+    "num": 13,
+    "titulo": "S2 volta e recebe escrita durante a sincronizacao",
+    "checks": [
+      {
+        "req": "DEPOSITO 100",
+        "esperado": "S1, saldo=100",
+        "obtido": "S1, saldo=100",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 50",
+        "esperado": "S1, saldo=150",
+        "obtido": "S1, saldo=150",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 25",
+        "esperado": "S1, saldo=175",
+        "obtido": "S1, saldo=175",
+        "ok": true
+      },
+      {
+        "req": "SALDO",
+        "esperado": "S1, saldo=175",
+        "obtido": "S1, saldo=175",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S1",
+        "esperado": "saldo=175",
+        "obtido": "saldo=175",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S2",
+        "esperado": "saldo=175",
+        "obtido": "saldo=175",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S3",
+        "esperado": "saldo=175",
+        "obtido": "saldo=175",
+        "ok": true
+      }
+    ],
+    "ok": true
+  },
+  {
+    "num": 14,
+    "titulo": "S3 volta e recebe escrita durante a sincronizacao",
+    "checks": [
+      {
+        "req": "DEPOSITO 100",
+        "esperado": "S1, saldo=100",
+        "obtido": "S1, saldo=100",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 50",
+        "esperado": "S1, saldo=150",
+        "obtido": "S1, saldo=150",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 25",
+        "esperado": "S1, saldo=175",
+        "obtido": "S1, saldo=175",
+        "ok": true
+      },
+      {
+        "req": "SALDO",
+        "esperado": "S1, saldo=175",
+        "obtido": "S1, saldo=175",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S1",
+        "esperado": "saldo=175",
+        "obtido": "saldo=175",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S2",
+        "esperado": "saldo=175",
+        "obtido": "saldo=175",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S3",
+        "esperado": "saldo=175",
+        "obtido": "saldo=175",
+        "ok": true
+      }
+    ],
+    "ok": true
+  }
+]

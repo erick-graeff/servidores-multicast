@@ -1,0 +1,21 @@
+2026-11-04 14:40:54.970 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:40:55.171 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:40:55.171 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:40:55.171 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:40:57.973 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:40:57.974 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:40:58.999 [S2 127.0.0.1:6002] INFO    REQ C1-fb1e90 DEPOSITO 100 de 127.0.0.1:49506: lider e S1, nao respondo
+2026-11-04 14:40:59.000 [S2 127.0.0.1:6002] INFO    REPLICA C1-fb1e90 de S1: deposito de 100 realizado, saldo=100
+2026-11-04 14:40:59.001 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-fb1e90
+2026-11-04 14:41:02.178 [S2 127.0.0.1:6002] WARNING FALHA detectada: S1 sem heartbeat ha mais de 3.0s
+2026-11-04 14:41:02.179 [S2 127.0.0.1:6002] INFO    VIVOS = [2, 3]
+2026-11-04 14:41:02.179 [S2 127.0.0.1:6002] INFO    LIDER eleito = S2 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-04 14:41:03.142 [S2 127.0.0.1:6002] INFO    REQ C1-3be9ca SALDO  de 127.0.0.1:45389: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:41:03.143 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-3be9ca -> 127.0.0.1:45389: saldo=100
+2026-11-04 14:41:03.281 [S2 127.0.0.1:6002] INFO    REQ C1-7f4b8e DEPOSITO 50 de 127.0.0.1:33432: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:41:03.281 [S2 127.0.0.1:6002] INFO    ESCRITA C1-7f4b8e executada localmente: deposito de 50 realizado, saldo=150
+2026-11-04 14:41:03.282 [S2 127.0.0.1:6002] INFO    REPLICA C1-7f4b8e enviada ao grupo; aguardando ACK de {S3}
+2026-11-04 14:41:03.282 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C1-7f4b8e
+2026-11-04 14:41:03.283 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-7f4b8e -> 127.0.0.1:33432: deposito de 50 realizado, saldo=150 (replicado em {S2, S3})
+2026-11-04 14:41:03.369 [S2 127.0.0.1:6002] INFO    REQ C1-b8b4ca SALDO  de 127.0.0.1:34782: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:41:03.369 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-b8b4ca -> 127.0.0.1:34782: saldo=150

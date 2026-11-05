@@ -3,6 +3,7 @@
   "porta_grupo": 5007,
   "intervalo_heartbeat": 1.0,
   "timeout_falha": 3.0,
+  "timeout_escrita": 8.0,
   "servidores": [
     {"id": 1, "ip": "127.0.0.1", "porta": 6001},
     {"id": 2, "ip": "127.0.0.1", "porta": 6002},

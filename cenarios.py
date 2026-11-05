@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # =============================================================================
 #  TP REDES II 2026 - Roteiro automatico dos cenarios de teste
-#  Dupla .................: Eduardo Camargo Neves e [NOME DO(A) COLEGA]
+#  Dupla .................: Eduardo Camargo Neves e Erick Graeff Petzold
 #  Funcionalidade ........: Sobe os servidores, executa requisicoes de
 #                           clientes, mata processos com SIGKILL (kill -9,
 #                           parada total) em varias combinacoes, confere o
@@ -48,15 +48,21 @@ class Cenario:
         self.roteiro.flush()
 
     def sobe(self, sid, falha=None):
-        args = [PY, os.path.join(AQUI, "servidor.py"), "--id", str(sid),
-                "--config", os.path.join(AQUI, "config.json"),
-                "--log", os.path.join(self.pasta, f"servidor_S{sid}.log")]
+        args = [
+            PY,
+            os.path.join(AQUI, "servidor.py"),
+            "--id",
+            str(sid),
+            "--config",
+            os.path.join(AQUI, "config.json"),
+            "--log",
+            os.path.join(self.pasta, f"servidor_S{sid}.log"),
+        ]
         if falha:
             args += ["--falha", falha]
         if os.path.exists(os.path.join(self.pasta, f"servidor_S{sid}.log")):
             # servidor reiniciado: guarda o log da execucao anterior
-            os.replace(os.path.join(self.pasta, f"servidor_S{sid}.log"),
-                       os.path.join(self.pasta, f"servidor_S{sid}_execucao1.log"))
+            os.replace(os.path.join(self.pasta, f"servidor_S{sid}.log"), os.path.join(self.pasta, f"servidor_S{sid}_execucao1.log"))
         p = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.procs[sid] = p
         self.nota(f"inicia S{sid} (pid {p.pid})" + (f" com falha injetada '{falha}'" if falha else ""))
@@ -74,9 +80,20 @@ class Cenario:
     def cliente(self, op, valor=0, esperado_srv=None, esperado_saldo=None, nome=None):
         self.n_cli += 1
         nome = nome or "C1"
-        args = [PY, os.path.join(AQUI, "cliente.py"), op] + ([str(valor)] if op != "SALDO" else []) + \
-               ["--config", os.path.join(AQUI, "config.json"), "--iface", self.iface,
-                "--nome", nome, "--log", os.path.join(self.pasta, "cliente.log")]
+        args = (
+            [PY, os.path.join(AQUI, "cliente.py"), op]
+            + ([str(valor)] if op != "SALDO" else [])
+            + [
+                "--config",
+                os.path.join(AQUI, "config.json"),
+                "--iface",
+                self.iface,
+                "--nome",
+                nome,
+                "--log",
+                os.path.join(self.pasta, "cliente.log"),
+            ]
+        )
         desc = op if op == "SALDO" else f"{op} {valor}"
         self.nota(f"cliente {nome}: {desc}")
         out = subprocess.run(args, capture_output=True, text=True).stdout
@@ -105,8 +122,9 @@ class Cenario:
                 saldos = re.findall(r"saldo=(-?\d+)", f.read())
             s = int(saldos[-1]) if saldos else 0
             ok = s == saldo_esperado
-            self.checks.append({"req": f"estado da replica S{sid}", "esperado": f"saldo={saldo_esperado}",
-                                "obtido": f"saldo={s}", "ok": ok})
+            self.checks.append(
+                {"req": f"estado da replica S{sid}", "esperado": f"saldo={saldo_esperado}", "obtido": f"saldo={s}", "ok": ok}
+            )
             self.nota(f"estado de S{sid}: saldo={s} (esperado {saldo_esperado}) {'OK' if ok else 'ERRO'}")
 
     def encerra(self):
@@ -141,7 +159,7 @@ def c01(c):
     c.cliente("SALDO", esperado_srv=1, esperado_saldo=0)
     c.cliente("DEPOSITO", 100, esperado_srv=1, esperado_saldo=100)
     c.cliente("SAQUE", 30, esperado_srv=1, esperado_saldo=70)
-    c.cliente("SAQUE", 500, esperado_srv=1, esperado_saldo=70)   # recusado: saldo insuficiente
+    c.cliente("SAQUE", 500, esperado_srv=1, esperado_saldo=70)  # recusado: saldo insuficiente
     c.cliente("SALDO", esperado_srv=1, esperado_saldo=70)
     c.confere_replicas(70)
 
@@ -249,8 +267,7 @@ def c11(c):
 
     def rajada():
         for k in range(6):
-            resultados.append(c.cliente("DEPOSITO", 10, esperado_srv=(1 if k == 0 else 2),
-                                        esperado_saldo=10 * (k + 1), nome="C2"))
+            resultados.append(c.cliente("DEPOSITO", 10, esperado_srv=(1 if k == 0 else 2), esperado_saldo=10 * (k + 1), nome="C2"))
             time.sleep(1)
 
     t = threading.Thread(target=rajada)
@@ -270,6 +287,51 @@ def c12(c):
     c.cliente("SALDO", esperado_srv=None)
 
 
+def reintegra_replica_durante_escrita(c, sid):
+    sobe_tres(c)
+    c.cliente("DEPOSITO", 100, esperado_srv=1, esperado_saldo=100)
+    c.mata(sid)
+    c.espera(DETECCAO, f"(S{sid} morto; os demais detectam a falha)")
+    c.cliente("DEPOSITO", 50, esperado_srv=1, esperado_saldo=150)
+    c.sobe(sid)
+    c.nota(f"S{sid} reinicia e o cliente escreve durante sua sincronizacao")
+    c.cliente("DEPOSITO", 25, esperado_srv=1, esperado_saldo=175)
+    c.espera(5, f"(S{sid} recebe o estado e processa retransmissoes)")
+    c.cliente("SALDO", esperado_srv=1, esperado_saldo=175)
+    c.confere_replicas(175)
+
+
+def c13(c):
+    reintegra_replica_durante_escrita(c, 2)
+
+
+def c14(c):
+    reintegra_replica_durante_escrita(c, 3)
+
+
+def c15(c):
+    sobe_tres(c)
+    erros = []
+
+    def rajada(nome):
+        try:
+            for _ in range(5):
+                c.cliente("DEPOSITO", 10, esperado_srv=1, nome=nome)
+        except Exception as exc:
+            erros.append(exc)
+
+    threads = [threading.Thread(target=rajada, args=(f"C{i}",)) for i in (2, 3, 4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    if erros:
+        raise erros[0]
+
+    c.cliente("SALDO", esperado_srv=1, esperado_saldo=150)
+    c.confere_replicas(150)
+
+
 CENARIOS = [
     (1, "Todos sem falha: consultas e alteracoes atendidas por S1", c01),
     (2, "Falha do lider S1: S2 assume e mantem o estado", c02),
@@ -283,6 +345,9 @@ CENARIOS = [
     (10, "S1 falha, S2 assume, S1 volta, recebe o estado e reassume", c10),
     (11, "Cliente enviando escritas enquanto o lider e morto", c11),
     (12, "Todos os servidores falhos: cliente fica sem resposta", c12),
+    (13, "S2 volta e recebe escrita durante a sincronizacao", c13),
+    (14, "S3 volta e recebe escrita durante a sincronizacao", c14),
+    (15, "Tres clientes concorrentes mantêm as replicas consistentes", c15),
 ]
 
 
@@ -305,8 +370,7 @@ def main():
             fn(c)
         finally:
             c.encerra()
-        resumo.append({"num": num, "titulo": titulo, "checks": c.checks,
-                       "ok": all(x["ok"] for x in c.checks)})
+        resumo.append({"num": num, "titulo": titulo, "checks": c.checks, "ok": all(x["ok"] for x in c.checks)})
         time.sleep(1)
     with open(os.path.join(a.saida, "resumo.json"), "w", encoding="utf-8") as f:
         json.dump(resumo, f, indent=2, ensure_ascii=False)

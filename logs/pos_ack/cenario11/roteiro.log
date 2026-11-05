@@ -1,0 +1,23 @@
+2026-11-04 14:48:12.388 [ROTEIRO] ===== CENARIO 11: Cliente enviando escritas enquanto o lider e morto =====
+2026-11-04 14:48:12.389 [ROTEIRO] inicia S1 (pid 243402)
+2026-11-04 14:48:12.390 [ROTEIRO] inicia S2 (pid 243404)
+2026-11-04 14:48:12.391 [ROTEIRO] inicia S3 (pid 243406)
+2026-11-04 14:48:12.391 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:48:16.391 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-04 14:48:16.470 [ROTEIRO]   -> esperado: S1, saldo=10 | obtido: S1, saldo=10 | OK
+2026-11-04 14:48:16.992 [ROTEIRO] kill -9 243402  -> S1 sofre PARADA TOTAL
+2026-11-04 14:48:17.470 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-04 14:48:19.584 [ROTEIRO]   -> esperado: S2, saldo=20 | obtido: S2, saldo=20 | OK
+2026-11-04 14:48:20.584 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-04 14:48:20.690 [ROTEIRO]   -> esperado: S2, saldo=30 | obtido: S2, saldo=30 | OK
+2026-11-04 14:48:21.690 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-04 14:48:21.803 [ROTEIRO]   -> esperado: S2, saldo=40 | obtido: S2, saldo=40 | OK
+2026-11-04 14:48:22.803 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-04 14:48:22.908 [ROTEIRO]   -> esperado: S2, saldo=50 | obtido: S2, saldo=50 | OK
+2026-11-04 14:48:23.908 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-04 14:48:23.984 [ROTEIRO]   -> esperado: S2, saldo=60 | obtido: S2, saldo=60 | OK
+2026-11-04 14:48:24.985 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:48:25.078 [ROTEIRO]   -> esperado: S2, saldo=60 | obtido: S2, saldo=60 | OK
+2026-11-04 14:48:25.578 [ROTEIRO] estado de S2: saldo=60 (esperado 60) OK
+2026-11-04 14:48:25.578 [ROTEIRO] estado de S3: saldo=60 (esperado 60) OK
+2026-11-04 14:48:25.583 [ROTEIRO] fim do cenario

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # =============================================================================
 #  TP REDES II 2026 - Gerador da pagina de entrega
-#  Dupla .................: Eduardo Camargo Neves e [NOME DO(A) COLEGA]
+#  Dupla .................: Eduardo Camargo Neves e Erick Graeff Petzold
 #  Funcionalidade ........: Monta a pasta site/ (index.html, relatorio.html,
 #                           codigo/*.txt e logs/*.txt) a partir do codigo e
 #                           dos logs gerados por cenarios.py.
 #  Ultima modificacao ....: 02/11/2026
 # =============================================================================
+import argparse
 import html
 import json
 import os
@@ -15,16 +16,28 @@ import shutil
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(AQUI, "site")
-DUPLA = "Eduardo Camargo Neves e [NOME DO(A) COLEGA]"
-DATA = "02/11/2026"
+DUPLA = "Eduardo Camargo Neves e Erick Graeff Petzold"
+DATA = "04/11/2026"
 
 CODIGOS = [
     ("servidor.py", "Processo servidor: heartbeat, detecção de falhas, eleição, serviço e replicação"),
     ("cliente.py", "Cliente: envia ao grupo multicast, reenvia com o mesmo req_id se não houver resposta"),
+    ("comunicacao.py", "Transporte UDP/JSON e canais multicast e unicast injetáveis"),
+    ("conta.py", "Conta bancária: operações, idempotência, versões e snapshots"),
+    ("membros.py", "Monitoramento de membros vivos e eleição do menor ID"),
     ("config.json", "Configuração usada nos testes locais (3 servidores)"),
     ("config_lab.json", "Modelo de configuração para 3 hosts diferentes no laboratório"),
-    ("cenarios.py", "Roteiro automático dos 12 cenários de teste (sobe, mata e confere)"),
+    ("cenarios.py", "Roteiro automático dos 15 cenários de teste (sobe, mata e confere)"),
     ("gera_pagina.py", "Gerador desta página"),
+    ("tests/doubles.py", "CanalFake e dublês usados somente nos testes"),
+    ("tests/test_comunicacao.py", "Testes unitários do transporte UDP/JSON"),
+    ("tests/test_conta.py", "Testes unitários da conta, versões e snapshots"),
+    ("tests/test_membros.py", "Testes unitários de heartbeat, timeout e eleição"),
+    ("tests/test_cliente.py", "Testes unitários das requisições e retransmissões do cliente"),
+    ("tests/test_replicacao.py", "Testes unitários de ACKs, timeout e idempotência"),
+    ("tests/test_ordenacao.py", "Testes de regressão de ordenação e sincronização"),
+    ("tests/test_injecao.py", "Testes da injeção dos canais no cliente e servidor"),
+    ("tests/test_entrega.py", "Testes da geração, links e cópias da página de entrega"),
 ]
 
 RUIDO = ("detectado sem falha", "VIVOS =", "INICIANDO", "nenhum membro vivo", "] cliente em ",
@@ -161,16 +174,19 @@ def trecho(caminho, max_linhas=60):
     return html.escape("\n".join(linhas))
 
 
-def gera():
+def gera(diretorio_logs=None):
+    logs = os.path.abspath(diretorio_logs or os.path.join(AQUI, "logs"))
     if os.path.isdir(SITE):
         shutil.rmtree(SITE)
     os.makedirs(os.path.join(SITE, "codigo"))
     os.makedirs(os.path.join(SITE, "logs"))
 
     for nome, _ in CODIGOS:
-        shutil.copy(os.path.join(AQUI, nome), os.path.join(SITE, "codigo", nome + ".txt"))
+        destino = os.path.join(SITE, "codigo", nome + ".txt")
+        os.makedirs(os.path.dirname(destino), exist_ok=True)
+        shutil.copy(os.path.join(AQUI, nome), destino)
 
-    with open(os.path.join(AQUI, "logs", "resumo.json"), encoding="utf-8") as f:
+    with open(os.path.join(logs, "resumo.json"), encoding="utf-8") as f:
         resumo = json.load(f)
     for r in resumo:
         r["titulo"] = TITULOS.get(r["num"], r["titulo"])
@@ -181,7 +197,7 @@ def gera():
     linhas_tab = []
     for r in resumo:
         pasta = f"cenario{r['num']:02d}"
-        orig = os.path.join(AQUI, "logs", pasta)
+        orig = os.path.join(logs, pasta)
         dest = os.path.join(SITE, "logs", pasta)
         os.makedirs(dest)
         arquivos = []
@@ -247,6 +263,11 @@ vezes), o que torna fácil demonstrar a correção da estratégia nos testes.</p
 
 <h2 id="arq">3. Arquitetura</h2>
 <figure>{SVG_ARQ}<figcaption>Figura 1 · Todos recebem a requisição pelo grupo; só o líder responde, por unicast, ao IP:porta de origem do cliente.</figcaption></figure>
+<p>O código é dividido por responsabilidades: <code>comunicacao.py</code> encapsula UDP/JSON e os canais;
+<code>conta.py</code> contém o estado, a idempotência, as versões e os snapshots; <code>membros.py</code>
+controla heartbeats recebidos, membros vivos e eleição; <code>servidor.py</code> coordena o protocolo;
+e <code>cliente.py</code> implementa requisições e retransmissões. Os canais são criados no <code>main</code>
+e injetados, permitindo testes com <code>CanalFake</code> sem rede real.</p>
 <p>Cada servidor tem quatro <i>threads</i>:</p>
 <table><tr><th>Thread</th><th>Função</th></tr>
 <tr><td>heartbeat</td><td>envia <code>HEARTBEAT</code> ao grupo a cada 1 s</td></tr>
@@ -260,11 +281,11 @@ calcula sozinho <code>lider = min(vivos)</code>. Quando chega uma requisição, 
 <table><tr><th>Mensagem</th><th>Via</th><th>Campos</th><th>Uso</th></tr>
 <tr><td>HEARTBEAT</td><td>multicast</td><td>id, sinc</td><td>"estou sem falha" e se já tenho o estado da conta</td></tr>
 <tr><td>REQ</td><td>multicast</td><td>req_id, op, valor</td><td>requisição do cliente ao grupo</td></tr>
-<tr><td>REPLICA</td><td>multicast</td><td>req_id, op, valor, lider, saldo_lider</td><td>líder pede às réplicas que executem a escrita</td></tr>
+<tr><td>REPLICA</td><td>multicast</td><td>req_id, op, valor, lider, versao, saldo_lider</td><td>líder pede às réplicas que executem a escrita na próxima versão</td></tr>
 <tr><td>ACK</td><td>unicast → líder</td><td>req_id, id</td><td>réplica confirma que executou</td></tr>
 <tr><td>RESPOSTA</td><td>unicast → cliente</td><td>req_id, ok, resultado, saldo, servidor{{id, ip, porta}}, replicado_em</td><td>resposta do líder</td></tr>
 <tr><td>SYNC_REQ</td><td>multicast</td><td>id</td><td>servidor que (re)iniciou pede o estado</td></tr>
-<tr><td>STATE</td><td>unicast</td><td>saldo, cache</td><td>estado atual enviado a quem pediu</td></tr></table>
+<tr><td>STATE</td><td>unicast</td><td>saldo, cache, versao, versoes</td><td>estado atual versionado enviado a quem pediu</td></tr></table>
 
 <h3>Escrita</h3>
 <figure>{SVG_SEQ}<figcaption>Figura 2 · O líder executa, replica, espera o ACK de todos os membros sem falha e só então responde.</figcaption></figure>
@@ -285,7 +306,9 @@ calcula sozinho <code>lider = min(vivos)</code>. Quando chega uma requisição, 
 <li><b>Sem execução dupla.</b> Todo servidor guarda um <i>cache</i> <code>req_id → resultado</code>. Se o líder morre depois de replicar e antes de responder, o novo líder já executou aquela escrita como réplica e, ao receber o reenvio, devolve o resultado guardado, sem executar de novo (cenário 9).</li>
 <li><b>Período de inicialização.</b> Um servidor recém-iniciado não sabe quem está vivo. Por isso, nos primeiros 3 s ele não atende clientes, para não se considerar líder por engano.</li>
 <li><b>Sincronização ao voltar de uma falha.</b> O heartbeat informa se o servidor já tem estado (<code>sinc</code>). Um servidor que reinicia envia <code>SYNC_REQ</code>; o membro sem falha de menor ID que tem estado responde com <code>STATE</code>. Só depois disso o servidor que voltou pode assumir como líder (cenário 10). Se todos estão começando juntos, ninguém tem estado e todos começam com saldo 0.</li>
-<li><b>Verificação de consistência.</b> A REPLICA leva o saldo do líder. Se a réplica chegar a um saldo diferente, ela registra <code>INCONSISTENCIA</code> no log e adota o do líder. Em todos os testes essa situação não ocorreu.</li>
+<li><b>Ordenação por versão.</b> Cada escrita recebe uma versão sequencial. Uma REPLICA antiga recebe ACK sem alterar o estado; somente a próxima versão é aplicada; uma lacuna não é confirmada. Assim, uma retransmissão atrasada não faz o saldo regredir.</li>
+<li><b>Timeout sem falso sucesso.</b> Se uma réplica sem-falha não confirmar em 8 s, o líder responde <code>ok=false</code> e <code>REPLICACAO_NAO_CONFIRMADA</code>. Nunca transforma falta de ACK em confirmação de sucesso.</li>
+<li><b>Sincronização versionada.</b> Réplicas ainda não sincronizadas não aplicam escritas. STATE contém a versão do estado e snapshots antigos são rejeitados. Os cenários 13 e 14 escrevem enquanto S2 e S3 retornam.</li>
 <li><b>Bug encontrado nos testes.</b> Na primeira versão, um servidor que voltava de uma falha assumia a liderança com saldo 0 e respondia errado. O cenário 10 detectou o problema, e a correção foi a sincronização descrita acima.</li>
 </ul>
 
@@ -303,12 +326,21 @@ python3 cliente.py --iface 192.168.0.10        # modo interativo
 # simular falha (parada total) de um servidor
 kill -9 &lt;pid do servidor&gt;
 
+# testes unitários, sem rede real
+python3 -m unittest discover -s tests -v
+
 # todos os cenários automaticamente, numa máquina só
-python3 cenarios.py</pre>
+python3 cenarios.py --saida logs/pos_correcoes
+
+# gerar esta página a partir dos resultados locais finais
+python3 gera_pagina.py --logs logs/pos_correcoes</pre>
 <p>Código-fonte comentado:</p>
 <table><tr><th>Arquivo</th><th>Conteúdo</th></tr>{codigos_html}</table>
 
 <h2 id="testes">7. Testes e resultados</h2>
+<p><b>46/46 testes unitários</b> verificam conta, snapshots, comunicação, eleição, retransmissões,
+ACKs, ordenação, sincronização e a própria geração desta página. Eles usam dublês e relógio controlado,
+sem sleeps longos nem rede real. A suíte de integração abaixo usa UDP/multicast reais.</p>
 <p>Cada cenário sobe os servidores do zero, executa requisições, mata processos com <code>SIGKILL</code>
 (<code>kill -9</code>) e confere duas coisas: qual servidor respondeu e o saldo. No fim, confere no log de cada
 réplica sem falha se o saldo é igual em todas. Para cada cenário há o log de cada processo, o roteiro e uma
@@ -331,6 +363,8 @@ por uma tabela com os resultados e os links.</div>
 <li>O modelo considera só falhas de parada total, como pede o enunciado; partição de rede não é tratada. Se a rede se dividir, cada parte elegeria seu próprio líder.</li>
 <li>Com perda de heartbeats, dois servidores podem se considerar líder por um instante. O cliente usa a primeira resposta e descarta a outra pelo <code>req_id</code>.</li>
 <li>O estado fica em memória: se todos os servidores param, o saldo se perde (cenário 12).</li>
+<li>Se o timeout de replicação terminar, o resultado da escrita é desconhecido: ela pode ter sido aplicada no líder e em parte das réplicas, mas o cliente recebe falha, nunca sucesso.</li>
+<li>Uma réplica que fica com lacuna de versão após perdas prolongadas deixa de confirmar escritas posteriores. Ainda não há ressincronização automática dessa lacuna; o processo deve ser reiniciado para obter um novo snapshot.</li>
 <li>O multicast usa TTL 1, então todos os hosts precisam estar na mesma rede local.</li>
 </ul>
 """
@@ -365,6 +399,9 @@ TITULOS = {
     10: "S1 falha, S2 assume, S1 volta, recebe o estado e reassume",
     11: "Cliente enviando escritas enquanto o líder é morto",
     12: "Todos os servidores falhos: cliente fica sem resposta",
+    13: "S2 volta e recebe escrita durante a sincronização",
+    14: "S3 volta e recebe escrita durante a sincronização",
+    15: "Três clientes concorrentes mantêm as réplicas consistentes",
 }
 
 DESCR = {
@@ -380,7 +417,14 @@ DESCR = {
     10: "S1 é morto e S2 assume. Depois S1 é reiniciado, pede o estado ao grupo, recebe o saldo de S2 e volta a ser o líder por ter o menor ID, com o saldo correto.",
     11: "Um cliente faz 6 depósitos, um por segundo, e S1 é morto durante a sequência. O depósito que estava em andamento é reenviado e atendido por S2, e nenhum é perdido ou duplicado: o saldo final é 60.",
     12: "Todos os servidores são mortos. O cliente tenta 6 vezes e informa que nenhum servidor respondeu.",
+    13: "Depois de duas escritas sem S2, ele é reiniciado e uma terceira escrita ocorre durante sua sincronização. O saldo final é 175 em S1, S2 e S3.",
+    14: "O mesmo teste de reintegração é feito com S3: uma escrita ocorre durante seu retorno e todas as réplicas terminam com saldo 175.",
+    15: "Três clientes fazem cinco depósitos de 10 cada, simultaneamente. S1 serializa as escritas e o saldo final é 150 em todos os servidores.",
 }
 
 if __name__ == "__main__":
-    gera()
+    ap = argparse.ArgumentParser(description="Gera a página HTML do TP")
+    ap.add_argument("--logs", default=os.path.join(AQUI, "logs"),
+                    help="diretório que contém resumo.json e os cenários")
+    args = ap.parse_args()
+    gera(args.logs)

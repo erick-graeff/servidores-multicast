@@ -1,0 +1,15 @@
+2026-11-04 14:40:53.069 [C1] cliente em 127.0.0.1:57201, grupo 224.1.1.1:5007
+2026-11-04 14:40:53.069 [C1] ENVIA C1-4e329c 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 14:40:53.071 [C1] RESPOSTA C1-4e329c do servidor S1 (127.0.0.1:6001): OK - consulta de saldo, saldo=0
+2026-11-04 14:40:53.175 [C1] cliente em 127.0.0.1:41385, grupo 224.1.1.1:5007
+2026-11-04 14:40:53.175 [C1] ENVIA C1-da8914 'DEPOSITO 100' ao grupo (tentativa 1/6)
+2026-11-04 14:40:53.176 [C1] RESPOSTA C1-da8914 do servidor S1 (127.0.0.1:6001): OK - deposito de 100 realizado, saldo=100, replicado em ['S1', 'S2', 'S3']
+2026-11-04 14:40:53.263 [C1] cliente em 127.0.0.1:48302, grupo 224.1.1.1:5007
+2026-11-04 14:40:53.263 [C1] ENVIA C1-d7d89a 'SAQUE 30' ao grupo (tentativa 1/6)
+2026-11-04 14:40:53.265 [C1] RESPOSTA C1-d7d89a do servidor S1 (127.0.0.1:6001): OK - saque de 30 realizado, saldo=70, replicado em ['S1', 'S2', 'S3']
+2026-11-04 14:40:53.319 [C1] cliente em 127.0.0.1:50881, grupo 224.1.1.1:5007
+2026-11-04 14:40:53.319 [C1] ENVIA C1-d78542 'SAQUE 500' ao grupo (tentativa 1/6)
+2026-11-04 14:40:53.320 [C1] RESPOSTA C1-d78542 do servidor S1 (127.0.0.1:6001): RECUSADA - saldo insuficiente para saque de 500, saldo=70, replicado em ['S1', 'S2', 'S3']
+2026-11-04 14:40:53.395 [C1] cliente em 127.0.0.1:40622, grupo 224.1.1.1:5007
+2026-11-04 14:40:53.396 [C1] ENVIA C1-f807b1 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 14:40:53.396 [C1] RESPOSTA C1-f807b1 do servidor S1 (127.0.0.1:6001): OK - consulta de saldo, saldo=70

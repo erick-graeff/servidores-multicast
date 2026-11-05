@@ -1,0 +1,21 @@
+2026-11-04 14:42:01.516 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:42:01.717 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:42:01.718 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2]
+2026-11-04 14:42:02.519 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:42:02.519 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:42:04.521 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:42:04.521 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:42:05.471 [S2 127.0.0.1:6002] INFO    REQ C1-12c46a DEPOSITO 100 de 127.0.0.1:39208: lider e S1, nao respondo
+2026-11-04 14:42:05.471 [S2 127.0.0.1:6002] INFO    REPLICA C1-12c46a de S1: deposito de 100 realizado, saldo=100
+2026-11-04 14:42:05.471 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-12c46a
+2026-11-04 14:42:07.474 [S2 127.0.0.1:6002] INFO    REQ C1-12c46a DEPOSITO 100 de 127.0.0.1:39208: lider e S1, nao respondo
+2026-11-04 14:42:08.525 [S2 127.0.0.1:6002] WARNING FALHA detectada: S1 sem heartbeat ha mais de 3.0s
+2026-11-04 14:42:08.525 [S2 127.0.0.1:6002] INFO    VIVOS = [2, 3]
+2026-11-04 14:42:08.525 [S2 127.0.0.1:6002] INFO    LIDER eleito = S2 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-04 14:42:09.476 [S2 127.0.0.1:6002] INFO    REQ C1-12c46a DEPOSITO 100 de 127.0.0.1:39208: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:42:09.476 [S2 127.0.0.1:6002] INFO    ESCRITA C1-12c46a ja executada antes (reenvio do cliente); nao executa de novo, saldo=100
+2026-11-04 14:42:09.477 [S2 127.0.0.1:6002] INFO    REPLICA C1-12c46a enviada ao grupo; aguardando ACK de {S3}
+2026-11-04 14:42:09.477 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C1-12c46a
+2026-11-04 14:42:09.478 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-12c46a -> 127.0.0.1:39208: deposito de 100 realizado, saldo=100 (replicado em {S2, S3})
+2026-11-04 14:42:09.570 [S2 127.0.0.1:6002] INFO    REQ C1-d9bf99 SALDO  de 127.0.0.1:35634: SOU O LIDER (vivos=[2, 3])
+2026-11-04 14:42:09.571 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-d9bf99 -> 127.0.0.1:35634: saldo=100

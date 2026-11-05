@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # =============================================================================
 #  TP REDES II 2026 - Cliente do servidor tolerante a falhas
-#  Dupla .................: Eduardo Camargo Neves e [NOME DO(A) COLEGA]
+#  Dupla .................: Eduardo Camargo Neves e Erick Graeff Petzold
 #  Funcionalidade ........: Cliente que envia requisicoes (consulta ou
 #                           alteracao da conta) ao ENDERECO DO GRUPO multicast
 #                           e mostra a resposta do lider: resultado,
@@ -29,9 +29,11 @@ import time
 import uuid
 from datetime import datetime
 
+from comunicacao import abrir_canal_cliente
+
 
 class Cliente:
-    def __init__(self, cfg, iface, nome, arquivo_log, tentativas, espera):
+    def __init__(self, cfg, nome, arquivo_log, tentativas, espera, canal):
         self.grupo = (cfg["grupo"], cfg["porta_grupo"])
         self.nome = nome
         self.tentativas = tentativas
@@ -41,14 +43,10 @@ class Cliente:
             os.makedirs(os.path.dirname(arquivo_log) or ".", exist_ok=True)
             self.arq = open(arquivo_log, "a", encoding="utf-8")
 
-        # Um unico socket UDP: envia ao grupo e recebe a resposta unicast do
-        # lider (o lider responde para o IP:porta de origem da requisicao).
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind((iface, 0))
-        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
-        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(iface))
-        self.sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
-        ip, porta = self.sock.getsockname()
+        # O canal e montado no main e injetado aqui. Ele envia ao grupo e
+        # recebe a resposta unicast no endereco de origem da requisicao.
+        self.canal = canal
+        ip, porta = self.canal.endereco
         self.log(f"cliente em {ip}:{porta}, grupo {self.grupo[0]}:{self.grupo[1]}")
 
     def log(self, texto):
@@ -69,22 +67,22 @@ class Cliente:
         desc = f"{op.upper()} {valor}" if op.upper() != "SALDO" else "SALDO"
         for t in range(1, self.tentativas + 1):
             self.log(f"ENVIA {req_id} '{desc}' ao grupo (tentativa {t}/{self.tentativas})")
-            self.sock.sendto(json.dumps(msg).encode(), self.grupo)
+            self.canal.enviar(msg, self.grupo)
             limite = time.time() + self.espera
             while time.time() < limite:
-                self.sock.settimeout(max(0.01, limite - time.time()))
                 try:
-                    dados, origem = self.sock.recvfrom(65535)
+                    resp, origem = self.canal.receber(timeout=max(0.01, limite - time.time()))
                 except socket.timeout:
                     break
-                resp = json.loads(dados.decode())
                 if resp.get("req_id") != req_id:
                     continue  # resposta atrasada de uma requisicao anterior
                 s = resp["servidor"]
                 extra = f", replicado em {['S%d' % i for i in resp['replicado_em']]}" if "replicado_em" in resp else ""
-                self.log(f"RESPOSTA {req_id} do servidor S{s['id']} ({s['ip']}:{s['porta']}): "
-                         f"{'OK' if resp['ok'] else 'RECUSADA'} - {resp['resultado']}, "
-                         f"saldo={resp['saldo']}{extra}")
+                self.log(
+                    f"RESPOSTA {req_id} do servidor S{s['id']} ({s['ip']}:{s['porta']}): "
+                    f"{'OK' if resp['ok'] else 'RECUSADA'} - {resp['resultado']}, "
+                    f"saldo={resp['saldo']}{extra}"
+                )
                 return resp
             self.log(f"sem resposta em {self.espera:.1f}s para {req_id}")
         self.log(f"FALHA: nenhum servidor respondeu a {req_id} apos {self.tentativas} tentativas")
@@ -104,7 +102,8 @@ def main():
     a = ap.parse_args()
     with open(a.config) as f:
         cfg = json.load(f)
-    c = Cliente(cfg, a.iface, a.nome, a.log, a.tentativas, a.espera)
+    canal = abrir_canal_cliente(a.iface)
+    c = Cliente(cfg, a.nome, a.log, a.tentativas, a.espera, canal)
 
     if a.op:
         r = c.requisita(a.op, a.valor)

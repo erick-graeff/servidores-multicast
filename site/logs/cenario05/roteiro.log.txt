@@ -1,16 +1,16 @@
-2026-11-02 15:51:06.443 [ROTEIRO] ===== CENARIO 5: Falhas de S1 e S2: S3 atende sozinho =====
-2026-11-02 15:51:06.444 [ROTEIRO] inicia S1 (pid 5274)
-2026-11-02 15:51:06.444 [ROTEIRO] inicia S2 (pid 5275)
-2026-11-02 15:51:06.450 [ROTEIRO] inicia S3 (pid 5276)
-2026-11-02 15:51:06.450 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
-2026-11-02 15:51:10.450 [ROTEIRO] cliente C1: DEPOSITO 10
-2026-11-02 15:51:10.486 [ROTEIRO]   -> esperado: S1, saldo=10 | obtido: S1, saldo=10 | OK
-2026-11-02 15:51:10.486 [ROTEIRO] kill -9 5274  -> S1 sofre PARADA TOTAL
-2026-11-02 15:51:10.487 [ROTEIRO] kill -9 5275  -> S2 sofre PARADA TOTAL
-2026-11-02 15:51:10.488 [ROTEIRO] aguarda 4s (S3 detecta as falhas de S1 e S2)
-2026-11-02 15:51:14.488 [ROTEIRO] cliente C1: DEPOSITO 5
-2026-11-02 15:51:14.528 [ROTEIRO]   -> esperado: S3, saldo=15 | obtido: S3, saldo=15 | OK
-2026-11-02 15:51:14.528 [ROTEIRO] cliente C1: SALDO
-2026-11-02 15:51:14.566 [ROTEIRO]   -> esperado: S3, saldo=15 | obtido: S3, saldo=15 | OK
-2026-11-02 15:51:15.066 [ROTEIRO] estado de S3: saldo=15 (esperado 15) OK
-2026-11-02 15:51:15.067 [ROTEIRO] fim do cenario
+2026-11-04 14:59:08.733 [ROTEIRO] ===== CENARIO 5: Falhas de S1 e S2: S3 atende sozinho =====
+2026-11-04 14:59:08.734 [ROTEIRO] inicia S1 (pid 256198)
+2026-11-04 14:59:08.735 [ROTEIRO] inicia S2 (pid 256199)
+2026-11-04 14:59:08.736 [ROTEIRO] inicia S3 (pid 256200)
+2026-11-04 14:59:08.736 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:59:12.736 [ROTEIRO] cliente C1: DEPOSITO 10
+2026-11-04 14:59:12.828 [ROTEIRO]   -> esperado: S1, saldo=10 | obtido: S1, saldo=10 | OK
+2026-11-04 14:59:12.828 [ROTEIRO] kill -9 256198  -> S1 sofre PARADA TOTAL
+2026-11-04 14:59:12.830 [ROTEIRO] kill -9 256199  -> S2 sofre PARADA TOTAL
+2026-11-04 14:59:12.832 [ROTEIRO] aguarda 4s (S3 detecta as falhas de S1 e S2)
+2026-11-04 14:59:16.832 [ROTEIRO] cliente C1: DEPOSITO 5
+2026-11-04 14:59:16.898 [ROTEIRO]   -> esperado: S3, saldo=15 | obtido: S3, saldo=15 | OK
+2026-11-04 14:59:16.898 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:59:16.968 [ROTEIRO]   -> esperado: S3, saldo=15 | obtido: S3, saldo=15 | OK
+2026-11-04 14:59:17.469 [ROTEIRO] estado de S3: saldo=15 (esperado 15) OK
+2026-11-04 14:59:17.472 [ROTEIRO] fim do cenario

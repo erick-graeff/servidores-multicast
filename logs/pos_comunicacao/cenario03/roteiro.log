@@ -1,0 +1,12 @@
+2026-11-04 14:34:16.568 [ROTEIRO] ===== CENARIO 3: Requisicao enviada logo apos a falha do lider (antes da deteccao) =====
+2026-11-04 14:34:16.570 [ROTEIRO] inicia S1 (pid 225338)
+2026-11-04 14:34:16.571 [ROTEIRO] inicia S2 (pid 225339)
+2026-11-04 14:34:16.572 [ROTEIRO] inicia S3 (pid 225340)
+2026-11-04 14:34:16.572 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:34:20.572 [ROTEIRO] kill -9 225338  -> S1 sofre PARADA TOTAL
+2026-11-04 14:34:20.575 [ROTEIRO] cliente envia IMEDIATAMENTE, antes de a falha ser detectada
+2026-11-04 14:34:20.575 [ROTEIRO] cliente C1: DEPOSITO 40
+2026-11-04 14:34:24.663 [ROTEIRO]   -> esperado: S2, saldo=40 | obtido: S2, saldo=40 | OK
+2026-11-04 14:34:25.164 [ROTEIRO] estado de S2: saldo=40 (esperado 40) OK
+2026-11-04 14:34:25.164 [ROTEIRO] estado de S3: saldo=40 (esperado 40) OK
+2026-11-04 14:34:25.169 [ROTEIRO] fim do cenario

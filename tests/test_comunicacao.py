@@ -1,0 +1,87 @@
+import json
+import socket
+import struct
+import unittest
+from unittest.mock import Mock, patch
+
+from comunicacao import (
+    CanalUDP,
+    abrir_canal_cliente,
+    abrir_canal_multicast,
+    abrir_canal_unicast,
+)
+
+
+class CanalUDPTest(unittest.TestCase):
+    def setUp(self):
+        self.sock = Mock()
+        self.sock.getsockname.return_value = ("127.0.0.1", 12345)
+        self.canal = CanalUDP(self.sock)
+
+    def test_enviar_serializa_json_para_o_destino(self):
+        mensagem = {"tipo": "REQ", "req_id": "C1-1", "valor": 10}
+        destino = ("224.1.1.1", 5007)
+
+        self.canal.enviar(mensagem, destino)
+
+        dados, destino_enviado = self.sock.sendto.call_args.args
+        self.assertEqual(mensagem, json.loads(dados.decode("utf-8")))
+        self.assertEqual(destino, destino_enviado)
+
+    def test_receber_decodifica_json_e_devolve_a_origem(self):
+        mensagem = {"tipo": "ACK", "req_id": "C1-1", "id": 2}
+        origem = ("127.0.0.1", 6002)
+        self.sock.recvfrom.return_value = (json.dumps(mensagem).encode("utf-8"), origem)
+
+        recebida, origem_recebida = self.canal.receber(timeout=0.25)
+
+        self.assertEqual(mensagem, recebida)
+        self.assertEqual(origem, origem_recebida)
+        self.sock.settimeout.assert_called_once_with(0.25)
+
+    def test_receber_rejeita_datagrama_json_invalido(self):
+        self.sock.recvfrom.return_value = (b"nao-e-json", ("127.0.0.1", 6002))
+
+        with self.assertRaises(json.JSONDecodeError):
+            self.canal.receber()
+
+    def test_endereco_expoe_o_endereco_local_do_socket(self):
+        self.assertEqual(("127.0.0.1", 12345), self.canal.endereco)
+
+
+class FabricasCanaisTest(unittest.TestCase):
+    def setUp(self):
+        self.sock = Mock()
+        self.sock.getsockname.return_value = ("127.0.0.1", 12345)
+
+    def test_canal_cliente_faz_bind_ephemeral_e_configura_multicast(self):
+        with patch("comunicacao.socket.socket", return_value=self.sock):
+            abrir_canal_cliente("192.0.2.10")
+
+        self.sock.bind.assert_called_once_with(("192.0.2.10", 0))
+        self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
+        self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton("192.0.2.10"))
+        self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
+
+    def test_canal_unicast_faz_bind_no_endereco_do_servidor(self):
+        with patch("comunicacao.socket.socket", return_value=self.sock):
+            abrir_canal_unicast("192.0.2.11", 6001, "192.0.2.11")
+
+        self.sock.bind.assert_called_once_with(("192.0.2.11", 6001))
+        self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton("192.0.2.11"))
+
+    def test_canal_multicast_entra_no_grupo_na_interface_informada(self):
+        grupo = "224.1.1.1"
+        iface = "192.0.2.12"
+
+        with patch("comunicacao.socket.socket", return_value=self.sock):
+            abrir_canal_multicast(grupo, 5007, iface)
+
+        self.sock.bind.assert_called_once_with(("", 5007))
+        self.sock.setsockopt.assert_any_call(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        mreq_esperado = struct.pack("4s4s", socket.inet_aton(grupo), socket.inet_aton(iface))
+        self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq_esperado)
+
+
+if __name__ == "__main__":
+    unittest.main()

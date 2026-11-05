@@ -1,0 +1,8 @@
+2026-11-04 14:19:43.283 [C1] cliente em 127.0.0.1:34853, grupo 224.1.1.1:5007
+2026-11-04 14:19:43.284 [C1] ENVIA C1-6a7965 'DEPOSITO 80' ao grupo (tentativa 1/6)
+2026-11-04 14:19:45.286 [C1] sem resposta em 2.0s para C1-6a7965
+2026-11-04 14:19:45.286 [C1] ENVIA C1-6a7965 'DEPOSITO 80' ao grupo (tentativa 2/6)
+2026-11-04 14:19:45.389 [C1] RESPOSTA C1-6a7965 do servidor S1 (127.0.0.1:6001): OK - deposito de 80 realizado, saldo=80, replicado em ['S1', 'S2']
+2026-11-04 14:19:45.489 [C1] cliente em 127.0.0.1:42399, grupo 224.1.1.1:5007
+2026-11-04 14:19:45.489 [C1] ENVIA C1-6383e2 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 14:19:45.490 [C1] RESPOSTA C1-6383e2 do servidor S1 (127.0.0.1:6001): OK - consulta de saldo, saldo=80

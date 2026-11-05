@@ -1,0 +1,17 @@
+2026-11-04 15:00:28.376 [C1] cliente em 127.0.0.1:47531, grupo 224.1.1.1:5007
+2026-11-04 15:00:28.376 [C1] ENVIA C1-d2217f 'DEPOSITO 30' ao grupo (tentativa 1/6)
+2026-11-04 15:00:28.379 [C1] RESPOSTA C1-d2217f do servidor S1 (127.0.0.1:6001): OK - deposito de 30 realizado, saldo=30, replicado em ['S1', 'S2', 'S3']
+2026-11-04 15:00:28.471 [C1] cliente em 127.0.0.1:52469, grupo 224.1.1.1:5007
+2026-11-04 15:00:28.471 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 15:00:30.473 [C1] sem resposta em 2.0s para C1-88bf62
+2026-11-04 15:00:30.473 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 2/6)
+2026-11-04 15:00:32.475 [C1] sem resposta em 2.0s para C1-88bf62
+2026-11-04 15:00:32.475 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 3/6)
+2026-11-04 15:00:34.477 [C1] sem resposta em 2.0s para C1-88bf62
+2026-11-04 15:00:34.477 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 4/6)
+2026-11-04 15:00:36.479 [C1] sem resposta em 2.0s para C1-88bf62
+2026-11-04 15:00:36.479 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 5/6)
+2026-11-04 15:00:38.481 [C1] sem resposta em 2.0s para C1-88bf62
+2026-11-04 15:00:38.481 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 6/6)
+2026-11-04 15:00:40.483 [C1] sem resposta em 2.0s para C1-88bf62
+2026-11-04 15:00:40.484 [C1] FALHA: nenhum servidor respondeu a C1-88bf62 apos 6 tentativas

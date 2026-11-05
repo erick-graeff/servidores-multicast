@@ -1,0 +1,14 @@
+2026-11-04 14:19:39.309 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:19:39.511 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:19:39.511 [S2 127.0.0.1:6002] INFO    VIVOS = [2, 3]
+2026-11-04 14:19:40.312 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:19:40.312 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:19:42.312 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:19:42.314 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:19:43.284 [S2 127.0.0.1:6002] INFO    REQ C1-6a7965 DEPOSITO 80 de 127.0.0.1:34853: lider e S1, nao respondo
+2026-11-04 14:19:43.285 [S2 127.0.0.1:6002] INFO    REPLICA C1-6a7965 de S1: deposito de 80 realizado, saldo=80
+2026-11-04 14:19:43.286 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-6a7965
+2026-11-04 14:19:45.287 [S2 127.0.0.1:6002] INFO    REQ C1-6a7965 DEPOSITO 80 de 127.0.0.1:34853: lider e S1, nao respondo
+2026-11-04 14:19:45.317 [S2 127.0.0.1:6002] WARNING FALHA detectada: S3 sem heartbeat ha mais de 3.0s
+2026-11-04 14:19:45.317 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2]
+2026-11-04 14:19:45.490 [S2 127.0.0.1:6002] INFO    REQ C1-6383e2 SALDO  de 127.0.0.1:42399: lider e S1, nao respondo

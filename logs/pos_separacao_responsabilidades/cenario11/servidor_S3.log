@@ -1,0 +1,29 @@
+2026-11-04 14:42:26.105 [S3 127.0.0.1:6003] INFO    INICIANDO servidor S3 em 127.0.0.1:6003, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:42:26.308 [S3 127.0.0.1:6003] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:42:26.308 [S3 127.0.0.1:6003] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-04 14:42:26.308 [S3 127.0.0.1:6003] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:42:29.109 [S3 127.0.0.1:6003] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:42:29.111 [S3 127.0.0.1:6003] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:42:30.082 [S3 127.0.0.1:6003] INFO    REQ C2-ba78b3 DEPOSITO 10 de 127.0.0.1:55975: lider e S1, nao respondo
+2026-11-04 14:42:30.083 [S3 127.0.0.1:6003] INFO    REPLICA C2-ba78b3 de S1: deposito de 10 realizado, saldo=10
+2026-11-04 14:42:30.083 [S3 127.0.0.1:6003] INFO    ACK enviado a S1 para C2-ba78b3
+2026-11-04 14:42:31.164 [S3 127.0.0.1:6003] INFO    REQ C2-b4066f DEPOSITO 10 de 127.0.0.1:45830: lider e S1, nao respondo
+2026-11-04 14:42:33.115 [S3 127.0.0.1:6003] WARNING FALHA detectada: S1 sem heartbeat ha mais de 3.0s
+2026-11-04 14:42:33.116 [S3 127.0.0.1:6003] INFO    VIVOS = [2, 3]
+2026-11-04 14:42:33.116 [S3 127.0.0.1:6003] INFO    LIDER eleito = S2 (menor ID sem falha) -> sou replica
+2026-11-04 14:42:33.166 [S3 127.0.0.1:6003] INFO    REQ C2-b4066f DEPOSITO 10 de 127.0.0.1:45830: lider e S2, nao respondo
+2026-11-04 14:42:33.167 [S3 127.0.0.1:6003] INFO    REPLICA C2-b4066f de S2: deposito de 10 realizado, saldo=20
+2026-11-04 14:42:33.167 [S3 127.0.0.1:6003] INFO    ACK enviado a S2 para C2-b4066f
+2026-11-04 14:42:34.244 [S3 127.0.0.1:6003] INFO    REQ C2-3f629f DEPOSITO 10 de 127.0.0.1:36310: lider e S2, nao respondo
+2026-11-04 14:42:34.244 [S3 127.0.0.1:6003] INFO    REPLICA C2-3f629f de S2: deposito de 10 realizado, saldo=30
+2026-11-04 14:42:34.245 [S3 127.0.0.1:6003] INFO    ACK enviado a S2 para C2-3f629f
+2026-11-04 14:42:35.333 [S3 127.0.0.1:6003] INFO    REQ C2-6a7a27 DEPOSITO 10 de 127.0.0.1:46519: lider e S2, nao respondo
+2026-11-04 14:42:35.333 [S3 127.0.0.1:6003] INFO    REPLICA C2-6a7a27 de S2: deposito de 10 realizado, saldo=40
+2026-11-04 14:42:35.333 [S3 127.0.0.1:6003] INFO    ACK enviado a S2 para C2-6a7a27
+2026-11-04 14:42:36.416 [S3 127.0.0.1:6003] INFO    REQ C2-3e187f DEPOSITO 10 de 127.0.0.1:43943: lider e S2, nao respondo
+2026-11-04 14:42:36.417 [S3 127.0.0.1:6003] INFO    REPLICA C2-3e187f de S2: deposito de 10 realizado, saldo=50
+2026-11-04 14:42:36.417 [S3 127.0.0.1:6003] INFO    ACK enviado a S2 para C2-3e187f
+2026-11-04 14:42:37.488 [S3 127.0.0.1:6003] INFO    REQ C2-159dbf DEPOSITO 10 de 127.0.0.1:47805: lider e S2, nao respondo
+2026-11-04 14:42:37.488 [S3 127.0.0.1:6003] INFO    REPLICA C2-159dbf de S2: deposito de 10 realizado, saldo=60
+2026-11-04 14:42:37.488 [S3 127.0.0.1:6003] INFO    ACK enviado a S2 para C2-159dbf
+2026-11-04 14:42:38.565 [S3 127.0.0.1:6003] INFO    REQ C1-61c2d0 SALDO  de 127.0.0.1:34812: lider e S2, nao respondo

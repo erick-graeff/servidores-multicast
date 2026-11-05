@@ -1,0 +1,19 @@
+2026-11-04 14:34:00.836 [ROTEIRO] ===== CENARIO 1: Todos sem falha: consultas e alteracoes atendidas por S1 =====
+2026-11-04 14:34:00.837 [ROTEIRO] inicia S1 (pid 224940)
+2026-11-04 14:34:00.838 [ROTEIRO] inicia S2 (pid 224941)
+2026-11-04 14:34:00.839 [ROTEIRO] inicia S3 (pid 224942)
+2026-11-04 14:34:00.839 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:34:04.840 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:34:04.919 [ROTEIRO]   -> esperado: S1, saldo=0 | obtido: S1, saldo=0 | OK
+2026-11-04 14:34:04.919 [ROTEIRO] cliente C1: DEPOSITO 100
+2026-11-04 14:34:04.981 [ROTEIRO]   -> esperado: S1, saldo=100 | obtido: S1, saldo=100 | OK
+2026-11-04 14:34:04.981 [ROTEIRO] cliente C1: SAQUE 30
+2026-11-04 14:34:05.052 [ROTEIRO]   -> esperado: S1, saldo=70 | obtido: S1, saldo=70 | OK
+2026-11-04 14:34:05.052 [ROTEIRO] cliente C1: SAQUE 500
+2026-11-04 14:34:05.139 [ROTEIRO]   -> esperado: S1, saldo=70 | obtido: S1, saldo=70 | OK
+2026-11-04 14:34:05.140 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:34:05.197 [ROTEIRO]   -> esperado: S1, saldo=70 | obtido: S1, saldo=70 | OK
+2026-11-04 14:34:05.698 [ROTEIRO] estado de S1: saldo=70 (esperado 70) OK
+2026-11-04 14:34:05.698 [ROTEIRO] estado de S2: saldo=70 (esperado 70) OK
+2026-11-04 14:34:05.698 [ROTEIRO] estado de S3: saldo=70 (esperado 70) OK
+2026-11-04 14:34:05.705 [ROTEIRO] fim do cenario

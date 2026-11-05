@@ -1,0 +1,26 @@
+2026-11-04 14:47:54.077 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:47:54.279 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:47:54.279 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 3]
+2026-11-04 14:47:55.080 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-04 14:47:55.080 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:47:57.080 [S1 127.0.0.1:6001] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:47:57.082 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-04 14:47:58.088 [S1 127.0.0.1:6001] INFO    REQ C1-d4d87c DEPOSITO 80 de 127.0.0.1:40085: SOU O LIDER (vivos=[1, 2, 3])
+2026-11-04 14:47:58.089 [S1 127.0.0.1:6001] INFO    ESCRITA C1-d4d87c executada localmente: deposito de 80 realizado, saldo=80
+2026-11-04 14:47:58.089 [S1 127.0.0.1:6001] INFO    REPLICA C1-d4d87c enviada ao grupo; aguardando ACK de {S2, S3}
+2026-11-04 14:47:58.089 [S1 127.0.0.1:6001] INFO    ACK recebido de S2 para C1-d4d87c
+2026-11-04 14:47:59.291 [S1 127.0.0.1:6001] INFO    REPLICA C1-d4d87c reenviada; ainda faltam ACK de {S3}
+2026-11-04 14:47:59.291 [S1 127.0.0.1:6001] INFO    ACK recebido de S2 para C1-d4d87c
+2026-11-04 14:48:00.091 [S1 127.0.0.1:6001] INFO    REQ C1-d4d87c DEPOSITO 80 de 127.0.0.1:40085: SOU O LIDER (vivos=[1, 2, 3])
+2026-11-04 14:48:00.493 [S1 127.0.0.1:6001] INFO    REPLICA C1-d4d87c reenviada; ainda faltam ACK de {S3}
+2026-11-04 14:48:00.494 [S1 127.0.0.1:6001] INFO    ACK recebido de S2 para C1-d4d87c
+2026-11-04 14:48:01.086 [S1 127.0.0.1:6001] WARNING FALHA detectada: S3 sem heartbeat ha mais de 3.0s
+2026-11-04 14:48:01.086 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2]
+2026-11-04 14:48:01.095 [S1 127.0.0.1:6001] WARNING S3 falhou durante a escrita C1-d4d87c; nao espero mais seu ACK
+2026-11-04 14:48:01.095 [S1 127.0.0.1:6001] INFO    ESCRITA C1-d4d87c ja executada antes (reenvio do cliente); nao executa de novo, saldo=80
+2026-11-04 14:48:01.095 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-d4d87c -> 127.0.0.1:40085: deposito de 80 realizado, saldo=80 (replicado em {S1, S2})
+2026-11-04 14:48:01.095 [S1 127.0.0.1:6001] INFO    REPLICA C1-d4d87c enviada ao grupo; aguardando ACK de {S2}
+2026-11-04 14:48:01.096 [S1 127.0.0.1:6001] INFO    ACK recebido de S2 para C1-d4d87c
+2026-11-04 14:48:01.097 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-d4d87c -> 127.0.0.1:40085: deposito de 80 realizado, saldo=80 (replicado em {S1, S2})
+2026-11-04 14:48:01.187 [S1 127.0.0.1:6001] INFO    REQ C1-336ed2 SALDO  de 127.0.0.1:59671: SOU O LIDER (vivos=[1, 2])
+2026-11-04 14:48:01.187 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-336ed2 -> 127.0.0.1:59671: saldo=80

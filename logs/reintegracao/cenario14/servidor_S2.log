@@ -1,0 +1,20 @@
+2026-11-04 14:55:29.138 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:55:29.340 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:55:29.340 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:55:29.341 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:55:32.142 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:55:32.143 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:55:33.119 [S2 127.0.0.1:6002] INFO    REQ C1-bc1399 DEPOSITO 100 de 127.0.0.1:46632: lider e S1, nao respondo
+2026-11-04 14:55:33.120 [S2 127.0.0.1:6002] INFO    REPLICA C1-bc1399 de S1: deposito de 100 realizado, saldo=100, versao=1
+2026-11-04 14:55:33.120 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-bc1399
+2026-11-04 14:55:35.145 [S2 127.0.0.1:6002] WARNING FALHA detectada: S3 sem heartbeat ha mais de 3.0s
+2026-11-04 14:55:35.146 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2]
+2026-11-04 14:55:37.217 [S2 127.0.0.1:6002] INFO    REQ C1-5f36ac DEPOSITO 50 de 127.0.0.1:46717: lider e S1, nao respondo
+2026-11-04 14:55:37.218 [S2 127.0.0.1:6002] INFO    REPLICA C1-5f36ac de S1: deposito de 50 realizado, saldo=150, versao=2
+2026-11-04 14:55:37.218 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-5f36ac
+2026-11-04 14:55:37.316 [S2 127.0.0.1:6002] INFO    REQ C1-6867cc DEPOSITO 25 de 127.0.0.1:34061: lider e S1, nao respondo
+2026-11-04 14:55:37.316 [S2 127.0.0.1:6002] INFO    REPLICA C1-6867cc de S1: deposito de 25 realizado, saldo=175, versao=3
+2026-11-04 14:55:37.317 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-6867cc
+2026-11-04 14:55:37.348 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:55:37.348 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:55:42.379 [S2 127.0.0.1:6002] INFO    REQ C1-6385c6 SALDO  de 127.0.0.1:34577: lider e S1, nao respondo

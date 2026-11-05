@@ -1,0 +1,19 @@
+2026-11-04 14:19:10.075 [S3 127.0.0.1:6003] INFO    INICIANDO servidor S3 em 127.0.0.1:6003, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:19:10.276 [S3 127.0.0.1:6003] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:19:10.277 [S3 127.0.0.1:6003] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-04 14:19:10.277 [S3 127.0.0.1:6003] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:19:13.078 [S3 127.0.0.1:6003] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:19:13.079 [S3 127.0.0.1:6003] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:19:14.047 [S3 127.0.0.1:6003] INFO    REQ C1-8efc09 DEPOSITO 10 de 127.0.0.1:55941: lider e S1, nao respondo
+2026-11-04 14:19:14.047 [S3 127.0.0.1:6003] INFO    REPLICA C1-8efc09 de S1: deposito de 10 realizado, saldo=10
+2026-11-04 14:19:14.048 [S3 127.0.0.1:6003] INFO    ACK enviado a S1 para C1-8efc09
+2026-11-04 14:19:16.082 [S3 127.0.0.1:6003] WARNING FALHA detectada: S1 sem heartbeat ha mais de 3.0s
+2026-11-04 14:19:16.083 [S3 127.0.0.1:6003] WARNING FALHA detectada: S2 sem heartbeat ha mais de 3.0s
+2026-11-04 14:19:16.083 [S3 127.0.0.1:6003] INFO    VIVOS = [3]
+2026-11-04 14:19:16.083 [S3 127.0.0.1:6003] INFO    LIDER eleito = S3 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-04 14:19:18.151 [S3 127.0.0.1:6003] INFO    REQ C1-5b5253 DEPOSITO 5 de 127.0.0.1:40800: SOU O LIDER (vivos=[3])
+2026-11-04 14:19:18.151 [S3 127.0.0.1:6003] INFO    ESCRITA C1-5b5253 executada localmente: deposito de 5 realizado, saldo=15
+2026-11-04 14:19:18.152 [S3 127.0.0.1:6003] INFO    REPLICA C1-5b5253 enviada ao grupo; aguardando ACK de {}
+2026-11-04 14:19:18.152 [S3 127.0.0.1:6003] INFO    RESPOSTA C1-5b5253 -> 127.0.0.1:40800: deposito de 5 realizado, saldo=15 (replicado em {S3})
+2026-11-04 14:19:18.258 [S3 127.0.0.1:6003] INFO    REQ C1-525572 SALDO  de 127.0.0.1:37028: SOU O LIDER (vivos=[3])
+2026-11-04 14:19:18.258 [S3 127.0.0.1:6003] INFO    RESPOSTA C1-525572 -> 127.0.0.1:37028: saldo=15

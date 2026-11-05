@@ -1,0 +1,14 @@
+2026-11-04 14:34:55.614 [ROTEIRO] ===== CENARIO 7: Falhas de S2 e S3: S1 atende sozinho =====
+2026-11-04 14:34:55.615 [ROTEIRO] inicia S1 (pid 226333)
+2026-11-04 14:34:55.616 [ROTEIRO] inicia S2 (pid 226334)
+2026-11-04 14:34:55.617 [ROTEIRO] inicia S3 (pid 226335)
+2026-11-04 14:34:55.617 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:34:59.617 [ROTEIRO] kill -9 226334  -> S2 sofre PARADA TOTAL
+2026-11-04 14:34:59.620 [ROTEIRO] kill -9 226335  -> S3 sofre PARADA TOTAL
+2026-11-04 14:34:59.622 [ROTEIRO] aguarda 4s (S1 detecta as falhas de S2 e S3)
+2026-11-04 14:35:03.622 [ROTEIRO] cliente C1: DEPOSITO 60
+2026-11-04 14:35:03.712 [ROTEIRO]   -> esperado: S1, saldo=60 | obtido: S1, saldo=60 | OK
+2026-11-04 14:35:03.712 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:35:03.819 [ROTEIRO]   -> esperado: S1, saldo=60 | obtido: S1, saldo=60 | OK
+2026-11-04 14:35:04.320 [ROTEIRO] estado de S1: saldo=60 (esperado 60) OK
+2026-11-04 14:35:04.322 [ROTEIRO] fim do cenario

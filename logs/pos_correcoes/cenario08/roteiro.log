@@ -1,0 +1,13 @@
+2026-11-04 14:59:37.915 [ROTEIRO] ===== CENARIO 8: Replica S3 para no meio de uma escrita =====
+2026-11-04 14:59:37.916 [ROTEIRO] inicia S1 (pid 256866)
+2026-11-04 14:59:37.917 [ROTEIRO] inicia S2 (pid 256867)
+2026-11-04 14:59:37.918 [ROTEIRO] inicia S3 (pid 256868) com falha injetada 'replica-durante-escrita'
+2026-11-04 14:59:37.918 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:59:41.918 [ROTEIRO] S3 vai parar no instante em que receber a REPLICA, sem confirmar
+2026-11-04 14:59:41.919 [ROTEIRO] cliente C1: DEPOSITO 80
+2026-11-04 14:59:44.087 [ROTEIRO]   -> esperado: S1, saldo=80 | obtido: S1, saldo=80 | OK
+2026-11-04 14:59:44.087 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:59:44.147 [ROTEIRO]   -> esperado: S1, saldo=80 | obtido: S1, saldo=80 | OK
+2026-11-04 14:59:44.647 [ROTEIRO] estado de S1: saldo=80 (esperado 80) OK
+2026-11-04 14:59:44.647 [ROTEIRO] estado de S2: saldo=80 (esperado 80) OK
+2026-11-04 14:59:44.652 [ROTEIRO] fim do cenario

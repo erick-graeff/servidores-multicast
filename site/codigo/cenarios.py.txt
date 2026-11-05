@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # =============================================================================
 #  TP REDES II 2026 - Roteiro automatico dos cenarios de teste
-#  Dupla .................: Eduardo Camargo Neves e [NOME DO(A) COLEGA]
+#  Dupla .................: Eduardo Camargo Neves e Erick Graeff Petzold
 #  Funcionalidade ........: Sobe os servidores, executa requisicoes de
 #                           clientes, mata processos com SIGKILL (kill -9,
 #                           parada total) em varias combinacoes, confere o
@@ -270,6 +270,51 @@ def c12(c):
     c.cliente("SALDO", esperado_srv=None)
 
 
+def reintegra_replica_durante_escrita(c, sid):
+    sobe_tres(c)
+    c.cliente("DEPOSITO", 100, esperado_srv=1, esperado_saldo=100)
+    c.mata(sid)
+    c.espera(DETECCAO, f"(S{sid} morto; os demais detectam a falha)")
+    c.cliente("DEPOSITO", 50, esperado_srv=1, esperado_saldo=150)
+    c.sobe(sid)
+    c.nota(f"S{sid} reinicia e o cliente escreve durante sua sincronizacao")
+    c.cliente("DEPOSITO", 25, esperado_srv=1, esperado_saldo=175)
+    c.espera(5, f"(S{sid} recebe o estado e processa retransmissoes)")
+    c.cliente("SALDO", esperado_srv=1, esperado_saldo=175)
+    c.confere_replicas(175)
+
+
+def c13(c):
+    reintegra_replica_durante_escrita(c, 2)
+
+
+def c14(c):
+    reintegra_replica_durante_escrita(c, 3)
+
+
+def c15(c):
+    sobe_tres(c)
+    erros = []
+
+    def rajada(nome):
+        try:
+            for _ in range(5):
+                c.cliente("DEPOSITO", 10, esperado_srv=1, nome=nome)
+        except Exception as exc:
+            erros.append(exc)
+
+    threads = [threading.Thread(target=rajada, args=(f"C{i}",)) for i in (2, 3, 4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    if erros:
+        raise erros[0]
+
+    c.cliente("SALDO", esperado_srv=1, esperado_saldo=150)
+    c.confere_replicas(150)
+
+
 CENARIOS = [
     (1, "Todos sem falha: consultas e alteracoes atendidas por S1", c01),
     (2, "Falha do lider S1: S2 assume e mantem o estado", c02),
@@ -283,6 +328,9 @@ CENARIOS = [
     (10, "S1 falha, S2 assume, S1 volta, recebe o estado e reassume", c10),
     (11, "Cliente enviando escritas enquanto o lider e morto", c11),
     (12, "Todos os servidores falhos: cliente fica sem resposta", c12),
+    (13, "S2 volta e recebe escrita durante a sincronizacao", c13),
+    (14, "S3 volta e recebe escrita durante a sincronizacao", c14),
+    (15, "Tres clientes concorrentes mantêm as replicas consistentes", c15),
 ]
 
 

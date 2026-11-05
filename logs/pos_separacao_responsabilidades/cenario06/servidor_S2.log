@@ -1,0 +1,20 @@
+2026-11-04 14:41:34.238 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:41:34.441 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:41:34.441 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:41:34.441 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:41:37.242 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:41:37.244 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:41:38.212 [S2 127.0.0.1:6002] INFO    REQ C1-3ae980 DEPOSITO 10 de 127.0.0.1:40833: lider e S1, nao respondo
+2026-11-04 14:41:38.213 [S2 127.0.0.1:6002] INFO    REPLICA C1-3ae980 de S1: deposito de 10 realizado, saldo=10
+2026-11-04 14:41:38.214 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-3ae980
+2026-11-04 14:41:40.247 [S2 127.0.0.1:6002] WARNING FALHA detectada: S1 sem heartbeat ha mais de 3.0s
+2026-11-04 14:41:40.247 [S2 127.0.0.1:6002] INFO    VIVOS = [2, 3]
+2026-11-04 14:41:40.247 [S2 127.0.0.1:6002] INFO    LIDER eleito = S2 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-04 14:41:40.447 [S2 127.0.0.1:6002] WARNING FALHA detectada: S3 sem heartbeat ha mais de 3.0s
+2026-11-04 14:41:40.447 [S2 127.0.0.1:6002] INFO    VIVOS = [2]
+2026-11-04 14:41:42.283 [S2 127.0.0.1:6002] INFO    REQ C1-010b25 DEPOSITO 7 de 127.0.0.1:39847: SOU O LIDER (vivos=[2])
+2026-11-04 14:41:42.283 [S2 127.0.0.1:6002] INFO    ESCRITA C1-010b25 executada localmente: deposito de 7 realizado, saldo=17
+2026-11-04 14:41:42.284 [S2 127.0.0.1:6002] INFO    REPLICA C1-010b25 enviada ao grupo; aguardando ACK de {}
+2026-11-04 14:41:42.284 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-010b25 -> 127.0.0.1:39847: deposito de 7 realizado, saldo=17 (replicado em {S2})
+2026-11-04 14:41:42.378 [S2 127.0.0.1:6002] INFO    REQ C1-1a5bcf SALDO  de 127.0.0.1:37882: SOU O LIDER (vivos=[2])
+2026-11-04 14:41:42.379 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-1a5bcf -> 127.0.0.1:37882: saldo=17

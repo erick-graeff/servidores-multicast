@@ -1,0 +1,21 @@
+2026-11-04 14:55:54.421 [ROTEIRO] ===== CENARIO 10: S1 falha, S2 assume, S1 volta, recebe o estado e reassume =====
+2026-11-04 14:55:54.422 [ROTEIRO] inicia S1 (pid 252308)
+2026-11-04 14:55:54.422 [ROTEIRO] inicia S2 (pid 252309)
+2026-11-04 14:55:54.423 [ROTEIRO] inicia S3 (pid 252310)
+2026-11-04 14:55:54.423 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:55:58.423 [ROTEIRO] cliente C1: DEPOSITO 100
+2026-11-04 14:55:58.555 [ROTEIRO]   -> esperado: S1, saldo=100 | obtido: S1, saldo=100 | OK
+2026-11-04 14:55:58.555 [ROTEIRO] kill -9 252308  -> S1 sofre PARADA TOTAL
+2026-11-04 14:55:58.556 [ROTEIRO] aguarda 4s (S1 morto, S2 assume)
+2026-11-04 14:56:02.557 [ROTEIRO] cliente C1: DEPOSITO 50
+2026-11-04 14:56:02.631 [ROTEIRO]   -> esperado: S2, saldo=150 | obtido: S2, saldo=150 | OK
+2026-11-04 14:56:02.632 [ROTEIRO] inicia S1 (pid 252512)
+2026-11-04 14:56:02.632 [ROTEIRO] aguarda 5s (S1 volta, pede o estado ao lider e reassume por ter o menor ID)
+2026-11-04 14:56:07.633 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:56:07.736 [ROTEIRO]   -> esperado: S1, saldo=150 | obtido: S1, saldo=150 | OK
+2026-11-04 14:56:07.737 [ROTEIRO] cliente C1: SAQUE 25
+2026-11-04 14:56:07.817 [ROTEIRO]   -> esperado: S1, saldo=125 | obtido: S1, saldo=125 | OK
+2026-11-04 14:56:08.318 [ROTEIRO] estado de S1: saldo=125 (esperado 125) OK
+2026-11-04 14:56:08.318 [ROTEIRO] estado de S2: saldo=125 (esperado 125) OK
+2026-11-04 14:56:08.318 [ROTEIRO] estado de S3: saldo=125 (esperado 125) OK
+2026-11-04 14:56:08.325 [ROTEIRO] fim do cenario

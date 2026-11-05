@@ -1,0 +1,14 @@
+2026-11-04 14:42:01.418 [ROTEIRO] ===== CENARIO 9: Lider para depois de replicar e antes de responder (sem execucao dupla) =====
+2026-11-04 14:42:01.419 [ROTEIRO] inicia S1 (pid 235536) com falha injetada 'lider-antes-de-responder'
+2026-11-04 14:42:01.419 [ROTEIRO] inicia S2 (pid 235537)
+2026-11-04 14:42:01.420 [ROTEIRO] inicia S3 (pid 235538)
+2026-11-04 14:42:01.420 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:42:05.420 [ROTEIRO] S1 vai executar e replicar a escrita e parar ANTES de responder ao cliente
+2026-11-04 14:42:05.420 [ROTEIRO] cliente C1: DEPOSITO 100
+2026-11-04 14:42:09.491 [ROTEIRO]   -> esperado: S2, saldo=100 | obtido: S2, saldo=100 | OK
+2026-11-04 14:42:09.491 [ROTEIRO] o deposito NAO pode ter sido aplicado duas vezes: saldo deve ser 100, nao 200
+2026-11-04 14:42:09.491 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:42:09.585 [ROTEIRO]   -> esperado: S2, saldo=100 | obtido: S2, saldo=100 | OK
+2026-11-04 14:42:10.085 [ROTEIRO] estado de S2: saldo=100 (esperado 100) OK
+2026-11-04 14:42:10.086 [ROTEIRO] estado de S3: saldo=100 (esperado 100) OK
+2026-11-04 14:42:10.090 [ROTEIRO] fim do cenario

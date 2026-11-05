@@ -1,0 +1,17 @@
+2026-11-04 14:42:44.161 [C1] cliente em 127.0.0.1:44094, grupo 224.1.1.1:5007
+2026-11-04 14:42:44.162 [C1] ENVIA C1-255b69 'DEPOSITO 30' ao grupo (tentativa 1/6)
+2026-11-04 14:42:44.163 [C1] RESPOSTA C1-255b69 do servidor S1 (127.0.0.1:6001): OK - deposito de 30 realizado, saldo=30, replicado em ['S1', 'S2', 'S3']
+2026-11-04 14:42:44.226 [C1] cliente em 127.0.0.1:55573, grupo 224.1.1.1:5007
+2026-11-04 14:42:44.226 [C1] ENVIA C1-0bcf33 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 14:42:46.228 [C1] sem resposta em 2.0s para C1-0bcf33
+2026-11-04 14:42:46.228 [C1] ENVIA C1-0bcf33 'SALDO' ao grupo (tentativa 2/6)
+2026-11-04 14:42:48.230 [C1] sem resposta em 2.0s para C1-0bcf33
+2026-11-04 14:42:48.231 [C1] ENVIA C1-0bcf33 'SALDO' ao grupo (tentativa 3/6)
+2026-11-04 14:42:50.233 [C1] sem resposta em 2.0s para C1-0bcf33
+2026-11-04 14:42:50.233 [C1] ENVIA C1-0bcf33 'SALDO' ao grupo (tentativa 4/6)
+2026-11-04 14:42:52.234 [C1] sem resposta em 2.0s para C1-0bcf33
+2026-11-04 14:42:52.235 [C1] ENVIA C1-0bcf33 'SALDO' ao grupo (tentativa 5/6)
+2026-11-04 14:42:54.237 [C1] sem resposta em 2.0s para C1-0bcf33
+2026-11-04 14:42:54.237 [C1] ENVIA C1-0bcf33 'SALDO' ao grupo (tentativa 6/6)
+2026-11-04 14:42:56.238 [C1] sem resposta em 2.0s para C1-0bcf33
+2026-11-04 14:42:56.239 [C1] FALHA: nenhum servidor respondeu a C1-0bcf33 apos 6 tentativas

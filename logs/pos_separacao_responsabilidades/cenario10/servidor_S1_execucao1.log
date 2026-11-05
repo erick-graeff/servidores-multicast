@@ -1,0 +1,13 @@
+2026-11-04 14:42:11.198 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:42:11.399 [S1 127.0.0.1:6001] INFO    VIVOS = [1]
+2026-11-04 14:42:12.201 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-04 14:42:12.201 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:42:12.201 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:42:14.200 [S1 127.0.0.1:6001] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:42:14.203 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-04 14:42:15.189 [S1 127.0.0.1:6001] INFO    REQ C1-7bf1da DEPOSITO 100 de 127.0.0.1:57663: SOU O LIDER (vivos=[1, 2, 3])
+2026-11-04 14:42:15.189 [S1 127.0.0.1:6001] INFO    ESCRITA C1-7bf1da executada localmente: deposito de 100 realizado, saldo=100
+2026-11-04 14:42:15.190 [S1 127.0.0.1:6001] INFO    REPLICA C1-7bf1da enviada ao grupo; aguardando ACK de {S2, S3}
+2026-11-04 14:42:15.190 [S1 127.0.0.1:6001] INFO    ACK recebido de S3 para C1-7bf1da
+2026-11-04 14:42:15.191 [S1 127.0.0.1:6001] INFO    ACK recebido de S2 para C1-7bf1da
+2026-11-04 14:42:15.191 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-7bf1da -> 127.0.0.1:57663: deposito de 100 realizado, saldo=100 (replicado em {S1, S2, S3})

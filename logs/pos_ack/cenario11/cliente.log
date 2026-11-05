@@ -1,0 +1,23 @@
+2026-11-04 14:48:16.457 [C2] cliente em 127.0.0.1:34983, grupo 224.1.1.1:5007
+2026-11-04 14:48:16.458 [C2] ENVIA C2-ce70bd 'DEPOSITO 10' ao grupo (tentativa 1/6)
+2026-11-04 14:48:16.460 [C2] RESPOSTA C2-ce70bd do servidor S1 (127.0.0.1:6001): OK - deposito de 10 realizado, saldo=10, replicado em ['S1', 'S2', 'S3']
+2026-11-04 14:48:17.565 [C2] cliente em 127.0.0.1:57149, grupo 224.1.1.1:5007
+2026-11-04 14:48:17.565 [C2] ENVIA C2-cee7c5 'DEPOSITO 10' ao grupo (tentativa 1/6)
+2026-11-04 14:48:19.568 [C2] sem resposta em 2.0s para C2-cee7c5
+2026-11-04 14:48:19.568 [C2] ENVIA C2-cee7c5 'DEPOSITO 10' ao grupo (tentativa 2/6)
+2026-11-04 14:48:19.571 [C2] RESPOSTA C2-cee7c5 do servidor S2 (127.0.0.1:6002): OK - deposito de 10 realizado, saldo=20, replicado em ['S2', 'S3']
+2026-11-04 14:48:20.680 [C2] cliente em 127.0.0.1:37214, grupo 224.1.1.1:5007
+2026-11-04 14:48:20.681 [C2] ENVIA C2-3cc49b 'DEPOSITO 10' ao grupo (tentativa 1/6)
+2026-11-04 14:48:20.682 [C2] RESPOSTA C2-3cc49b do servidor S2 (127.0.0.1:6002): OK - deposito de 10 realizado, saldo=30, replicado em ['S2', 'S3']
+2026-11-04 14:48:21.790 [C2] cliente em 127.0.0.1:41725, grupo 224.1.1.1:5007
+2026-11-04 14:48:21.790 [C2] ENVIA C2-266994 'DEPOSITO 10' ao grupo (tentativa 1/6)
+2026-11-04 14:48:21.793 [C2] RESPOSTA C2-266994 do servidor S2 (127.0.0.1:6002): OK - deposito de 10 realizado, saldo=40, replicado em ['S2', 'S3']
+2026-11-04 14:48:22.892 [C2] cliente em 127.0.0.1:45655, grupo 224.1.1.1:5007
+2026-11-04 14:48:22.892 [C2] ENVIA C2-a429e5 'DEPOSITO 10' ao grupo (tentativa 1/6)
+2026-11-04 14:48:22.894 [C2] RESPOSTA C2-a429e5 do servidor S2 (127.0.0.1:6002): OK - deposito de 10 realizado, saldo=50, replicado em ['S2', 'S3']
+2026-11-04 14:48:23.976 [C2] cliente em 127.0.0.1:36932, grupo 224.1.1.1:5007
+2026-11-04 14:48:23.976 [C2] ENVIA C2-85346a 'DEPOSITO 10' ao grupo (tentativa 1/6)
+2026-11-04 14:48:23.977 [C2] RESPOSTA C2-85346a do servidor S2 (127.0.0.1:6002): OK - deposito de 10 realizado, saldo=60, replicado em ['S2', 'S3']
+2026-11-04 14:48:25.069 [C1] cliente em 127.0.0.1:34610, grupo 224.1.1.1:5007
+2026-11-04 14:48:25.069 [C1] ENVIA C1-58be26 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 14:48:25.070 [C1] RESPOSTA C1-58be26 do servidor S2 (127.0.0.1:6002): OK - consulta de saldo, saldo=60

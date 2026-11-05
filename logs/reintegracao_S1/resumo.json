@@ -1,0 +1,51 @@
+[
+  {
+    "num": 10,
+    "titulo": "S1 falha, S2 assume, S1 volta, recebe o estado e reassume",
+    "checks": [
+      {
+        "req": "DEPOSITO 100",
+        "esperado": "S1, saldo=100",
+        "obtido": "S1, saldo=100",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 50",
+        "esperado": "S2, saldo=150",
+        "obtido": "S2, saldo=150",
+        "ok": true
+      },
+      {
+        "req": "SALDO",
+        "esperado": "S1, saldo=150",
+        "obtido": "S1, saldo=150",
+        "ok": true
+      },
+      {
+        "req": "SAQUE 25",
+        "esperado": "S1, saldo=125",
+        "obtido": "S1, saldo=125",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S1",
+        "esperado": "saldo=125",
+        "obtido": "saldo=125",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S2",
+        "esperado": "saldo=125",
+        "obtido": "saldo=125",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S3",
+        "esperado": "saldo=125",
+        "obtido": "saldo=125",
+        "ok": true
+      }
+    ],
+    "ok": true
+  }
+]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # =============================================================================
 #  TP REDES II 2026 - Servidor tolerante a falhas com grupo multicast
-#  Dupla .................: Eduardo Camargo Neves e [NOME DO(A) COLEGA]
+#  Dupla .................: Eduardo Camargo Neves e Erick Graeff Petzold
 #  Funcionalidade ........: Processo servidor do grupo replicado. Implementa
 #                           heartbeat por multicast, deteccao de falhas por
 #                           parada total, eleicao do lider (menor ID sem
@@ -18,12 +18,12 @@
 #   multicast (endereco do grupo, recebidas por todos os servidores):
 #     HEARTBEAT  {id, sinc}                "estou sem falha" (+ se ja tenho estado)
 #     REQ        {req_id, op, valor}       requisicao do cliente
-#     REPLICA    {req_id, op, valor, lider, saldo_lider} lider pede que as replicas executem
+#     REPLICA    {req_id, op, valor, lider, versao, saldo_lider} lider pede que as replicas executem
 #     SYNC_REQ   {id}                      servidor que (re)iniciou pede o estado
 #
 #   unicast (IP:porta de cada processo, conhecidos por todos via config.json):
 #     ACK        {req_id, id}              replica confirma ao lider
-#     STATE      {saldo, cache, id}        lider envia o estado a quem reiniciou
+#     STATE      {saldo, cache, versao, versoes, id} lider envia o estado a quem reiniciou
 #     RESPOSTA   {...}                     lider responde ao cliente
 # =============================================================================
 
@@ -31,50 +31,13 @@ import argparse
 import json
 import logging
 import os
-import socket
-import struct
 import sys
 import threading
 import time
 
-
-# -----------------------------------------------------------------------------
-#  Utilitarios de rede
-# -----------------------------------------------------------------------------
-def cria_socket_multicast(grupo, porta, iface):
-    """Socket que RECEBE as mensagens enviadas ao grupo multicast.
-
-    SO_REUSEADDR permite varios processos na mesma maquina escutarem a mesma
-    porta de grupo (util para testes locais). A entrada no grupo
-    (IP_ADD_MEMBERSHIP) e feita na interface 'iface' (o IP do proprio host)."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    if hasattr(socket, "SO_REUSEPORT"):
-        try:
-            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
-        except OSError:
-            pass
-    s.bind(("", porta))
-    mreq = struct.pack("4s4s", socket.inet_aton(grupo), socket.inet_aton(iface))
-    s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-    return s
-
-
-def configura_envio_multicast(s, iface):
-    """Configura um socket para ENVIAR ao grupo: TTL 1 (fica na rede local),
-    interface de saida = IP do host e loop ligado (processos no mesmo host
-    tambem recebem)."""
-    s.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
-    s.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(iface))
-    s.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
-
-
-def codifica(msg):
-    return json.dumps(msg).encode("utf-8")
-
-
-def decodifica(dados):
-    return json.loads(dados.decode("utf-8"))
+from comunicacao import abrir_canal_multicast, abrir_canal_unicast
+from conta import Conta
+from membros import Membros
 
 
 # -----------------------------------------------------------------------------
@@ -89,43 +52,11 @@ OPS_LEITURA = {"SALDO"}
 OPS_ESCRITA = {"DEPOSITO", "SAQUE"}
 
 
-class Conta:
-    def __init__(self):
-        self.saldo = 0
-        # cache: req_id -> resultado. Garante que uma escrita reenviada pelo
-        # cliente (mesmo req_id) NAO seja executada duas vezes.
-        self.cache = {}
-        self.lock = threading.Lock()
-
-    def aplica(self, req_id, op, valor):
-        """Executa uma escrita uma unica vez por req_id. Retorna (resultado, nova)."""
-        with self.lock:
-            if req_id in self.cache:
-                return self.cache[req_id], False
-            if op == "DEPOSITO":
-                self.saldo += valor
-                res = {"ok": True, "msg": f"deposito de {valor} realizado", "saldo": self.saldo}
-            elif op == "SAQUE":
-                if valor > self.saldo:
-                    res = {"ok": False, "msg": f"saldo insuficiente para saque de {valor}", "saldo": self.saldo}
-                else:
-                    self.saldo -= valor
-                    res = {"ok": True, "msg": f"saque de {valor} realizado", "saldo": self.saldo}
-            else:
-                res = {"ok": False, "msg": f"operacao desconhecida {op}", "saldo": self.saldo}
-            self.cache[req_id] = res
-            return res, True
-
-    def consulta(self):
-        with self.lock:
-            return {"ok": True, "msg": "consulta de saldo", "saldo": self.saldo}
-
-
 # -----------------------------------------------------------------------------
 #  Processo servidor
 # -----------------------------------------------------------------------------
 class Servidor:
-    def __init__(self, meu_id, cfg, falha_injetada=None):
+    def __init__(self, meu_id, cfg, canal_grupo, canal_uni, falha_injetada=None):
         self.id = meu_id
         self.cfg = cfg
         self.membros = {s["id"]: s for s in cfg["servidores"]}   # todos conhecem todos
@@ -133,48 +64,38 @@ class Servidor:
         self.grupo = (cfg["grupo"], cfg["porta_grupo"])
         self.hb_intervalo = cfg["intervalo_heartbeat"]
         self.timeout = cfg["timeout_falha"]
+        self.timeout_escrita = cfg.get("timeout_escrita", 8.0)
+        self.estado_membros = Membros(meu_id, set(self.membros), self.timeout)
         self.falha_injetada = falha_injetada  # usado so nos testes (ver main)
 
         self.conta = Conta()
         self.inicio = time.time()
         self.sincronizado = False   # ja tem o estado atual da conta?
-        self.peers_sinc = set()     # membros que anunciaram (no heartbeat) ter estado
 
-        # ultimo heartbeat recebido de cada membro (id -> instante)
-        self.ultimo_hb = {}
         self.vivos_anteriores = set()
         self.lider_anterior = None
-        self.lock_membros = threading.Lock()
 
         # controle de ACKs das escritas em andamento
         self.acks = {}                      # req_id -> conjunto de ids que confirmaram
         self.cond_ack = threading.Condition()
         self.lock_escrita = threading.Lock()  # o lider executa uma escrita por vez
+        self.lock_estado = threading.RLock()  # serializa REPLICA, STATE e snapshots
 
-        iface = self.eu["ip"]
-        # socket que recebe do grupo multicast
-        self.sock_grupo = cria_socket_multicast(cfg["grupo"], cfg["porta_grupo"], iface)
-        # socket unicast do servidor (IP:porta do config): envia ao grupo e
-        # recebe ACK / STATE. Respostas ao cliente tambem saem por ele.
-        self.sock_uni = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock_uni.bind((self.eu["ip"], self.eu["porta"]))
-        configura_envio_multicast(self.sock_uni, iface)
+        # Os canais sao montados no main e injetados aqui. O canal do grupo
+        # recebe multicast; o unicast envia ao grupo e recebe ACK / STATE.
+        self.canal_grupo = canal_grupo
+        self.canal_uni = canal_uni
 
         self.log = logging.getLogger("servidor")
 
     # ---------------------------------------------------------------- membros
     def vivos(self):
-        """Conjunto de membros considerados sem falha: eu + quem mandou
-        heartbeat ha menos de 'timeout' segundos."""
-        agora = time.time()
-        with self.lock_membros:
-            v = {i for i, t in self.ultimo_hb.items() if agora - t < self.timeout}
-        v.add(self.id)
-        return v
+        """Conjunto de membros considerados sem falha pelo monitor do grupo."""
+        return self.estado_membros.vivos()
 
     def lider(self):
         """Lider = membro sem falha de MENOR identificador."""
-        return min(self.vivos())
+        return self.estado_membros.lider()
 
     def sou_lider(self):
         return self.lider() == self.id
@@ -191,8 +112,7 @@ class Servidor:
             return True
         if not self.sincronizado:
             outros = self.vivos() - {self.id}
-            with self.lock_membros:
-                com_estado = outros & self.peers_sinc
+            com_estado = self.estado_membros.sincronizados(outros)
             if com_estado:
                 return True
             self.sincronizado = True
@@ -230,20 +150,13 @@ class Servidor:
     def thread_grupo(self):
         """Recebe tudo que chega ao grupo multicast."""
         while True:
-            dados, origem = self.sock_grupo.recvfrom(65535)
             try:
-                msg = decodifica(dados)
-            except Exception:
+                msg, origem = self.canal_grupo.receber()
+            except ValueError:
                 continue
             tipo = msg.get("tipo")
             if tipo == "HEARTBEAT":
-                if msg["id"] != self.id and msg["id"] in self.membros:
-                    with self.lock_membros:
-                        self.ultimo_hb[msg["id"]] = time.time()
-                        if msg.get("sinc"):
-                            self.peers_sinc.add(msg["id"])
-                        else:
-                            self.peers_sinc.discard(msg["id"])
+                self.estado_membros.registrar_heartbeat(msg["id"], msg.get("sinc", False))
             elif tipo == "REQ":
                 threading.Thread(target=self.trata_requisicao, args=(msg, origem), daemon=True).start()
             elif tipo == "REPLICA":
@@ -256,10 +169,9 @@ class Servidor:
     def thread_unicast(self):
         """Recebe mensagens unicast: ACK das replicas e STATE (sincronizacao)."""
         while True:
-            dados, origem = self.sock_uni.recvfrom(65535)
             try:
-                msg = decodifica(dados)
-            except Exception:
+                msg, origem = self.canal_uni.receber()
+            except ValueError:
                 continue
             if msg.get("tipo") == "ACK":
                 with self.cond_ack:
@@ -268,23 +180,29 @@ class Servidor:
                         self.log.info(f"ACK recebido de S{msg['id']} para {msg['req_id']}")
                     self.cond_ack.notify_all()
             elif msg.get("tipo") == "STATE":
-                if self.sincronizado:
-                    continue  # ja tem estado; ignora respostas repetidas
-                with self.conta.lock:
-                    self.conta.saldo = msg["saldo"]
-                    self.conta.cache.update(msg["cache"])
-                self.sincronizado = True
-                self.log.info(f"ESTADO recebido de S{msg['id']}: saldo={msg['saldo']} "
-                              f"({len(msg['cache'])} escritas ja aplicadas)")
+                self.recebe_estado(msg)
+
+    def recebe_estado(self, msg):
+        """Restaura um estado somente se ele nao for anterior ao estado local."""
+        with self.lock_estado:
+            if self.sincronizado:
+                return
+            if not self.conta.restaurar(msg):
+                self.log.warning(f"ESTADO antigo de S{msg['id']} ignorado: versao={msg['versao']} "
+                                 f"atual={self.conta.versao}")
+                return
+            self.sincronizado = True
+            self.log.info(f"ESTADO recebido de S{msg['id']}: saldo={msg['saldo']} "
+                          f"versao={msg['versao']} ({len(msg['cache'])} escritas ja aplicadas)")
 
     # ------------------------------------------------------------ envio
     def envia_grupo(self, msg):
-        self.sock_uni.sendto(codifica(msg), self.grupo)
+        self.canal_uni.enviar(msg, self.grupo)
 
     def envia_para(self, msg, ip, porta):
-        self.sock_uni.sendto(codifica(msg), (ip, porta))
+        self.canal_uni.enviar(msg, (ip, porta))
 
-    def resposta_para_cliente(self, req_id, res, origem, replicado_em=None):
+    def resposta_para_cliente(self, req_id, res, origem, replicado_em=None, erro=None):
         """Toda resposta leva o resultado + identificador, IP e porta do servidor."""
         resp = {
             "tipo": "RESPOSTA", "req_id": req_id,
@@ -293,7 +211,9 @@ class Servidor:
         }
         if replicado_em is not None:
             resp["replicado_em"] = sorted(replicado_em)
-        self.sock_uni.sendto(codifica(resp), origem)
+        if erro is not None:
+            resp["erro"] = erro
+        self.canal_uni.enviar(resp, origem)
 
     # ------------------------------------------------------- requisicoes
     def trata_requisicao(self, msg, origem):
@@ -325,7 +245,9 @@ class Servidor:
 
         # ---------------------------- escrita: executa, replica, espera ACKs
         with self.lock_escrita:
-            res, nova = self.conta.aplica(req_id, op, valor)
+            with self.lock_estado:
+                res, nova = self.conta.aplica(req_id, op, valor)
+                versao = self.conta.versao_requisicao(req_id)
             if nova:
                 self.log.info(f"ESCRITA {req_id} executada localmente: {res['msg']}, saldo={res['saldo']}")
             else:
@@ -335,7 +257,7 @@ class Servidor:
             with self.cond_ack:
                 self.acks[req_id] = set()
             replica = {"tipo": "REPLICA", "req_id": req_id, "op": op, "valor": valor, "lider": self.id,
-                       "saldo_lider": res["saldo"]}
+                       "versao": versao, "saldo_lider": res["saldo"]}
             esperando = self.vivos() - {self.id}
             self.log.info(f"REPLICA {req_id} enviada ao grupo; aguardando ACK de {fmt(esperando)}")
             self.envia_grupo(replica)
@@ -347,7 +269,8 @@ class Servidor:
                 os._exit(1)
 
             ultimo_envio = time.time()
-            limite = time.time() + 15
+            limite = time.time() + self.timeout_escrita
+            falha_replicacao = False
             while True:
                 with self.cond_ack:
                     confirmados = set(self.acks[req_id])
@@ -364,34 +287,70 @@ class Servidor:
                     self.log.info(f"REPLICA {req_id} reenviada; ainda faltam ACK de {fmt(faltam)}")
                 if time.time() > limite:
                     self.log.warning(f"tempo esgotado esperando ACK de {fmt(faltam)}")
+                    falha_replicacao = True
                     break
             for i in sorted(descartados):
                 self.log.warning(f"S{i} falhou durante a escrita {req_id}; nao espero mais seu ACK")
             with self.cond_ack:
                 confirmados = self.acks.pop(req_id)
 
+        if falha_replicacao:
+            res_falha = {
+                "ok": False,
+                "msg": "replicacao nao confirmada por todos os membros sem-falha; resultado desconhecido",
+                "saldo": res["saldo"],
+            }
+            self.resposta_para_cliente(
+                req_id, res_falha, origem,
+                replicado_em=confirmados | {self.id},
+                erro="REPLICACAO_NAO_CONFIRMADA",
+            )
+            self.log.warning(f"RESPOSTA {req_id} -> {cli}: REPLICACAO_NAO_CONFIRMADA "
+                             f"(confirmada em {fmt(confirmados | {self.id})})")
+            return
+
         self.resposta_para_cliente(req_id, res, origem, replicado_em=confirmados | {self.id})
         self.log.info(f"RESPOSTA {req_id} -> {cli}: {res['msg']}, saldo={res['saldo']} "
                       f"(replicado em {fmt(confirmados | {self.id})})")
 
     def trata_replica(self, msg):
-        """Replica: executa a escrita enviada pelo lider e confirma com ACK."""
+        """Aplica somente a proxima versao e confirma duplicados sem regredir."""
+        if not self.sincronizado:
+            self.log.info(f"REPLICA {msg['req_id']} ignorada: estado ainda nao sincronizado")
+            return
         if self.falha_injetada == "replica-durante-escrita":
             self.log.critical(f"FALHA INJETADA: REPLICA {msg['req_id']} recebida, "
-                              f"replica para (parada total) antes de executar e confirmar")
+                              "replica para (parada total) antes de executar e confirmar")
             logging.shutdown()
             os._exit(1)
-        res, nova = self.conta.aplica(msg["req_id"], msg["op"], msg["valor"])
-        if nova:
-            self.log.info(f"REPLICA {msg['req_id']} de S{msg['lider']}: {res['msg']}, saldo={res['saldo']}")
-        # verificacao de consistencia: o saldo da replica deve ser igual ao do lider
-        if self.conta.saldo != msg["saldo_lider"]:
-            self.log.warning(f"INCONSISTENCIA: saldo local {self.conta.saldo} != saldo do lider "
-                             f"{msg['saldo_lider']}; adotando o do lider")
-            with self.conta.lock:
-                self.conta.saldo = msg["saldo_lider"]
+
+        versao = msg["versao"]
+        nova = False
+        with self.lock_estado:
+            if not self.sincronizado:
+                return
+            if versao <= self.conta.versao:
+                self.log.info(f"REPLICA {msg['req_id']} versao {versao} ja aplicada ou superada "
+                              f"(atual={self.conta.versao}); ACK sem alterar o estado")
+            elif versao > self.conta.versao + 1:
+                self.log.warning(f"LACUNA de versoes: REPLICA {msg['req_id']} versao={versao}, "
+                                 f"esperada={self.conta.versao + 1}; nao aplica nem confirma")
+                return
+            else:
+                res, nova = self.conta.aplica(msg["req_id"], msg["op"], msg["valor"], versao)
+                if nova:
+                    self.log.info(f"REPLICA {msg['req_id']} de S{msg['lider']}: {res['msg']}, "
+                                  f"saldo={res['saldo']}, versao={versao}")
+                # A correcao so e permitida na aplicacao da proxima versao;
+                # mensagens antigas nunca alteram o saldo atual.
+                if self.conta.saldo != msg["saldo_lider"]:
+                    self.log.warning(f"INCONSISTENCIA: saldo local {self.conta.saldo} != saldo do lider "
+                                     f"{msg['saldo_lider']}; adotando o do lider na mesma versao")
+                    with self.conta.lock:
+                        self.conta.saldo = msg["saldo_lider"]
         lider = self.membros[msg["lider"]]
-        self.envia_para({"tipo": "ACK", "req_id": msg["req_id"], "id": self.id}, lider["ip"], lider["porta"])
+        self.envia_para({"tipo": "ACK", "req_id": msg["req_id"], "id": self.id},
+                        lider["ip"], lider["porta"])
         if nova:
             self.log.info(f"ACK enviado a S{msg['lider']} para {msg['req_id']}")
 
@@ -400,16 +359,18 @@ class Servidor:
         ID entre os vivos QUE JA TEM ESTADO, sem contar quem pediu (o novo
         membro pode ter ID menor, mas ainda nao tem estado). Feito sob o lock
         de escrita para nao mandar um estado no meio de uma escrita."""
+        # O pedido de estado tambem prova que o processo esta executando.
+        # Marca-lo como vivo faz o lider aguardar seu ACK se uma escrita
+        # ocorrer depois do snapshot, fechando a corrida de reintegracao.
+        self.estado_membros.registrar_heartbeat(msg["id"], False)
         if not self.sincronizado:
             return
         outros = self.vivos() - {msg["id"]}
-        with self.lock_membros:
-            candidatos = (outros & self.peers_sinc) | {self.id}
+        candidatos = self.estado_membros.sincronizados(outros) | {self.id}
         if min(candidatos) != self.id:
             return
-        with self.lock_escrita, self.conta.lock:
-            estado = {"tipo": "STATE", "id": self.id, "saldo": self.conta.saldo,
-                      "cache": self.conta.cache}
+        with self.lock_escrita, self.lock_estado:
+            estado = {"tipo": "STATE", "id": self.id, **self.conta.snapshot()}
             m = self.membros.get(msg["id"])
             if m:
                 self.envia_para(estado, m["ip"], m["porta"])
@@ -466,7 +427,9 @@ def main():
         cfg = json.load(f)
     eu = next(s for s in cfg["servidores"] if s["id"] == a.id)
     configura_log(a.id, eu["ip"], eu["porta"], a.log)
-    Servidor(a.id, cfg, a.falha).executa()
+    canal_grupo = abrir_canal_multicast(cfg["grupo"], cfg["porta_grupo"], eu["ip"])
+    canal_uni = abrir_canal_unicast(eu["ip"], eu["porta"], eu["ip"])
+    Servidor(a.id, cfg, canal_grupo, canal_uni, a.falha).executa()
 
 
 if __name__ == "__main__":

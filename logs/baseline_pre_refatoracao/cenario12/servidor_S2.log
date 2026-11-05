@@ -1,0 +1,10 @@
+2026-11-04 14:20:25.772 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:20:25.974 [S2 127.0.0.1:6002] INFO    VIVOS = [2]
+2026-11-04 14:20:26.775 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:20:26.775 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:20:26.775 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:20:28.776 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:20:28.777 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:20:29.734 [S2 127.0.0.1:6002] INFO    REQ C1-2f9b75 DEPOSITO 30 de 127.0.0.1:39852: lider e S1, nao respondo
+2026-11-04 14:20:29.734 [S2 127.0.0.1:6002] INFO    REPLICA C1-2f9b75 de S1: deposito de 30 realizado, saldo=30
+2026-11-04 14:20:29.735 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-2f9b75

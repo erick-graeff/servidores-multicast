@@ -1,0 +1,7 @@
+2026-11-04 14:58:53.419 [C1] cliente em 127.0.0.1:60774, grupo 224.1.1.1:5007
+2026-11-04 14:58:53.419 [C1] ENVIA C1-1c9dce 'DEPOSITO 40' ao grupo (tentativa 1/6)
+2026-11-04 14:58:55.420 [C1] sem resposta em 2.0s para C1-1c9dce
+2026-11-04 14:58:55.421 [C1] ENVIA C1-1c9dce 'DEPOSITO 40' ao grupo (tentativa 2/6)
+2026-11-04 14:58:57.422 [C1] sem resposta em 2.0s para C1-1c9dce
+2026-11-04 14:58:57.423 [C1] ENVIA C1-1c9dce 'DEPOSITO 40' ao grupo (tentativa 3/6)
+2026-11-04 14:58:57.425 [C1] RESPOSTA C1-1c9dce do servidor S2 (127.0.0.1:6002): OK - deposito de 40 realizado, saldo=40, replicado em ['S2', 'S3']

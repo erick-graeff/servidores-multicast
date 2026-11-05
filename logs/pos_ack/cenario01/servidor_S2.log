@@ -1,0 +1,17 @@
+2026-11-04 14:47:48.202 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:47:48.405 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-04 14:47:48.405 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:47:48.405 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:47:51.207 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:47:51.208 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-04 14:47:52.189 [S2 127.0.0.1:6002] INFO    REQ C1-2ef3a4 SALDO  de 127.0.0.1:43175: lider e S1, nao respondo
+2026-11-04 14:47:52.275 [S2 127.0.0.1:6002] INFO    REQ C1-30b229 DEPOSITO 100 de 127.0.0.1:32952: lider e S1, nao respondo
+2026-11-04 14:47:52.275 [S2 127.0.0.1:6002] INFO    REPLICA C1-30b229 de S1: deposito de 100 realizado, saldo=100
+2026-11-04 14:47:52.276 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-30b229
+2026-11-04 14:47:52.359 [S2 127.0.0.1:6002] INFO    REQ C1-5150b6 SAQUE 30 de 127.0.0.1:43483: lider e S1, nao respondo
+2026-11-04 14:47:52.359 [S2 127.0.0.1:6002] INFO    REPLICA C1-5150b6 de S1: saque de 30 realizado, saldo=70
+2026-11-04 14:47:52.360 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-5150b6
+2026-11-04 14:47:52.428 [S2 127.0.0.1:6002] INFO    REQ C1-58f48a SAQUE 500 de 127.0.0.1:39877: lider e S1, nao respondo
+2026-11-04 14:47:52.429 [S2 127.0.0.1:6002] INFO    REPLICA C1-58f48a de S1: saldo insuficiente para saque de 500, saldo=70
+2026-11-04 14:47:52.429 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-58f48a
+2026-11-04 14:47:52.491 [S2 127.0.0.1:6002] INFO    REQ C1-733ce6 SALDO  de 127.0.0.1:44514: lider e S1, nao respondo

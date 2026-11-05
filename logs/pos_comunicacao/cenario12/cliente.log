@@ -1,0 +1,17 @@
+2026-11-04 14:35:56.836 [C1] cliente em 127.0.0.1:45132, grupo 224.1.1.1:5007
+2026-11-04 14:35:56.836 [C1] ENVIA C1-ddc898 'DEPOSITO 30' ao grupo (tentativa 1/6)
+2026-11-04 14:35:56.839 [C1] RESPOSTA C1-ddc898 do servidor S1 (127.0.0.1:6001): OK - deposito de 30 realizado, saldo=30, replicado em ['S1', 'S2', 'S3']
+2026-11-04 14:35:56.934 [C1] cliente em 127.0.0.1:37257, grupo 224.1.1.1:5007
+2026-11-04 14:35:56.934 [C1] ENVIA C1-d60490 'SALDO' ao grupo (tentativa 1/6)
+2026-11-04 14:35:58.936 [C1] sem resposta em 2.0s para C1-d60490
+2026-11-04 14:35:58.937 [C1] ENVIA C1-d60490 'SALDO' ao grupo (tentativa 2/6)
+2026-11-04 14:36:00.938 [C1] sem resposta em 2.0s para C1-d60490
+2026-11-04 14:36:00.939 [C1] ENVIA C1-d60490 'SALDO' ao grupo (tentativa 3/6)
+2026-11-04 14:36:02.941 [C1] sem resposta em 2.0s para C1-d60490
+2026-11-04 14:36:02.942 [C1] ENVIA C1-d60490 'SALDO' ao grupo (tentativa 4/6)
+2026-11-04 14:36:04.944 [C1] sem resposta em 2.0s para C1-d60490
+2026-11-04 14:36:04.944 [C1] ENVIA C1-d60490 'SALDO' ao grupo (tentativa 5/6)
+2026-11-04 14:36:06.947 [C1] sem resposta em 2.0s para C1-d60490
+2026-11-04 14:36:06.947 [C1] ENVIA C1-d60490 'SALDO' ao grupo (tentativa 6/6)
+2026-11-04 14:36:08.950 [C1] sem resposta em 2.0s para C1-d60490
+2026-11-04 14:36:08.950 [C1] FALHA: nenhum servidor respondeu a C1-d60490 apos 6 tentativas

@@ -1,0 +1,18 @@
+2026-11-04 14:18:40.769 [ROTEIRO] ===== CENARIO 2: Falha do lider S1: S2 assume e mantem o estado =====
+2026-11-04 14:18:40.770 [ROTEIRO] inicia S1 (pid 204038)
+2026-11-04 14:18:40.771 [ROTEIRO] inicia S2 (pid 204039)
+2026-11-04 14:18:40.773 [ROTEIRO] inicia S3 (pid 204040)
+2026-11-04 14:18:40.773 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-04 14:18:44.773 [ROTEIRO] cliente C1: DEPOSITO 100
+2026-11-04 14:18:44.862 [ROTEIRO]   -> esperado: S1, saldo=100 | obtido: S1, saldo=100 | OK
+2026-11-04 14:18:44.863 [ROTEIRO] kill -9 204038  -> S1 sofre PARADA TOTAL
+2026-11-04 14:18:44.864 [ROTEIRO] aguarda 4s (S2 e S3 detectam a falha de S1)
+2026-11-04 14:18:48.864 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:18:48.983 [ROTEIRO]   -> esperado: S2, saldo=100 | obtido: S2, saldo=100 | OK
+2026-11-04 14:18:48.983 [ROTEIRO] cliente C1: DEPOSITO 50
+2026-11-04 14:18:49.070 [ROTEIRO]   -> esperado: S2, saldo=150 | obtido: S2, saldo=150 | OK
+2026-11-04 14:18:49.070 [ROTEIRO] cliente C1: SALDO
+2026-11-04 14:18:49.118 [ROTEIRO]   -> esperado: S2, saldo=150 | obtido: S2, saldo=150 | OK
+2026-11-04 14:18:49.618 [ROTEIRO] estado de S2: saldo=150 (esperado 150) OK
+2026-11-04 14:18:49.619 [ROTEIRO] estado de S3: saldo=150 (esperado 150) OK
+2026-11-04 14:18:49.624 [ROTEIRO] fim do cenario

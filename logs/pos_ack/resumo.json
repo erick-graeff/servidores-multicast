@@ -1,0 +1,180 @@
+[
+  {
+    "num": 1,
+    "titulo": "Todos sem falha: consultas e alteracoes atendidas por S1",
+    "checks": [
+      {
+        "req": "SALDO",
+        "esperado": "S1, saldo=0",
+        "obtido": "S1, saldo=0",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 100",
+        "esperado": "S1, saldo=100",
+        "obtido": "S1, saldo=100",
+        "ok": true
+      },
+      {
+        "req": "SAQUE 30",
+        "esperado": "S1, saldo=70",
+        "obtido": "S1, saldo=70",
+        "ok": true
+      },
+      {
+        "req": "SAQUE 500",
+        "esperado": "S1, saldo=70",
+        "obtido": "S1, saldo=70",
+        "ok": true
+      },
+      {
+        "req": "SALDO",
+        "esperado": "S1, saldo=70",
+        "obtido": "S1, saldo=70",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S1",
+        "esperado": "saldo=70",
+        "obtido": "saldo=70",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S2",
+        "esperado": "saldo=70",
+        "obtido": "saldo=70",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S3",
+        "esperado": "saldo=70",
+        "obtido": "saldo=70",
+        "ok": true
+      }
+    ],
+    "ok": true
+  },
+  {
+    "num": 8,
+    "titulo": "Replica S3 para no meio de uma escrita",
+    "checks": [
+      {
+        "req": "DEPOSITO 80",
+        "esperado": "S1, saldo=80",
+        "obtido": "S1, saldo=80",
+        "ok": true
+      },
+      {
+        "req": "SALDO",
+        "esperado": "S1, saldo=80",
+        "obtido": "S1, saldo=80",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S1",
+        "esperado": "saldo=80",
+        "obtido": "saldo=80",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S2",
+        "esperado": "saldo=80",
+        "obtido": "saldo=80",
+        "ok": true
+      }
+    ],
+    "ok": true
+  },
+  {
+    "num": 9,
+    "titulo": "Lider para depois de replicar e antes de responder (sem execucao dupla)",
+    "checks": [
+      {
+        "req": "DEPOSITO 100",
+        "esperado": "S2, saldo=100",
+        "obtido": "S2, saldo=100",
+        "ok": true
+      },
+      {
+        "req": "SALDO",
+        "esperado": "S2, saldo=100",
+        "obtido": "S2, saldo=100",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S2",
+        "esperado": "saldo=100",
+        "obtido": "saldo=100",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S3",
+        "esperado": "saldo=100",
+        "obtido": "saldo=100",
+        "ok": true
+      }
+    ],
+    "ok": true
+  },
+  {
+    "num": 11,
+    "titulo": "Cliente enviando escritas enquanto o lider e morto",
+    "checks": [
+      {
+        "req": "DEPOSITO 10",
+        "esperado": "S1, saldo=10",
+        "obtido": "S1, saldo=10",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 10",
+        "esperado": "S2, saldo=20",
+        "obtido": "S2, saldo=20",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 10",
+        "esperado": "S2, saldo=30",
+        "obtido": "S2, saldo=30",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 10",
+        "esperado": "S2, saldo=40",
+        "obtido": "S2, saldo=40",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 10",
+        "esperado": "S2, saldo=50",
+        "obtido": "S2, saldo=50",
+        "ok": true
+      },
+      {
+        "req": "DEPOSITO 10",
+        "esperado": "S2, saldo=60",
+        "obtido": "S2, saldo=60",
+        "ok": true
+      },
+      {
+        "req": "SALDO",
+        "esperado": "S2, saldo=60",
+        "obtido": "S2, saldo=60",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S2",
+        "esperado": "saldo=60",
+        "obtido": "saldo=60",
+        "ok": true
+      },
+      {
+        "req": "estado da replica S3",
+        "esperado": "saldo=60",
+        "obtido": "saldo=60",
+        "ok": true
+      }
+    ],
+    "ok": true
+  }
+]

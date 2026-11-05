@@ -1,15 +1,16 @@
-2026-11-02 15:51:25.730 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
-2026-11-02 15:51:25.931 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
-2026-11-02 15:51:25.931 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
-2026-11-02 15:51:25.931 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
-2026-11-02 15:51:28.732 [S1 127.0.0.1:6001] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
-2026-11-02 15:51:28.733 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
-2026-11-02 15:51:31.937 [S1 127.0.0.1:6001] WARNING FALHA detectada: S2 sem heartbeat ha mais de 3.0s
-2026-11-02 15:51:31.937 [S1 127.0.0.1:6001] WARNING FALHA detectada: S3 sem heartbeat ha mais de 3.0s
-2026-11-02 15:51:31.937 [S1 127.0.0.1:6001] INFO    VIVOS = [1]
-2026-11-02 15:51:33.733 [S1 127.0.0.1:6001] INFO    REQ C1-0056fe DEPOSITO 60 de 127.0.0.1:55724: SOU O LIDER (vivos=[1])
-2026-11-02 15:51:33.733 [S1 127.0.0.1:6001] INFO    ESCRITA C1-0056fe executada localmente: deposito de 60 realizado, saldo=60
-2026-11-02 15:51:33.733 [S1 127.0.0.1:6001] INFO    REPLICA C1-0056fe enviada ao grupo; aguardando ACK de {}
-2026-11-02 15:51:33.734 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-0056fe -> 127.0.0.1:55724: deposito de 60 realizado, saldo=60 (replicado em {S1})
-2026-11-02 15:51:33.773 [S1 127.0.0.1:6001] INFO    REQ C1-c79f4a SALDO  de 127.0.0.1:47624: SOU O LIDER (vivos=[1])
-2026-11-02 15:51:33.773 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-c79f4a -> 127.0.0.1:47624: saldo=60
+2026-11-04 14:59:28.343 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
+2026-11-04 14:59:28.546 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-04 14:59:28.546 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-04 14:59:28.546 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
+2026-11-04 14:59:31.347 [S1 127.0.0.1:6001] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-04 14:59:31.349 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-04 14:59:34.352 [S1 127.0.0.1:6001] WARNING FALHA detectada: S3 sem heartbeat ha mais de 3.0s
+2026-11-04 14:59:34.352 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2]
+2026-11-04 14:59:34.552 [S1 127.0.0.1:6001] WARNING FALHA detectada: S2 sem heartbeat ha mais de 3.0s
+2026-11-04 14:59:34.552 [S1 127.0.0.1:6001] INFO    VIVOS = [1]
+2026-11-04 14:59:36.309 [S1 127.0.0.1:6001] INFO    REQ C1-caa98f DEPOSITO 60 de 127.0.0.1:44728: SOU O LIDER (vivos=[1])
+2026-11-04 14:59:36.309 [S1 127.0.0.1:6001] INFO    ESCRITA C1-caa98f executada localmente: deposito de 60 realizado, saldo=60
+2026-11-04 14:59:36.309 [S1 127.0.0.1:6001] INFO    REPLICA C1-caa98f enviada ao grupo; aguardando ACK de {}
+2026-11-04 14:59:36.310 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-caa98f -> 127.0.0.1:44728: deposito de 60 realizado, saldo=60 (replicado em {S1})
+2026-11-04 14:59:36.399 [S1 127.0.0.1:6001] INFO    REQ C1-57df5c SALDO  de 127.0.0.1:37319: SOU O LIDER (vivos=[1])
+2026-11-04 14:59:36.400 [S1 127.0.0.1:6001] INFO    RESPOSTA C1-57df5c -> 127.0.0.1:37319: saldo=60
