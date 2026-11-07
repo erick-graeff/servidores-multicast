@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # =============================================================================
 #  TP REDES II 2026 - Servidor tolerante a falhas com grupo multicast
 #  Dupla .................: Eduardo Camargo Neves e Erick Graeff Petzold
@@ -7,7 +6,11 @@
 #                           parada total, eleicao do lider (menor ID sem
 #                           falha), servico de conta bancaria (consulta e
 #                           alteracao) e replicacao das escritas com ACK.
-#  Ultima modificacao ....: 02/11/2026
+#                           Durante a troca de lider, uma requisicao recebida
+#                           por uma replica nao e descartada: e guardada e
+#                           atendida pelo novo lider assim que a eleicao
+#                           acontece, ainda dentro da espera do cliente.
+#  Ultima modificacao ....: 07/11/2026
 # =============================================================================
 #
 #  Uso:
@@ -35,10 +38,10 @@ import sys
 import threading
 import time
 
-from comunicacao import abrir_canal_multicast, abrir_canal_unicast
+from comunicacao import abrir_canal_multicast
+from comunicacao import abrir_canal_unicast
 from conta import Conta
 from membros import Membros
-
 
 # -----------------------------------------------------------------------------
 #  Servico oferecido pelo grupo: conta bancaria
@@ -59,7 +62,7 @@ class Servidor:
     def __init__(self, meu_id, cfg, canal_grupo, canal_uni, falha_injetada=None):
         self.id = meu_id
         self.cfg = cfg
-        self.membros = {s["id"]: s for s in cfg["servidores"]}   # todos conhecem todos
+        self.membros = {s["id"]: s for s in cfg["servidores"]}  # todos conhecem todos
         self.eu = self.membros[meu_id]
         self.grupo = (cfg["grupo"], cfg["porta_grupo"])
         self.hb_intervalo = cfg["intervalo_heartbeat"]
@@ -70,16 +73,25 @@ class Servidor:
 
         self.conta = Conta()
         self.inicio = time.time()
-        self.sincronizado = False   # ja tem o estado atual da conta?
+        self.sincronizado = False  # ja tem o estado atual da conta?
 
         self.vivos_anteriores = set()
         self.lider_anterior = None
 
         # controle de ACKs das escritas em andamento
-        self.acks = {}                      # req_id -> conjunto de ids que confirmaram
+        self.acks = {}  # req_id -> conjunto de ids que confirmaram
         self.cond_ack = threading.Condition()
         self.lock_escrita = threading.Lock()  # o lider executa uma escrita por vez
         self.lock_estado = threading.RLock()  # serializa REPLICA, STATE e snapshots
+
+        # Requisicoes recebidas enquanto este processo nao era o lider. Sao
+        # guardadas com um prazo curto: se o lider aparente estiver de fato
+        # falho e este processo assumir a lideranca logo em seguida, elas sao
+        # atendidas de imediato (em vez de ficar sem resposta ate o cliente
+        # reenviar; ver cenarios 3 e 11).
+        self.pendentes = []  # (mensagem, origem, prazo)
+        self.lock_pendentes = threading.Lock()
+        self.max_pendentes = 32
 
         # Os canais sao montados no main e injetados aqui. O canal do grupo
         # recebe multicast; o unicast envia ao grupo e recebe ACK / STATE.
@@ -101,13 +113,16 @@ class Servidor:
         return self.lider() == self.id
 
     def em_inicializacao(self):
-        """Durante o primeiro 'timeout' apos iniciar, o servidor ainda nao sabe
+        """
+        Durante o primeiro 'timeout' apos iniciar, o servidor ainda nao sabe
+
         quem esta vivo; por isso nao atende clientes nesse periodo (senao
         poderia se achar lider por engano). Depois disso:
           - se algum membro vivo ja tem estado (flag 'sinc' do heartbeat),
             espera receber o estado dele (servidor voltando de uma falha);
           - se nenhum tem, todos estao comecando juntos e o estado inicial
-            (saldo 0) ja e o estado correto."""
+            (saldo 0) ja e o estado correto.
+        """
         if time.time() - self.inicio < self.timeout:
             return True
         if not self.sincronizado:
@@ -146,6 +161,33 @@ class Servidor:
                     papel = "EU SOU O LIDER" if l == self.id else "sou replica"
                     self.log.info(f"LIDER eleito = S{l} (menor ID sem falha) -> {papel}")
                     self.lider_anterior = l
+                    if l == self.id:
+                        threading.Thread(target=self.atende_pendentes, daemon=True).start()
+            self.recolhe_expiradas()
+
+    def recolhe_expiradas(self):
+        """Descarta silenciosamente requisicoes guardadas cujo prazo acabou:
+        em operacao normal muitas requisicoes ficam guardadas sem precisar
+        (o lider verdadeiro as atende), e elas simplesmente expiram."""
+        with self.lock_pendentes:
+            agora = time.time()
+            self.pendentes = [p for p in self.pendentes if p[2] > agora]
+
+    def atende_pendentes(self):
+        """Este processo acabou de assumir a lideranca: atende de imediato as
+        requisicoes guardadas durante a troca de lider (as que ainda cabem no
+        prazo; a idempotencia por req_id protege as copias repetidas)."""
+        with self.lock_pendentes:
+            para_atender = [p for p in self.pendentes if p[2] > time.time()]
+            self.pendentes = []
+        if not para_atender:
+            return
+        self.log.info(
+            f"assumi como lider: atendendo agora {len(para_atender)} "
+            f"requisicao(oes) guardada(s) durante a troca de lider"
+        )
+        for msg, origem, _ in para_atender:
+            self.trata_requisicao(msg, origem)
 
     def thread_grupo(self):
         """Recebe tudo que chega ao grupo multicast."""
@@ -188,12 +230,13 @@ class Servidor:
             if self.sincronizado:
                 return
             if not self.conta.restaurar(msg):
-                self.log.warning(f"ESTADO antigo de S{msg['id']} ignorado: versao={msg['versao']} "
-                                 f"atual={self.conta.versao}")
+                self.log.warning(f"ESTADO antigo de S{msg['id']} ignorado: versao={msg['versao']} atual={self.conta.versao}")
                 return
             self.sincronizado = True
-            self.log.info(f"ESTADO recebido de S{msg['id']}: saldo={msg['saldo']} "
-                          f"versao={msg['versao']} ({len(msg['cache'])} escritas ja aplicadas)")
+            self.log.info(
+                f"ESTADO recebido de S{msg['id']}: saldo={msg['saldo']} "
+                f"versao={msg['versao']} ({len(msg['cache'])} escritas ja aplicadas)"
+            )
 
     # ------------------------------------------------------------ envio
     def envia_grupo(self, msg):
@@ -205,8 +248,11 @@ class Servidor:
     def resposta_para_cliente(self, req_id, res, origem, replicado_em=None, erro=None):
         """Toda resposta leva o resultado + identificador, IP e porta do servidor."""
         resp = {
-            "tipo": "RESPOSTA", "req_id": req_id,
-            "ok": res["ok"], "resultado": res["msg"], "saldo": res["saldo"],
+            "tipo": "RESPOSTA",
+            "req_id": req_id,
+            "ok": res["ok"],
+            "resultado": res["msg"],
+            "saldo": res["saldo"],
             "servidor": {"id": self.id, "ip": self.eu["ip"], "porta": self.eu["porta"]},
         }
         if replicado_em is not None:
@@ -225,12 +271,10 @@ class Servidor:
         v = self.vivos()
         lider = min(v)
         if lider != self.id:
-            self.log.info(f"REQ {req_id} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: "
-                          f"lider e S{lider}, nao respondo")
+            self.guarda_requisicao(msg, origem, lider, cli, op, valor)
             return
 
-        self.log.info(f"REQ {req_id} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: "
-                      f"SOU O LIDER (vivos={sorted(v)})")
+        self.log.info(f"REQ {req_id} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: SOU O LIDER (vivos={sorted(v)})")
 
         if op in OPS_LEITURA:
             res = self.conta.consulta()
@@ -251,13 +295,21 @@ class Servidor:
             if nova:
                 self.log.info(f"ESCRITA {req_id} executada localmente: {res['msg']}, saldo={res['saldo']}")
             else:
-                self.log.info(f"ESCRITA {req_id} ja executada antes (reenvio do cliente); "
-                              f"nao executa de novo, saldo={res['saldo']}")
+                self.log.info(
+                    f"ESCRITA {req_id} ja executada antes (reenvio do cliente); nao executa de novo, saldo={res['saldo']}"
+                )
 
             with self.cond_ack:
                 self.acks[req_id] = set()
-            replica = {"tipo": "REPLICA", "req_id": req_id, "op": op, "valor": valor, "lider": self.id,
-                       "versao": versao, "saldo_lider": res["saldo"]}
+            replica = {
+                "tipo": "REPLICA",
+                "req_id": req_id,
+                "op": op,
+                "valor": valor,
+                "lider": self.id,
+                "versao": versao,
+                "saldo_lider": res["saldo"],
+            }
             esperando = self.vivos() - {self.id}
             self.log.info(f"REPLICA {req_id} enviada ao grupo; aguardando ACK de {fmt(esperando)}")
             self.envia_grupo(replica)
@@ -281,7 +333,7 @@ class Servidor:
                     if not faltam:
                         break
                     self.cond_ack.wait(0.3)
-                if time.time() - ultimo_envio > 1.0:   # UDP pode perder pacotes: reenvia
+                if time.time() - ultimo_envio > 1.0:  # UDP pode perder pacotes: reenvia
                     self.envia_grupo(replica)
                     ultimo_envio = time.time()
                     self.log.info(f"REPLICA {req_id} reenviada; ainda faltam ACK de {fmt(faltam)}")
@@ -301,17 +353,47 @@ class Servidor:
                 "saldo": res["saldo"],
             }
             self.resposta_para_cliente(
-                req_id, res_falha, origem,
+                req_id,
+                res_falha,
+                origem,
                 replicado_em=confirmados | {self.id},
                 erro="REPLICACAO_NAO_CONFIRMADA",
             )
-            self.log.warning(f"RESPOSTA {req_id} -> {cli}: REPLICACAO_NAO_CONFIRMADA "
-                             f"(confirmada em {fmt(confirmados | {self.id})})")
+            self.log.warning(
+                f"RESPOSTA {req_id} -> {cli}: REPLICACAO_NAO_CONFIRMADA (confirmada em {fmt(confirmados | {self.id})})"
+            )
             return
 
         self.resposta_para_cliente(req_id, res, origem, replicado_em=confirmados | {self.id})
-        self.log.info(f"RESPOSTA {req_id} -> {cli}: {res['msg']}, saldo={res['saldo']} "
-                      f"(replicado em {fmt(confirmados | {self.id})})")
+        self.log.info(
+            f"RESPOSTA {req_id} -> {cli}: {res['msg']}, saldo={res['saldo']} (replicado em {fmt(confirmados | {self.id})})"
+        )
+
+    def guarda_requisicao(self, msg, origem, lider, cli, op, valor):
+        """Requisicao recebida por uma replica. Na operacao normal o lider
+        verdadeiro a atende e esta copia apenas expira; mas, se o lider
+        aparente estiver de fato falho (heartbeats atrasados), a requisicao
+        fica guardada ate a eleicao: quem assumir em seguida a atende de
+        imediato, dentro do tempo de espera do cliente."""
+        with self.lock_pendentes:
+            # reenvio do cliente: atualiza o prazo em vez de duplicar
+            self.pendentes[:] = [p for p in self.pendentes if p[0]["req_id"] != msg["req_id"]]
+            prazo = time.time() + self.timeout + 1.0
+            self.pendentes.append((msg, origem, prazo))
+            while len(self.pendentes) > self.max_pendentes:
+                self.pendentes.pop(0)
+        idade = self.estado_membros.idade_heartbeat(lider)
+        if idade is None or idade > self.hb_intervalo:
+            idade_txt = f"sem novo heartbeat ha {idade:.1f}s" if idade is not None else "sem nenhum heartbeat recebido"
+            self.log.info(
+                f"REQ {msg['req_id']} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: "
+                f"lider aparente S{lider} ({idade_txt}); guardada, sera atendida se assumir a lideranca"
+            )
+        else:
+            self.log.info(
+                f"REQ {msg['req_id']} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: "
+                f"lider e S{lider}, ele respondera (este processo nao responde)"
+            )
 
     def trata_replica(self, msg):
         """Aplica somente a proxima versao e confirma duplicados sem regredir."""
@@ -319,8 +401,9 @@ class Servidor:
             self.log.info(f"REPLICA {msg['req_id']} ignorada: estado ainda nao sincronizado")
             return
         if self.falha_injetada == "replica-durante-escrita":
-            self.log.critical(f"FALHA INJETADA: REPLICA {msg['req_id']} recebida, "
-                              "replica para (parada total) antes de executar e confirmar")
+            self.log.critical(
+                f"FALHA INJETADA: REPLICA {msg['req_id']} recebida, replica para (parada total) antes de executar e confirmar"
+            )
             logging.shutdown()
             os._exit(1)
 
@@ -330,27 +413,33 @@ class Servidor:
             if not self.sincronizado:
                 return
             if versao <= self.conta.versao:
-                self.log.info(f"REPLICA {msg['req_id']} versao {versao} ja aplicada ou superada "
-                              f"(atual={self.conta.versao}); ACK sem alterar o estado")
+                self.log.info(
+                    f"REPLICA {msg['req_id']} versao {versao} ja aplicada ou superada "
+                    f"(atual={self.conta.versao}); ACK sem alterar o estado"
+                )
             elif versao > self.conta.versao + 1:
-                self.log.warning(f"LACUNA de versoes: REPLICA {msg['req_id']} versao={versao}, "
-                                 f"esperada={self.conta.versao + 1}; nao aplica nem confirma")
+                self.log.warning(
+                    f"LACUNA de versoes: REPLICA {msg['req_id']} versao={versao}, "
+                    f"esperada={self.conta.versao + 1}; nao aplica nem confirma"
+                )
                 return
             else:
                 res, nova = self.conta.aplica(msg["req_id"], msg["op"], msg["valor"], versao)
                 if nova:
-                    self.log.info(f"REPLICA {msg['req_id']} de S{msg['lider']}: {res['msg']}, "
-                                  f"saldo={res['saldo']}, versao={versao}")
+                    self.log.info(
+                        f"REPLICA {msg['req_id']} de S{msg['lider']}: {res['msg']}, saldo={res['saldo']}, versao={versao}"
+                    )
                 # A correcao so e permitida na aplicacao da proxima versao;
                 # mensagens antigas nunca alteram o saldo atual.
                 if self.conta.saldo != msg["saldo_lider"]:
-                    self.log.warning(f"INCONSISTENCIA: saldo local {self.conta.saldo} != saldo do lider "
-                                     f"{msg['saldo_lider']}; adotando o do lider na mesma versao")
+                    self.log.warning(
+                        f"INCONSISTENCIA: saldo local {self.conta.saldo} != saldo do lider "
+                        f"{msg['saldo_lider']}; adotando o do lider na mesma versao"
+                    )
                     with self.conta.lock:
                         self.conta.saldo = msg["saldo_lider"]
         lider = self.membros[msg["lider"]]
-        self.envia_para({"tipo": "ACK", "req_id": msg["req_id"], "id": self.id},
-                        lider["ip"], lider["porta"])
+        self.envia_para({"tipo": "ACK", "req_id": msg["req_id"], "id": self.id}, lider["ip"], lider["porta"])
         if nova:
             self.log.info(f"ACK enviado a S{msg['lider']} para {msg['req_id']}")
 
@@ -378,16 +467,18 @@ class Servidor:
 
     # ----------------------------------------------------------------- main
     def executa(self):
-        self.log.info(f"INICIANDO servidor S{self.id} em {self.eu['ip']}:{self.eu['porta']}, "
-                      f"grupo {self.grupo[0]}:{self.grupo[1]}, heartbeat a cada {self.hb_intervalo}s, "
-                      f"falha apos {self.timeout}s sem heartbeat")
+        self.log.info(
+            f"INICIANDO servidor S{self.id} em {self.eu['ip']}:{self.eu['porta']}, "
+            f"grupo {self.grupo[0]}:{self.grupo[1]}, heartbeat a cada {self.hb_intervalo}s, "
+            f"falha apos {self.timeout}s sem heartbeat"
+        )
         for alvo in (self.thread_grupo, self.thread_unicast, self.thread_heartbeat, self.thread_monitor):
             threading.Thread(target=alvo, daemon=True).start()
         # pede o estado atual ao grupo (caso esteja voltando de uma falha)
         while not self.sincronizado:
             self.envia_grupo({"tipo": "SYNC_REQ", "id": self.id})
             time.sleep(0.5)
-            self.em_inicializacao()   # marca 'sincronizado' se estiver sozinho no grupo
+            self.em_inicializacao()  # marca 'sincronizado' se estiver sozinho no grupo
         try:
             while True:
                 time.sleep(1)
@@ -400,8 +491,7 @@ def fmt(ids):
 
 
 def configura_log(meu_id, ip, porta, arquivo):
-    fmt_ = logging.Formatter(f"%(asctime)s.%(msecs)03d [S{meu_id} {ip}:{porta}] %(levelname)-7s %(message)s",
-                             "%Y-%m-%d %H:%M:%S")
+    fmt_ = logging.Formatter(f"%(asctime)s.%(msecs)03d [S{meu_id} {ip}:{porta}] %(levelname)-7s %(message)s", "%Y-%m-%d %H:%M:%S")
     log = logging.getLogger("servidor")
     log.setLevel(logging.INFO)
     h = logging.StreamHandler(sys.stdout)

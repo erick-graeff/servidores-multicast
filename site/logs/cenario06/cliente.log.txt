@@ -1,9 +1,9 @@
-2026-11-04 14:59:22.549 [C1] cliente em 127.0.0.1:60814, grupo 224.1.1.1:5007
-2026-11-04 14:59:22.550 [C1] ENVIA C1-79409d 'DEPOSITO 10' ao grupo (tentativa 1/6)
-2026-11-04 14:59:22.553 [C1] RESPOSTA C1-79409d do servidor S1 (127.0.0.1:6001): OK - deposito de 10 realizado, saldo=10, replicado em ['S1', 'S2', 'S3']
-2026-11-04 14:59:26.633 [C1] cliente em 127.0.0.1:33611, grupo 224.1.1.1:5007
-2026-11-04 14:59:26.633 [C1] ENVIA C1-49a940 'DEPOSITO 7' ao grupo (tentativa 1/6)
-2026-11-04 14:59:26.635 [C1] RESPOSTA C1-49a940 do servidor S2 (127.0.0.1:6002): OK - deposito de 7 realizado, saldo=17, replicado em ['S2']
-2026-11-04 14:59:26.721 [C1] cliente em 127.0.0.1:53680, grupo 224.1.1.1:5007
-2026-11-04 14:59:26.721 [C1] ENVIA C1-2b7eaa 'SALDO' ao grupo (tentativa 1/6)
-2026-11-04 14:59:26.723 [C1] RESPOSTA C1-2b7eaa do servidor S2 (127.0.0.1:6002): OK - consulta de saldo, saldo=17
+2026-11-07 01:18:55.783 [C1] cliente em 127.0.0.1:56827, grupo 224.1.1.1:5007
+2026-11-07 01:18:55.783 [C1] ENVIA C1-ac976e 'DEPOSITO 10' ao grupo (reenvio a cada 0.5s, orcamento 12s)
+2026-11-07 01:18:55.785 [C1] RESPOSTA C1-ac976e do servidor S1 (127.0.0.1:6001): OK - deposito de 10 realizado, saldo=10, replicado em ['S1', 'S2', 'S3']
+2026-11-07 01:18:59.873 [C1] cliente em 127.0.0.1:54860, grupo 224.1.1.1:5007
+2026-11-07 01:18:59.873 [C1] ENVIA C1-c4ec63 'DEPOSITO 7' ao grupo (reenvio a cada 0.5s, orcamento 12s)
+2026-11-07 01:18:59.874 [C1] RESPOSTA C1-c4ec63 do servidor S2 (127.0.0.1:6002): OK - deposito de 7 realizado, saldo=17, replicado em ['S2']
+2026-11-07 01:18:59.935 [C1] cliente em 127.0.0.1:38188, grupo 224.1.1.1:5007
+2026-11-07 01:18:59.935 [C1] ENVIA C1-452c8f 'SALDO' ao grupo (reenvio a cada 0.5s, orcamento 12s)
+2026-11-07 01:18:59.936 [C1] RESPOSTA C1-452c8f do servidor S2 (127.0.0.1:6002): OK - consulta de saldo, saldo=17

@@ -17,7 +17,7 @@ import shutil
 AQUI = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(AQUI, "site")
 DUPLA = "Eduardo Camargo Neves e Erick Graeff Petzold"
-DATA = "04/11/2026"
+DATA = "07/11/2026"
 
 CODIGOS = [
     ("servidor.py", "Processo servidor: heartbeat, detecção de falhas, eleição, serviço e replicação"),
@@ -35,6 +35,7 @@ CODIGOS = [
     ("tests/test_membros.py", "Testes unitários de heartbeat, timeout e eleição"),
     ("tests/test_cliente.py", "Testes unitários das requisições e retransmissões do cliente"),
     ("tests/test_replicacao.py", "Testes unitários de ACKs, timeout e idempotência"),
+    ("tests/test_troca_lider.py", "Testes unitários da fila de requisições durante a troca de líder"),
     ("tests/test_ordenacao.py", "Testes de regressão de ordenação e sincronização"),
     ("tests/test_injecao.py", "Testes da injeção dos canais no cliente e servidor"),
     ("tests/test_entrega.py", "Testes da geração, links e cópias da página de entrega"),
@@ -110,8 +111,8 @@ SVG_ARQ = """<svg viewBox="0 0 860 330" role="img" aria-label="Arquitetura" font
 <text x="745" y="160" text-anchor="middle" font-size="12" fill="#5b6475">e não responde;</text>
 <text x="745" y="178" text-anchor="middle" font-size="12" fill="#5b6475">executa REPLICA + ACK</text>
 <rect x="270" y="235" width="560" height="54" rx="8" fill="#eef1f6" stroke="#5b6475"/>
-<text x="550" y="258" text-anchor="middle" font-size="13">HEARTBEAT por multicast a cada 1 s, de todos para todos</text>
-<text x="550" y="277" text-anchor="middle" font-size="12" fill="#5b6475">3 s sem heartbeat de um membro = falha (parada total)</text>
+<text x="550" y="258" text-anchor="middle" font-size="13">HEARTBEAT por multicast a cada 0,5 s, de todos para todos</text>
+<text x="550" y="277" text-anchor="middle" font-size="12" fill="#5b6475">1,5 s sem heartbeat de um membro = falha (parada total)</text>
 <path d="M190 140H268" stroke="#5b6475" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
 <text x="229" y="130" text-anchor="middle" font-size="12" fill="#5b6475">REQ</text>
 <path d="M270 185H192" stroke="#1f5fbf" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
@@ -150,18 +151,19 @@ SVG_SEQ = """<svg viewBox="0 0 860 470" role="img" aria-label="Sequência de uma
 
 SVG_FAILOVER = """<svg viewBox="0 0 860 230" role="img" aria-label="Linha do tempo da troca de líder" font-family="system-ui,sans-serif" font-size="13">
 <defs><marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b6475"/></marker></defs>
-<g stroke="#e3e6ec"><path d="M80 40V180"/><path d="M230 40V180"/><path d="M380 40V180"/><path d="M530 40V180"/><path d="M680 40V180"/></g>
+<g stroke="#e3e6ec"><path d="M80 40V180"/><path d="M260 40V180"/><path d="M440 40V180"/><path d="M620 40V180"/><path d="M800 40V180"/></g>
 <path d="M60 180H830" stroke="#5b6475" stroke-width="1.4" marker-end="url(#f)"/>
-<g font-size="12" fill="#5b6475" text-anchor="middle"><text x="80" y="200">t = 0</text><text x="230" y="200">1 s</text><text x="380" y="200">2 s</text><text x="530" y="200">3 s</text><text x="680" y="200">4 s</text></g>
+<g font-size="12" fill="#5b6475" text-anchor="middle"><text x="80" y="200">t = 0</text><text x="260" y="200">0,5 s</text><text x="440" y="200">1,0 s</text><text x="620" y="200">1,5 s</text><text x="800" y="200">2,0 s</text></g>
 <text x="20" y="74" font-weight="600">S1</text><text x="20" y="144" font-weight="600">S2</text>
 <circle cx="80" cy="70" r="6" fill="#1d7a3e"/>
 <text x="80" y="52" text-anchor="middle" font-size="12" fill="#1d7a3e">último heartbeat</text>
 <path d="M110 58V82" stroke="#b42318" stroke-width="2.5"/>
 <text x="120" y="96" font-size="12" fill="#b42318" font-weight="600">kill -9 (parada total)</text>
-<path d="M86 118H526" stroke="#5b6475" stroke-dasharray="5 4" marker-end="url(#f)"/>
-<text x="305" y="110" text-anchor="middle" font-size="12" fill="#5b6475">3 s sem heartbeat de S1: requisições ficam sem resposta, o cliente reenvia</text>
-<rect x="530" y="126" width="290" height="34" rx="6" fill="#1f5fbf" fill-opacity=".12" stroke="#1f5fbf"/>
-<text x="675" y="148" text-anchor="middle">S2 detecta a falha e assume como líder</text>
+<path d="M86 118H616" stroke="#5b6475" stroke-dasharray="5 4" marker-end="url(#f)"/>
+<text x="350" y="110" text-anchor="middle" font-size="12" fill="#5b6475">1,5 s sem heartbeat de S1; o cliente reenvia a mesma REQ a cada 0,5 s</text>
+<rect x="620" y="126" width="236" height="40" rx="6" fill="#1f5fbf" fill-opacity=".12" stroke="#1f5fbf"/>
+<text x="738" y="143" text-anchor="middle" font-size="12">S2 detecta a falha e assume;</text>
+<text x="738" y="159" text-anchor="middle" font-size="11.5">a REQ guardada é atendida em seguida</text>
 </svg>"""
 
 
@@ -248,10 +250,11 @@ multicast IP. Todos conhecem o identificador, o IP e a porta de todos os outros 
 <code>config.json</code>). O cliente envia a requisição para o <b>endereço do grupo</b>; todos os servidores a
 recebem, mas apenas o <b>líder</b>, o servidor sem falha de <b>menor identificador</b>, responde. A resposta
 contém o resultado do serviço e o identificador, o IP e a porta do servidor que atendeu.</p>
-<p>Cada servidor envia periodicamente um <b>heartbeat</b> por multicast. Quem fica 3 s sem enviar é
-considerado falho. As falhas consideradas são de parada total: nos testes os processos são mortos com
-<code>kill -9</code>. Implementação em Python 3, só com a biblioteca padrão (<code>socket</code>,
-<code>threading</code>, <code>json</code>).</p>
+<p>Cada servidor envia periodicamente um <b>heartbeat</b> por multicast (a cada 0,5 s). Quem fica 1,5 s sem
+enviar é considerado falho. As falhas consideradas são de parada total: nos testes os processos são mortos com
+<code>kill -9</code>. Com esse limite, a detecção da falha e a eleição do novo líder acabam
+<b>antes</b> do tempo de espera do cliente, e a resposta chega a tempo (cenários 3 e 11). Implementação em
+Python 3, só com a biblioteca padrão (<code>socket</code>, <code>threading</code>, <code>json</code>).</p>
 <p>Resultado: <b>{len(resumo)} cenários</b> de teste, <b>{total_ok} de {total}</b> verificações corretas.</p>
 
 <h2 id="servico">2. Serviço oferecido: conta bancária</h2>
@@ -271,7 +274,7 @@ e <code>cliente.py</code> implementa requisições e retransmissões. Os canais 
 e injetados, permitindo testes com <code>CanalFake</code> sem rede real.</p>
 <p>Cada servidor tem quatro <i>threads</i>:</p>
 <table><tr><th>Thread</th><th>Função</th></tr>
-<tr><td>heartbeat</td><td>envia <code>HEARTBEAT</code> ao grupo a cada 1 s</td></tr>
+<tr><td>heartbeat</td><td>envia <code>HEARTBEAT</code> ao grupo a cada 0,5 s</td></tr>
 <tr><td>monitor</td><td>a cada 0,2 s recalcula a lista de vivos e o líder e registra no log falhas, novos membros e troca de líder</td></tr>
 <tr><td>grupo</td><td>recebe o tráfego multicast: <code>HEARTBEAT</code>, <code>REQ</code>, <code>REPLICA</code>, <code>SYNC_REQ</code></td></tr>
 <tr><td>unicast</td><td>recebe na porta do servidor: <code>ACK</code> das réplicas e <code>STATE</code> (sincronização)</td></tr></table>
@@ -299,13 +302,21 @@ calcula sozinho <code>lider = min(vivos)</code>. Quando chega uma requisição, 
 <p>Uma leitura é respondida diretamente pelo líder. As escritas são executadas uma de cada vez pelo líder (um <i>lock</i>), o que garante que todas as réplicas recebam as alterações na mesma ordem.</p>
 
 <h3>Detecção de falha e troca de líder</h3>
-<figure>{SVG_FAILOVER}<figcaption>Figura 3 · Com heartbeat de 1 s e limite de 3 s, a troca de líder acontece cerca de 3 s após a parada.</figcaption></figure>
+<figure>{SVG_FAILOVER}<figcaption>Figura 3 · Com heartbeat de 0,5 s e limite de 1,5 s, a troca de líder acontece após cerca de 1,5 s — antes de o orçamento de espera do cliente expirar (2 s por janela de resposta).</figcaption></figure>
+<p>Na janela entre a parada do líder e a detecção da falha, uma requisição pode não ser atendida por ninguém
+(o líder anterior por estar morto; os demais porque ainda são réplicas). Nesse intervalo, cada réplica
+<b>guarda</b> a requisição com um prazo curto (timeout + 1 s, excluída se expirar), em vez de descartá-la.
+Quando a falha é detectada, o novo líder (menor ID) assume e atende as requisições guardadas de imediato. No
+lado cliente, a mesma requisição (mesmo <code>req_id</code>) é retransmitida a cada 0,5 s durante todo o
+orçamento de espera, cobrindo também a perda de um datagrama. Juntas, as duas medidas fazem a resposta
+chegar em cerca de 2 s após a queda do líder — dentro do primeiro ciclo de espera do cliente (cenários 3 e 11).</p>
 
 <h2 id="decisoes">5. Decisões de projeto</h2>
 <ul>
-<li><b>Reenvio pelo cliente com o mesmo <code>req_id</code>.</b> Se nenhuma resposta chega em 2 s, o cliente reenvia a mesma requisição (até 6 vezes). Isso cobre o intervalo em que o líder já morreu mas a falha ainda não foi detectada.</li>
+<li><b>Reenvio pelo cliente com o mesmo <code>req_id</code>.</b> O cliente tem um orçamento total de espera (padrão: 6 &times; 2 s = 12 s) e, dentro dele, reenvia a mesma requisição a cada 0,5 s. Isso cobre o intervalo em que o líder já morreu mas a falha ainda não foi detectada, e a perda de um datagrama no multicast.</li>
+<li><b>Requisição não é descartada durante a troca de líder.</b> Uma réplica que recebe a REQ guarda-a com um prazo (timeout + 1 s); quando a eleição escolhe a réplica como novo líder, as requisições guardadas são atendidas imediatamente, antes do cliente precisar de outra tentativa. Em operação normal, a cópia guardada apenas expira em silêncio.</li>
 <li><b>Sem execução dupla.</b> Todo servidor guarda um <i>cache</i> <code>req_id → resultado</code>. Se o líder morre depois de replicar e antes de responder, o novo líder já executou aquela escrita como réplica e, ao receber o reenvio, devolve o resultado guardado, sem executar de novo (cenário 9).</li>
-<li><b>Período de inicialização.</b> Um servidor recém-iniciado não sabe quem está vivo. Por isso, nos primeiros 3 s ele não atende clientes, para não se considerar líder por engano.</li>
+<li><b>Período de inicialização.</b> Um servidor recém-iniciado não sabe quem está vivo. Por isso, nos primeiros 1,5 s ele não atende clientes, para não se considerar líder por engano.</li>
 <li><b>Sincronização ao voltar de uma falha.</b> O heartbeat informa se o servidor já tem estado (<code>sinc</code>). Um servidor que reinicia envia <code>SYNC_REQ</code>; o membro sem falha de menor ID que tem estado responde com <code>STATE</code>. Só depois disso o servidor que voltou pode assumir como líder (cenário 10). Se todos estão começando juntos, ninguém tem estado e todos começam com saldo 0.</li>
 <li><b>Ordenação por versão.</b> Cada escrita recebe uma versão sequencial. Uma REPLICA antiga recebe ACK sem alterar o estado; somente a próxima versão é aplicada; uma lacuna não é confirmada. Assim, uma retransmissão atrasada não faz o saldo regredir.</li>
 <li><b>Timeout sem falso sucesso.</b> Se uma réplica sem-falha não confirmar em 8 s, o líder responde <code>ok=false</code> e <code>REPLICACAO_NAO_CONFIRMADA</code>. Nunca transforma falta de ACK em confirmação de sucesso.</li>
@@ -339,9 +350,9 @@ python3 gera_pagina.py --logs logs/pos_correcoes</pre>
 <table><tr><th>Arquivo</th><th>Conteúdo</th></tr>{codigos_html}</table>
 
 <h2 id="testes">7. Testes e resultados</h2>
-<p><b>46/46 testes unitários</b> verificam conta, snapshots, comunicação, eleição, retransmissões,
-ACKs, ordenação, sincronização e a própria geração desta página. Eles usam dublês e relógio controlado,
-sem sleeps longos nem rede real. A suíte de integração abaixo usa UDP/multicast reais.</p>
+<p><b>52/52 testes unitários</b> verificam conta, snapshots, comunicação, eleição, retransmissões,
+ACKs, ordenação, troca de líder, sincronização e a própria geração desta página. Eles usam dublês e relógio
+controlado, sem sleeps longos nem rede real. A suíte de integração abaixo usa UDP/multicast reais.</p>
 <p>Cada cenário sobe os servidores do zero, executa requisições, mata processos com <code>SIGKILL</code>
 (<code>kill -9</code>) e confere duas coisas: qual servidor respondeu e o saldo. No fim, confere no log de cada
 réplica sem falha se o saldo é igual em todas. Para cada cenário há o log de cada processo, o roteiro e uma
@@ -362,7 +373,7 @@ por uma tabela com os resultados e os links.</div>
 <h2 id="limites">9. Limitações</h2>
 <ul>
 <li>O modelo considera só falhas de parada total, como pede o enunciado; partição de rede não é tratada. Se a rede se dividir, cada parte elegeria seu próprio líder.</li>
-<li>Com perda de heartbeats, dois servidores podem se considerar líder por um instante. O cliente usa a primeira resposta e descarta a outra pelo <code>req_id</code>.</li>
+<li>Com perda de heartbeats, dois servidores podem se considerar líder por um instante. O cliente usa a primeira resposta e descarta a outra pelo <code>req_id</code>; a fila de requisições guardadas na troca de líder amplia um pouco essa janela de divergência.</li>
 <li>O estado fica em memória: se todos os servidores param, o saldo se perde (cenário 12).</li>
 <li>Se o timeout de replicação terminar, o resultado da escrita é desconhecido: ela pode ter sido aplicada no líder e em parte das réplicas, mas o cliente recebe falha, nunca sucesso.</li>
 <li>Uma réplica que fica com lacuna de versão após perdas prolongadas deixa de confirmar escritas posteriores. Ainda não há ressincronização automática dessa lacuna; o processo deve ser reiniciado para obter um novo snapshot.</li>
@@ -408,7 +419,7 @@ TITULOS = {
 DESCR = {
     1: "Os três servidores estão sem falha. S1, de menor ID, responde a tudo. As escritas são replicadas em S1, S2 e S3. O saque maior que o saldo é recusado, e o saldo não muda.",
     2: "Depois de um depósito, S1 é morto. S2 e S3 detectam a falha pelo heartbeat, S2 passa a ser o líder, mantém o saldo de 100 e atende às novas requisições.",
-    3: "O cliente envia a requisição logo após a morte de S1, antes de a falha ser detectada. Ninguém responde à primeira tentativa (S2 e S3 ainda acham que S1 é o líder). Após a detecção, S2 assume e responde ao reenvio.",
+    3: "O cliente envia a requisição logo após a morte de S1, antes de a falha ser detectada. Ninguém atende na hora, mas S2 e S3 guardam a requisição; em até 1,5 s a falha é detectada, S2 assume e atende a requisição guardada — a resposta chega ao cliente em ~2 s, na primeira janela de espera.",
     4: "Uma réplica (S2) é morta. S1 continua líder e, nas escritas, espera apenas o ACK de S3.",
     5: "S1 e S2 são mortos. S3 é o único sem falha, vira líder e atende sozinho com o saldo correto.",
     6: "S1 e S3 são mortos. S2 atende sozinho.",
@@ -416,7 +427,7 @@ DESCR = {
     8: "S3 para no instante em que recebe a REPLICA, sem executar nem confirmar. S1 detecta a falha pelo heartbeat, deixa de esperar o ACK de S3 e responde ao cliente.",
     9: "S1 executa e replica um depósito de 100 e para antes de responder. O cliente reenvia o mesmo req_id, S2 assume e reconhece a escrita já executada. O saldo fica em 100, e não 200.",
     10: "S1 é morto e S2 assume. Depois S1 é reiniciado, pede o estado ao grupo, recebe o saldo de S2 e volta a ser o líder por ter o menor ID, com o saldo correto.",
-    11: "Um cliente faz 6 depósitos, um por segundo, e S1 é morto durante a sequência. O depósito que estava em andamento é reenviado e atendido por S2, e nenhum é perdido ou duplicado: o saldo final é 60.",
+    11: "Um cliente faz 6 depósitos, um por segundo, e S1 é morto durante a sequência. O depósito que estava em andamento é atendido por S2 (guardado na troca de líder ou reenviado pelo cliente), e nenhum é perdido ou duplicado: o saldo final é 60.",
     12: "Todos os servidores são mortos. O cliente tenta 6 vezes e informa que nenhum servidor respondeu.",
     13: "Depois de duas escritas sem S2, ele é reiniciado e uma terceira escrita ocorre durante sua sincronização. O saldo final é 175 em S1, S2 e S3.",
     14: "O mesmo teste de reintegração é feito com S3: uma escrita ocorre durante seu retorno e todas as réplicas terminam com saldo 175.",

@@ -1,41 +1,41 @@
-2026-11-04 15:01:11.200 [ROTEIRO] ===== CENARIO 15: Tres clientes concorrentes mantêm as replicas consistentes =====
-2026-11-04 15:01:11.201 [ROTEIRO] inicia S1 (pid 258966)
-2026-11-04 15:01:11.202 [ROTEIRO] inicia S2 (pid 258967)
-2026-11-04 15:01:11.203 [ROTEIRO] inicia S3 (pid 258968)
-2026-11-04 15:01:11.203 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
-2026-11-04 15:01:15.204 [ROTEIRO] cliente C2: DEPOSITO 10
-2026-11-04 15:01:15.204 [ROTEIRO] cliente C3: DEPOSITO 10
-2026-11-04 15:01:15.205 [ROTEIRO] cliente C4: DEPOSITO 10
-2026-11-04 15:01:15.303 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=10 | OK
-2026-11-04 15:01:15.303 [ROTEIRO] cliente C2: DEPOSITO 10
-2026-11-04 15:01:15.303 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=20 | OK
-2026-11-04 15:01:15.303 [ROTEIRO] cliente C3: DEPOSITO 10
-2026-11-04 15:01:15.304 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=30 | OK
-2026-11-04 15:01:15.304 [ROTEIRO] cliente C4: DEPOSITO 10
-2026-11-04 15:01:15.373 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=40 | OK
-2026-11-04 15:01:15.373 [ROTEIRO] cliente C4: DEPOSITO 10
-2026-11-04 15:01:15.377 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=60 | OK
-2026-11-04 15:01:15.377 [ROTEIRO] cliente C2: DEPOSITO 10
-2026-11-04 15:01:15.378 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=50 | OK
-2026-11-04 15:01:15.378 [ROTEIRO] cliente C3: DEPOSITO 10
-2026-11-04 15:01:15.450 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=70 | OK
-2026-11-04 15:01:15.450 [ROTEIRO] cliente C4: DEPOSITO 10
-2026-11-04 15:01:15.452 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=80 | OK
-2026-11-04 15:01:15.452 [ROTEIRO] cliente C3: DEPOSITO 10
-2026-11-04 15:01:15.456 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=90 | OK
-2026-11-04 15:01:15.456 [ROTEIRO] cliente C2: DEPOSITO 10
-2026-11-04 15:01:15.522 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=100 | OK
-2026-11-04 15:01:15.522 [ROTEIRO] cliente C3: DEPOSITO 10
-2026-11-04 15:01:15.525 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=110 | OK
-2026-11-04 15:01:15.525 [ROTEIRO] cliente C4: DEPOSITO 10
-2026-11-04 15:01:15.540 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=120 | OK
-2026-11-04 15:01:15.540 [ROTEIRO] cliente C2: DEPOSITO 10
-2026-11-04 15:01:15.602 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=130 | OK
-2026-11-04 15:01:15.603 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=140 | OK
-2026-11-04 15:01:15.612 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=150 | OK
-2026-11-04 15:01:15.612 [ROTEIRO] cliente C1: SALDO
-2026-11-04 15:01:15.670 [ROTEIRO]   -> esperado: S1, saldo=150 | obtido: S1, saldo=150 | OK
-2026-11-04 15:01:16.171 [ROTEIRO] estado de S1: saldo=150 (esperado 150) OK
-2026-11-04 15:01:16.171 [ROTEIRO] estado de S2: saldo=150 (esperado 150) OK
-2026-11-04 15:01:16.171 [ROTEIRO] estado de S3: saldo=150 (esperado 150) OK
-2026-11-04 15:01:16.178 [ROTEIRO] fim do cenario
+2026-11-07 01:20:40.572 [ROTEIRO] ===== CENARIO 15: Tres clientes concorrentes mantêm as replicas consistentes =====
+2026-11-07 01:20:40.573 [ROTEIRO] inicia S1 (pid 51985)
+2026-11-07 01:20:40.574 [ROTEIRO] inicia S2 (pid 51986)
+2026-11-07 01:20:40.576 [ROTEIRO] inicia S3 (pid 51987)
+2026-11-07 01:20:40.576 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-07 01:20:44.577 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-07 01:20:44.579 [ROTEIRO] cliente C3: DEPOSITO 10
+2026-11-07 01:20:44.580 [ROTEIRO] cliente C4: DEPOSITO 10
+2026-11-07 01:20:44.673 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=10 | OK
+2026-11-07 01:20:44.673 [ROTEIRO] cliente C4: DEPOSITO 10
+2026-11-07 01:20:44.673 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=20 | OK
+2026-11-07 01:20:44.674 [ROTEIRO] cliente C3: DEPOSITO 10
+2026-11-07 01:20:44.676 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=30 | OK
+2026-11-07 01:20:44.676 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-07 01:20:44.742 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=40 | OK
+2026-11-07 01:20:44.742 [ROTEIRO] cliente C3: DEPOSITO 10
+2026-11-07 01:20:44.743 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=50 | OK
+2026-11-07 01:20:44.743 [ROTEIRO] cliente C4: DEPOSITO 10
+2026-11-07 01:20:44.748 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=60 | OK
+2026-11-07 01:20:44.748 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-07 01:20:44.809 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=70 | OK
+2026-11-07 01:20:44.809 [ROTEIRO] cliente C3: DEPOSITO 10
+2026-11-07 01:20:44.815 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=80 | OK
+2026-11-07 01:20:44.815 [ROTEIRO] cliente C4: DEPOSITO 10
+2026-11-07 01:20:44.817 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=90 | OK
+2026-11-07 01:20:44.817 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-07 01:20:44.880 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=100 | OK
+2026-11-07 01:20:44.880 [ROTEIRO] cliente C3: DEPOSITO 10
+2026-11-07 01:20:44.883 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=110 | OK
+2026-11-07 01:20:44.883 [ROTEIRO] cliente C4: DEPOSITO 10
+2026-11-07 01:20:44.884 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=120 | OK
+2026-11-07 01:20:44.884 [ROTEIRO] cliente C2: DEPOSITO 10
+2026-11-07 01:20:44.951 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=130 | OK
+2026-11-07 01:20:44.953 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=140 | OK
+2026-11-07 01:20:44.956 [ROTEIRO]   -> esperado: S1 | obtido: S1, saldo=150 | OK
+2026-11-07 01:20:44.956 [ROTEIRO] cliente C1: SALDO
+2026-11-07 01:20:45.016 [ROTEIRO]   -> esperado: S1, saldo=150 | obtido: S1, saldo=150 | OK
+2026-11-07 01:20:45.517 [ROTEIRO] estado de S1: saldo=150 (esperado 150) OK
+2026-11-07 01:20:45.517 [ROTEIRO] estado de S2: saldo=150 (esperado 150) OK
+2026-11-07 01:20:45.517 [ROTEIRO] estado de S3: saldo=150 (esperado 150) OK
+2026-11-07 01:20:45.530 [ROTEIRO] fim do cenario

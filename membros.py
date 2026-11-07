@@ -32,6 +32,12 @@ class Membros:
         vivos.add(self.meu_id)
         return vivos
 
+    def idade_heartbeat(self, membro_id):
+        """Idade do ultimo heartbeat recebido do membro (None se nunca chegou)."""
+        with self._lock:
+            instante = self._ultimo_hb.get(membro_id)
+        return None if instante is None else self._relogio() - instante
+
     def lider(self):
         return min(self.vivos())
 

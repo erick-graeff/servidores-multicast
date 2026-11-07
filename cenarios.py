@@ -151,7 +151,7 @@ def sobe_tres(c):
     c.espera(4, "(heartbeats e eleicao inicial)")
 
 
-DETECCAO = 4  # timeout de 3 s + folga
+DETECCAO = 4  # timeout de 1,5 s + folga
 
 
 def c01(c):

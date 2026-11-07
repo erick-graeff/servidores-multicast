@@ -6,9 +6,15 @@
 #                           alteracao da conta) ao ENDERECO DO GRUPO multicast
 #                           e mostra a resposta do lider: resultado,
 #                           identificador, IP e porta do servidor que atendeu.
-#                           Reenvia a mesma requisicao (mesmo req_id) se nao
-#                           houver resposta, o que cobre a falha do lider.
-#  Ultima modificacao ....: 02/11/2026
+#                           Reenvia a MESMA requisicao (mesmo req_id) a cada
+#                           'repetir' segundos ate o fim do orcamento total
+#                           (tentativas x espera): se o lider caiu, os
+#                           reenvios sao atendidos pelo novo lider assim que a
+#                           troca acontece (1,5 s), e a resposta ja chega
+#                           dentro do tempo de espera do cliente. Se o lider
+#                           caiu depois de executar uma escrita, o novo lider
+#                           reconhece o req_id e nao executa a escrita de novo.
+#  Ultima modificacao ....: 07/11/2026
 # =============================================================================
 #
 #  Uso:
@@ -19,6 +25,7 @@
 #  Opcoes: --config config.json --iface <IP desta maquina> --log arquivo
 #          --nome C1 (identificacao do cliente nos logs)
 # =============================================================================
+
 
 import argparse
 import json
@@ -33,11 +40,14 @@ from comunicacao import abrir_canal_cliente
 
 
 class Cliente:
-    def __init__(self, cfg, nome, arquivo_log, tentativas, espera, canal):
+    def __init__(self, cfg, nome, arquivo_log, tentativas, espera, canal, repetir=0.5):
         self.grupo = (cfg["grupo"], cfg["porta_grupo"])
         self.nome = nome
         self.tentativas = tentativas
         self.espera = espera
+        # cadencia de reenvio dentro do orcamento total; a mesma requisicao
+        # (mesmo req_id) e retransmitida de `repetir` em `repetir` segundos
+        self.repetir = max(repetir, 0.05)
         self.arq = None
         if arquivo_log:
             os.makedirs(os.path.dirname(arquivo_log) or ".", exist_ok=True)
@@ -59,31 +69,43 @@ class Cliente:
 
     def requisita(self, op, valor=0):
         """Envia a requisicao ao grupo e espera a resposta do lider.
-        Se nao vier resposta, reenvia COM O MESMO req_id: assim, se o lider
-        caiu depois de executar uma escrita, o novo lider reconhece o req_id
-        e nao executa a escrita de novo."""
+
+        O orcamento total para receber uma resposta e tentativas x espera
+        (padrao: 6 x 2 s = 12 s). Dentro dele, a MESMA requisicao (mesmo
+        req_id) e retransmitida a cada `repetir` segundos: quando o lider
+        cai, a retransmissao e atendida pelo novo lider assim que a troca
+        acontece. E, se o lider caiu depois de executar uma escrita, o novo
+        lider reconhece o req_id no cache e nao executa a escrita de novo."""
         req_id = f"{self.nome}-{uuid.uuid4().hex[:6]}"
         msg = {"tipo": "REQ", "req_id": req_id, "op": op.upper(), "valor": valor}
         desc = f"{op.upper()} {valor}" if op.upper() != "SALDO" else "SALDO"
-        for t in range(1, self.tentativas + 1):
-            self.log(f"ENVIA {req_id} '{desc}' ao grupo (tentativa {t}/{self.tentativas})")
+        total = self.espera * self.tentativas
+        inicio = time.time()
+        envios = 0
+        while True:
+            envios += 1
+            if envios == 1:
+                self.log(f"ENVIA {req_id} '{desc}' ao grupo (reenvio a cada {self.repetir:.1f}s, orcamento {total:.0f}s)")
+            else:
+                self.log(f"REENVIA {req_id} ao grupo ({envios}o envio, {time.time() - inicio:.1f}s sem resposta)")
             self.canal.enviar(msg, self.grupo)
-            limite = time.time() + self.espera
-            while time.time() < limite:
-                try:
-                    resp, origem = self.canal.receber(timeout=max(0.01, limite - time.time()))
-                except socket.timeout:
+            try:
+                resp, origem = self.canal.receber(timeout=min(self.repetir, max(0.01, total)))
+            except socket.timeout:
+                if time.time() - inicio >= total:
                     break
-                if resp.get("req_id") != req_id:
-                    continue  # resposta atrasada de uma requisicao anterior
-                s = resp["servidor"]
-                extra = f", replicado em {['S%d' % i for i in resp['replicado_em']]}" if "replicado_em" in resp else ""
-                self.log(f"RESPOSTA {req_id} do servidor S{s['id']} ({s['ip']}:{s['porta']}): "
-                         f"{'OK' if resp['ok'] else 'RECUSADA'} - {resp['resultado']}, "
-                         f"saldo={resp['saldo']}{extra}")
-                return resp
-            self.log(f"sem resposta em {self.espera:.1f}s para {req_id}")
-        self.log(f"FALHA: nenhum servidor respondeu a {req_id} apos {self.tentativas} tentativas")
+                continue
+            if resp.get("req_id") != req_id:
+                continue  # resposta atrasada de uma requisicao anterior
+            s = resp["servidor"]
+            extra = f", replicado em {['S%d' % i for i in resp['replicado_em']]}" if "replicado_em" in resp else ""
+            self.log(
+                f"RESPOSTA {req_id} do servidor S{s['id']} ({s['ip']}:{s['porta']}): "
+                f"{'OK' if resp['ok'] else 'RECUSADA'} - {resp['resultado']}, "
+                f"saldo={resp['saldo']}{extra}"
+            )
+            return resp
+        self.log(f"FALHA: nenhum servidor respondeu a {req_id} apos {total:.0f}s ({envios} envios)")
         return None
 
 
@@ -95,13 +117,14 @@ def main():
     ap.add_argument("--iface", default="0.0.0.0", help="IP desta maquina (interface multicast)")
     ap.add_argument("--nome", default="C1")
     ap.add_argument("--log", default=None)
-    ap.add_argument("--tentativas", type=int, default=6)
-    ap.add_argument("--espera", type=float, default=2.0, help="segundos de espera por tentativa")
+    ap.add_argument("--tentativas", type=int, default=6, help="orcamento total = tentativas x espera (padrao 12 s)")
+    ap.add_argument("--espera", type=float, default=2.0, help="pedaco do orcamento por (re)envio (total = tentativas x espera)")
+    ap.add_argument("--repetir", type=float, default=0.5, help="cadencia de reenvio da mesma requisicao (mesmo req_id)")
     a = ap.parse_args()
     with open(a.config) as f:
         cfg = json.load(f)
     canal = abrir_canal_cliente(a.iface)
-    c = Cliente(cfg, a.nome, a.log, a.tentativas, a.espera, canal)
+    c = Cliente(cfg, a.nome, a.log, a.tentativas, a.espera, canal, a.repetir)
 
     if a.op:
         r = c.requisita(a.op, a.valor)

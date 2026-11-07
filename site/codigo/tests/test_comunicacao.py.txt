@@ -60,9 +60,7 @@ class FabricasCanaisTest(unittest.TestCase):
 
         self.sock.bind.assert_called_once_with(("192.0.2.10", 0))
         self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 1)
-        self.sock.setsockopt.assert_any_call(
-            socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton("192.0.2.10")
-        )
+        self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton("192.0.2.10"))
         self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
 
     def test_canal_unicast_faz_bind_no_endereco_do_servidor(self):
@@ -70,9 +68,7 @@ class FabricasCanaisTest(unittest.TestCase):
             abrir_canal_unicast("192.0.2.11", 6001, "192.0.2.11")
 
         self.sock.bind.assert_called_once_with(("192.0.2.11", 6001))
-        self.sock.setsockopt.assert_any_call(
-            socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton("192.0.2.11")
-        )
+        self.sock.setsockopt.assert_any_call(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton("192.0.2.11"))
 
     def test_canal_multicast_entra_no_grupo_na_interface_informada(self):
         grupo = "224.1.1.1"

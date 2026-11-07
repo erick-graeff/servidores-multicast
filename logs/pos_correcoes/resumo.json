@@ -566,13 +566,13 @@
       {
         "req": "DEPOSITO 10",
         "esperado": "S1",
-        "obtido": "S1, saldo=60",
+        "obtido": "S1, saldo=50",
         "ok": true
       },
       {
         "req": "DEPOSITO 10",
         "esperado": "S1",
-        "obtido": "S1, saldo=50",
+        "obtido": "S1, saldo=60",
         "ok": true
       },
       {

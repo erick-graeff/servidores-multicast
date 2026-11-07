@@ -1,55 +1,52 @@
-2026-11-04 14:58:49.360 [ROTEIRO] ===== CENARIO 3: Requisicao enviada logo apos a falha do lider (antes da deteccao) =====
-2026-11-04 14:58:49.361 [ROTEIRO] inicia S1 (pid 255667)
-2026-11-04 14:58:49.362 [ROTEIRO] inicia S2 (pid 255668)
-2026-11-04 14:58:49.363 [ROTEIRO] inicia S3 (pid 255669)
-2026-11-04 14:58:49.363 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
-2026-11-04 14:58:49.456 [S3 127.0.0.1:6003] INFO    INICIANDO servidor S3 em 127.0.0.1:6003, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
-2026-11-04 14:58:49.459 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
-2026-11-04 14:58:49.459 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
-2026-11-04 14:58:49.659 [S3 127.0.0.1:6003] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
-2026-11-04 14:58:49.660 [S3 127.0.0.1:6003] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
-2026-11-04 14:58:49.660 [S3 127.0.0.1:6003] INFO    VIVOS = [1, 2, 3]
-2026-11-04 14:58:49.661 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
-2026-11-04 14:58:49.662 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
-2026-11-04 14:58:49.662 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
-2026-11-04 14:58:49.663 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
-2026-11-04 14:58:49.663 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
-2026-11-04 14:58:49.664 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
-2026-11-04 14:58:52.461 [S3 127.0.0.1:6003] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
-2026-11-04 14:58:52.463 [S1 127.0.0.1:6001] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
-2026-11-04 14:58:52.463 [S3 127.0.0.1:6003] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
-2026-11-04 14:58:52.464 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
-2026-11-04 14:58:52.465 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
-2026-11-04 14:58:52.466 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
-2026-11-04 14:58:53.363 [ROTEIRO] kill -9 255667  -> S1 sofre PARADA TOTAL
-2026-11-04 14:58:53.366 [ROTEIRO] cliente envia IMEDIATAMENTE, antes de a falha ser detectada
-2026-11-04 14:58:53.366 [ROTEIRO] cliente C1: DEPOSITO 40
-2026-11-04 14:58:53.419 [C1] cliente em 127.0.0.1:60774, grupo 224.1.1.1:5007
-2026-11-04 14:58:53.419 [C1] ENVIA C1-1c9dce 'DEPOSITO 40' ao grupo (tentativa 1/6)
-2026-11-04 14:58:53.419 [S2 127.0.0.1:6002] INFO    REQ C1-1c9dce DEPOSITO 40 de 127.0.0.1:60774: lider e S1, nao respondo
-2026-11-04 14:58:53.420 [S3 127.0.0.1:6003] INFO    REQ C1-1c9dce DEPOSITO 40 de 127.0.0.1:60774: lider e S1, nao respondo
-2026-11-04 14:58:55.420 [C1] sem resposta em 2.0s para C1-1c9dce
-2026-11-04 14:58:55.421 [C1] ENVIA C1-1c9dce 'DEPOSITO 40' ao grupo (tentativa 2/6)
-2026-11-04 14:58:55.421 [S2 127.0.0.1:6002] INFO    REQ C1-1c9dce DEPOSITO 40 de 127.0.0.1:60774: lider e S1, nao respondo
-2026-11-04 14:58:55.421 [S3 127.0.0.1:6003] INFO    REQ C1-1c9dce DEPOSITO 40 de 127.0.0.1:60774: lider e S1, nao respondo
-2026-11-04 14:58:55.466 [S3 127.0.0.1:6003] WARNING FALHA detectada: S1 sem heartbeat ha mais de 3.0s
-2026-11-04 14:58:55.466 [S3 127.0.0.1:6003] INFO    VIVOS = [2, 3]
-2026-11-04 14:58:55.466 [S3 127.0.0.1:6003] INFO    LIDER eleito = S2 (menor ID sem falha) -> sou replica
-2026-11-04 14:58:55.469 [S2 127.0.0.1:6002] WARNING FALHA detectada: S1 sem heartbeat ha mais de 3.0s
-2026-11-04 14:58:55.469 [S2 127.0.0.1:6002] INFO    VIVOS = [2, 3]
-2026-11-04 14:58:55.469 [S2 127.0.0.1:6002] INFO    LIDER eleito = S2 (menor ID sem falha) -> EU SOU O LIDER
-2026-11-04 14:58:57.422 [C1] sem resposta em 2.0s para C1-1c9dce
-2026-11-04 14:58:57.423 [C1] ENVIA C1-1c9dce 'DEPOSITO 40' ao grupo (tentativa 3/6)
-2026-11-04 14:58:57.423 [S3 127.0.0.1:6003] INFO    REQ C1-1c9dce DEPOSITO 40 de 127.0.0.1:60774: lider e S2, nao respondo
-2026-11-04 14:58:57.424 [S2 127.0.0.1:6002] INFO    REQ C1-1c9dce DEPOSITO 40 de 127.0.0.1:60774: SOU O LIDER (vivos=[2, 3])
-2026-11-04 14:58:57.424 [S2 127.0.0.1:6002] INFO    ESCRITA C1-1c9dce executada localmente: deposito de 40 realizado, saldo=40
-2026-11-04 14:58:57.424 [S2 127.0.0.1:6002] INFO    REPLICA C1-1c9dce enviada ao grupo; aguardando ACK de {S3}
-2026-11-04 14:58:57.425 [C1] RESPOSTA C1-1c9dce do servidor S2 (127.0.0.1:6002): OK - deposito de 40 realizado, saldo=40, replicado em ['S2', 'S3']
-2026-11-04 14:58:57.425 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C1-1c9dce
-2026-11-04 14:58:57.425 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-1c9dce -> 127.0.0.1:60774: deposito de 40 realizado, saldo=40 (replicado em {S2, S3})
-2026-11-04 14:58:57.425 [S3 127.0.0.1:6003] INFO    REPLICA C1-1c9dce de S2: deposito de 40 realizado, saldo=40, versao=1
-2026-11-04 14:58:57.425 [S3 127.0.0.1:6003] INFO    ACK enviado a S2 para C1-1c9dce
-2026-11-04 14:58:57.436 [ROTEIRO]   -> esperado: S2, saldo=40 | obtido: S2, saldo=40 | OK
-2026-11-04 14:58:57.937 [ROTEIRO] estado de S2: saldo=40 (esperado 40) OK
-2026-11-04 14:58:57.937 [ROTEIRO] estado de S3: saldo=40 (esperado 40) OK
-2026-11-04 14:58:57.942 [ROTEIRO] fim do cenario
+2026-11-07 01:18:25.582 [ROTEIRO] ===== CENARIO 3: Requisicao enviada logo apos a falha do lider (antes da deteccao) =====
+2026-11-07 01:18:25.584 [ROTEIRO] inicia S1 (pid 51103)
+2026-11-07 01:18:25.585 [ROTEIRO] inicia S2 (pid 51104)
+2026-11-07 01:18:25.587 [ROTEIRO] inicia S3 (pid 51105)
+2026-11-07 01:18:25.588 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-07 01:18:25.673 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 01:18:25.673 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 01:18:25.673 [S3 127.0.0.1:6003] INFO    INICIANDO servidor S3 em 127.0.0.1:6003, grupo 224.1.1.1:5007, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 01:18:25.874 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 01:18:25.874 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-07 01:18:25.874 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-07 01:18:25.874 [S3 127.0.0.1:6003] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-07 01:18:25.874 [S3 127.0.0.1:6003] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 01:18:25.875 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-07 01:18:25.875 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
+2026-11-07 01:18:25.875 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-07 01:18:25.875 [S3 127.0.0.1:6003] INFO    VIVOS = [1, 2, 3]
+2026-11-07 01:18:27.175 [S1 127.0.0.1:6001] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-07 01:18:27.175 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-07 01:18:27.175 [S3 127.0.0.1:6003] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-07 01:18:27.276 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-07 01:18:27.276 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-07 01:18:27.276 [S3 127.0.0.1:6003] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-07 01:18:29.589 [ROTEIRO] kill -9 51103  -> S1 sofre PARADA TOTAL
+2026-11-07 01:18:29.594 [ROTEIRO] cliente envia IMEDIATAMENTE, antes de a falha ser detectada
+2026-11-07 01:18:29.594 [ROTEIRO] cliente C1: DEPOSITO 40
+2026-11-07 01:18:29.693 [C1] cliente em 127.0.0.1:37438, grupo 224.1.1.1:5007
+2026-11-07 01:18:29.693 [C1] ENVIA C1-821478 'DEPOSITO 40' ao grupo (reenvio a cada 0.5s, orcamento 12s)
+2026-11-07 01:18:29.694 [S2 127.0.0.1:6002] INFO    REQ C1-821478 DEPOSITO 40 de 127.0.0.1:37438: lider aparente S1 (sem novo heartbeat ha 0.5s); guardada, sera atendida se assumir a lideranca
+2026-11-07 01:18:29.694 [S3 127.0.0.1:6003] INFO    REQ C1-821478 DEPOSITO 40 de 127.0.0.1:37438: lider aparente S1 (sem novo heartbeat ha 0.5s); guardada, sera atendida se assumir a lideranca
+2026-11-07 01:18:30.194 [C1] REENVIA C1-821478 ao grupo (2o envio, 0.5s sem resposta)
+2026-11-07 01:18:30.195 [S2 127.0.0.1:6002] INFO    REQ C1-821478 DEPOSITO 40 de 127.0.0.1:37438: lider aparente S1 (sem novo heartbeat ha 1.0s); guardada, sera atendida se assumir a lideranca
+2026-11-07 01:18:30.195 [S3 127.0.0.1:6003] INFO    REQ C1-821478 DEPOSITO 40 de 127.0.0.1:37438: lider aparente S1 (sem novo heartbeat ha 1.0s); guardada, sera atendida se assumir a lideranca
+2026-11-07 01:18:30.681 [S2 127.0.0.1:6002] WARNING FALHA detectada: S1 sem heartbeat ha mais de 1.5s
+2026-11-07 01:18:30.681 [S3 127.0.0.1:6003] WARNING FALHA detectada: S1 sem heartbeat ha mais de 1.5s
+2026-11-07 01:18:30.682 [S2 127.0.0.1:6002] INFO    VIVOS = [2, 3]
+2026-11-07 01:18:30.682 [S2 127.0.0.1:6002] INFO    LIDER eleito = S2 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-07 01:18:30.682 [S3 127.0.0.1:6003] INFO    VIVOS = [2, 3]
+2026-11-07 01:18:30.682 [S3 127.0.0.1:6003] INFO    LIDER eleito = S2 (menor ID sem falha) -> sou replica
+2026-11-07 01:18:30.683 [S2 127.0.0.1:6002] INFO    assumi como lider: atendendo agora 1 requisicao(oes) guardada(s) durante a troca de lider
+2026-11-07 01:18:30.683 [S2 127.0.0.1:6002] INFO    REQ C1-821478 DEPOSITO 40 de 127.0.0.1:37438: SOU O LIDER (vivos=[2, 3])
+2026-11-07 01:18:30.683 [S2 127.0.0.1:6002] INFO    ESCRITA C1-821478 executada localmente: deposito de 40 realizado, saldo=40
+2026-11-07 01:18:30.683 [S2 127.0.0.1:6002] INFO    REPLICA C1-821478 enviada ao grupo; aguardando ACK de {S3}
+2026-11-07 01:18:30.684 [S2 127.0.0.1:6002] INFO    ACK recebido de S3 para C1-821478
+2026-11-07 01:18:30.684 [S3 127.0.0.1:6003] INFO    REPLICA C1-821478 de S2: deposito de 40 realizado, saldo=40, versao=1
+2026-11-07 01:18:30.684 [S3 127.0.0.1:6003] INFO    ACK enviado a S2 para C1-821478
+2026-11-07 01:18:30.685 [C1] RESPOSTA C1-821478 do servidor S2 (127.0.0.1:6002): OK - deposito de 40 realizado, saldo=40, replicado em ['S2', 'S3']
+2026-11-07 01:18:30.685 [S2 127.0.0.1:6002] INFO    RESPOSTA C1-821478 -> 127.0.0.1:37438: deposito de 40 realizado, saldo=40 (replicado em {S2, S3})
+2026-11-07 01:18:30.716 [ROTEIRO]   -> esperado: S2, saldo=40 | obtido: S2, saldo=40 | OK
+2026-11-07 01:18:31.216 [ROTEIRO] estado de S2: saldo=40 (esperado 40) OK
+2026-11-07 01:18:31.216 [ROTEIRO] estado de S3: saldo=40 (esperado 40) OK
+2026-11-07 01:18:31.225 [ROTEIRO] fim do cenario

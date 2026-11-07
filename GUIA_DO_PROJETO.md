@@ -152,8 +152,9 @@ SAIR
 --iface IP           IP da interface local usada para multicast
 --nome NOME          Identificação do cliente nos logs e no req_id
 --log ARQUIVO        Arquivo no qual o log será acrescentado
---tentativas N       Quantidade máxima de envios; padrão: 6
---espera SEGUNDOS    Espera por resposta em cada tentativa; padrão: 2.0
+--tentativas N       Orçamento total = tentativas x espera; padrão: 6
+--espera SEGUNDOS    Pedaco do orçamento por (re)envio; padrão: 2.0 (total 12 s)
+--repetir SEGUNDOS   Cadência de reenvio da mesma requisição; padrão: 0.5
 ```
 
 ### Simular uma parada total
@@ -164,9 +165,9 @@ Descubra o PID do servidor desejado e execute:
 kill -9 <pid>
 ```
 
-Depois de aproximadamente 3 segundos sem heartbeat, os demais detectam a falha. Se S1 parar, S2 assume; se S1 e S2 pararem, S3 assume.
+Depois de aproximadamente 1,5 segundo sem heartbeat, os demais detectam a falha (a eleição termina antes do ciclo de espera do cliente). Se S1 parar, S2 assume; se S1 e S2 pararem, S3 assume.
 
-O cliente reenvia a mesma requisição com o mesmo `req_id` quando não recebe resposta, evitando que uma escrita seja executada duas vezes durante a troca de líder.
+O cliente reenvia a mesma requisição com o mesmo `req_id` a cada 0,5 s; e uma réplica guarda as requisições recebidas durante a troca de líder e o novo líder as atende ao assumir — a resposta chega em cerca de 2 s, sem esperar uma nova tentativa.
 
 ---
 
@@ -318,8 +319,9 @@ Cada servidor envia por multicast:
 
 Configuração local:
 
-- heartbeat a cada 1 segundo;
-- falha considerada após 3 segundos sem heartbeat.
+- heartbeat a cada 0,5 segundo;
+- falha considerada após 1,5 segundos sem heartbeat (eleição termina antes do ciclo de espera do cliente);
+- requisições recebidas durante a troca de líder são guardadas e atendidas pelo novo líder ao assumir.
 
 `membros.py` mantém os instantes dos últimos heartbeats e calcula o conjunto de vivos.
 

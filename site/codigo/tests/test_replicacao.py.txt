@@ -39,10 +39,7 @@ def configuracao(ids):
         "porta_grupo": 5007,
         "intervalo_heartbeat": 1.0,
         "timeout_falha": 3.0,
-        "servidores": [
-            {"id": sid, "ip": "127.0.0.1", "porta": 6000 + sid}
-            for sid in ids
-        ],
+        "servidores": [{"id": sid, "ip": "127.0.0.1", "porta": 6000 + sid} for sid in ids],
     }
 
 
@@ -70,9 +67,7 @@ class ReplicacaoTest(unittest.TestCase):
         return [m for m, _ in canal.enviadas if m["tipo"] == "RESPOSTA"]
 
     def test_confirma_sucesso_depois_dos_acks(self):
-        servidor, canal, relogio = self.cria_servidor(
-            ao_esperar=lambda: servidor.acks["C1-1"].add(2)
-        )
+        servidor, canal, relogio = self.cria_servidor(ao_esperar=lambda: servidor.acks["C1-1"].add(2))
 
         self.executa_deposito(servidor, relogio)
 

@@ -6,7 +6,11 @@
 #                           parada total, eleicao do lider (menor ID sem
 #                           falha), servico de conta bancaria (consulta e
 #                           alteracao) e replicacao das escritas com ACK.
-#  Ultima modificacao ....: 02/11/2026
+#                           Durante a troca de lider, uma requisicao recebida
+#                           por uma replica nao e descartada: e guardada e
+#                           atendida pelo novo lider assim que a eleicao
+#                           acontece, ainda dentro da espera do cliente.
+#  Ultima modificacao ....: 07/11/2026
 # =============================================================================
 #
 #  Uso:
@@ -80,6 +84,15 @@ class Servidor:
         self.lock_escrita = threading.Lock()  # o lider executa uma escrita por vez
         self.lock_estado = threading.RLock()  # serializa REPLICA, STATE e snapshots
 
+        # Requisicoes recebidas enquanto este processo nao era o lider. Sao
+        # guardadas com um prazo curto: se o lider aparente estiver de fato
+        # falho e este processo assumir a lideranca logo em seguida, elas sao
+        # atendidas de imediato (em vez de ficar sem resposta ate o cliente
+        # reenviar; ver cenarios 3 e 11).
+        self.pendentes = []  # (mensagem, origem, prazo)
+        self.lock_pendentes = threading.Lock()
+        self.max_pendentes = 32
+
         # Os canais sao montados no main e injetados aqui. O canal do grupo
         # recebe multicast; o unicast envia ao grupo e recebe ACK / STATE.
         self.canal_grupo = canal_grupo
@@ -148,6 +161,33 @@ class Servidor:
                     papel = "EU SOU O LIDER" if l == self.id else "sou replica"
                     self.log.info(f"LIDER eleito = S{l} (menor ID sem falha) -> {papel}")
                     self.lider_anterior = l
+                    if l == self.id:
+                        threading.Thread(target=self.atende_pendentes, daemon=True).start()
+            self.recolhe_expiradas()
+
+    def recolhe_expiradas(self):
+        """Descarta silenciosamente requisicoes guardadas cujo prazo acabou:
+        em operacao normal muitas requisicoes ficam guardadas sem precisar
+        (o lider verdadeiro as atende), e elas simplesmente expiram."""
+        with self.lock_pendentes:
+            agora = time.time()
+            self.pendentes = [p for p in self.pendentes if p[2] > agora]
+
+    def atende_pendentes(self):
+        """Este processo acabou de assumir a lideranca: atende de imediato as
+        requisicoes guardadas durante a troca de lider (as que ainda cabem no
+        prazo; a idempotencia por req_id protege as copias repetidas)."""
+        with self.lock_pendentes:
+            para_atender = [p for p in self.pendentes if p[2] > time.time()]
+            self.pendentes = []
+        if not para_atender:
+            return
+        self.log.info(
+            f"assumi como lider: atendendo agora {len(para_atender)} "
+            f"requisicao(oes) guardada(s) durante a troca de lider"
+        )
+        for msg, origem, _ in para_atender:
+            self.trata_requisicao(msg, origem)
 
     def thread_grupo(self):
         """Recebe tudo que chega ao grupo multicast."""
@@ -231,7 +271,7 @@ class Servidor:
         v = self.vivos()
         lider = min(v)
         if lider != self.id:
-            self.log.info(f"REQ {req_id} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: lider e S{lider}, nao respondo")
+            self.guarda_requisicao(msg, origem, lider, cli, op, valor)
             return
 
         self.log.info(f"REQ {req_id} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: SOU O LIDER (vivos={sorted(v)})")
@@ -328,6 +368,32 @@ class Servidor:
         self.log.info(
             f"RESPOSTA {req_id} -> {cli}: {res['msg']}, saldo={res['saldo']} (replicado em {fmt(confirmados | {self.id})})"
         )
+
+    def guarda_requisicao(self, msg, origem, lider, cli, op, valor):
+        """Requisicao recebida por uma replica. Na operacao normal o lider
+        verdadeiro a atende e esta copia apenas expira; mas, se o lider
+        aparente estiver de fato falho (heartbeats atrasados), a requisicao
+        fica guardada ate a eleicao: quem assumir em seguida a atende de
+        imediato, dentro do tempo de espera do cliente."""
+        with self.lock_pendentes:
+            # reenvio do cliente: atualiza o prazo em vez de duplicar
+            self.pendentes[:] = [p for p in self.pendentes if p[0]["req_id"] != msg["req_id"]]
+            prazo = time.time() + self.timeout + 1.0
+            self.pendentes.append((msg, origem, prazo))
+            while len(self.pendentes) > self.max_pendentes:
+                self.pendentes.pop(0)
+        idade = self.estado_membros.idade_heartbeat(lider)
+        if idade is None or idade > self.hb_intervalo:
+            idade_txt = f"sem novo heartbeat ha {idade:.1f}s" if idade is not None else "sem nenhum heartbeat recebido"
+            self.log.info(
+                f"REQ {msg['req_id']} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: "
+                f"lider aparente S{lider} ({idade_txt}); guardada, sera atendida se assumir a lideranca"
+            )
+        else:
+            self.log.info(
+                f"REQ {msg['req_id']} {op} {valor if op in OPS_ESCRITA else ''} de {cli}: "
+                f"lider e S{lider}, ele respondera (este processo nao responde)"
+            )
 
     def trata_replica(self, msg):
         """Aplica somente a proxima versao e confirma duplicados sem regredir."""

@@ -1,17 +1,29 @@
-2026-11-04 15:00:28.376 [C1] cliente em 127.0.0.1:47531, grupo 224.1.1.1:5007
-2026-11-04 15:00:28.376 [C1] ENVIA C1-d2217f 'DEPOSITO 30' ao grupo (tentativa 1/6)
-2026-11-04 15:00:28.379 [C1] RESPOSTA C1-d2217f do servidor S1 (127.0.0.1:6001): OK - deposito de 30 realizado, saldo=30, replicado em ['S1', 'S2', 'S3']
-2026-11-04 15:00:28.471 [C1] cliente em 127.0.0.1:52469, grupo 224.1.1.1:5007
-2026-11-04 15:00:28.471 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 1/6)
-2026-11-04 15:00:30.473 [C1] sem resposta em 2.0s para C1-88bf62
-2026-11-04 15:00:30.473 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 2/6)
-2026-11-04 15:00:32.475 [C1] sem resposta em 2.0s para C1-88bf62
-2026-11-04 15:00:32.475 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 3/6)
-2026-11-04 15:00:34.477 [C1] sem resposta em 2.0s para C1-88bf62
-2026-11-04 15:00:34.477 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 4/6)
-2026-11-04 15:00:36.479 [C1] sem resposta em 2.0s para C1-88bf62
-2026-11-04 15:00:36.479 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 5/6)
-2026-11-04 15:00:38.481 [C1] sem resposta em 2.0s para C1-88bf62
-2026-11-04 15:00:38.481 [C1] ENVIA C1-88bf62 'SALDO' ao grupo (tentativa 6/6)
-2026-11-04 15:00:40.483 [C1] sem resposta em 2.0s para C1-88bf62
-2026-11-04 15:00:40.484 [C1] FALHA: nenhum servidor respondeu a C1-88bf62 apos 6 tentativas
+2026-11-07 01:19:57.765 [C1] cliente em 127.0.0.1:55576, grupo 224.1.1.1:5007
+2026-11-07 01:19:57.765 [C1] ENVIA C1-49486b 'DEPOSITO 30' ao grupo (reenvio a cada 0.5s, orcamento 12s)
+2026-11-07 01:19:57.767 [C1] RESPOSTA C1-49486b do servidor S1 (127.0.0.1:6001): OK - deposito de 30 realizado, saldo=30, replicado em ['S1', 'S2', 'S3']
+2026-11-07 01:19:57.837 [C1] cliente em 127.0.0.1:34795, grupo 224.1.1.1:5007
+2026-11-07 01:19:57.837 [C1] ENVIA C1-175414 'SALDO' ao grupo (reenvio a cada 0.5s, orcamento 12s)
+2026-11-07 01:19:58.338 [C1] REENVIA C1-175414 ao grupo (2o envio, 0.5s sem resposta)
+2026-11-07 01:19:58.839 [C1] REENVIA C1-175414 ao grupo (3o envio, 1.0s sem resposta)
+2026-11-07 01:19:59.340 [C1] REENVIA C1-175414 ao grupo (4o envio, 1.5s sem resposta)
+2026-11-07 01:19:59.841 [C1] REENVIA C1-175414 ao grupo (5o envio, 2.0s sem resposta)
+2026-11-07 01:20:00.342 [C1] REENVIA C1-175414 ao grupo (6o envio, 2.5s sem resposta)
+2026-11-07 01:20:00.843 [C1] REENVIA C1-175414 ao grupo (7o envio, 3.0s sem resposta)
+2026-11-07 01:20:01.344 [C1] REENVIA C1-175414 ao grupo (8o envio, 3.5s sem resposta)
+2026-11-07 01:20:01.845 [C1] REENVIA C1-175414 ao grupo (9o envio, 4.0s sem resposta)
+2026-11-07 01:20:02.346 [C1] REENVIA C1-175414 ao grupo (10o envio, 4.5s sem resposta)
+2026-11-07 01:20:02.847 [C1] REENVIA C1-175414 ao grupo (11o envio, 5.0s sem resposta)
+2026-11-07 01:20:03.348 [C1] REENVIA C1-175414 ao grupo (12o envio, 5.5s sem resposta)
+2026-11-07 01:20:03.849 [C1] REENVIA C1-175414 ao grupo (13o envio, 6.0s sem resposta)
+2026-11-07 01:20:04.350 [C1] REENVIA C1-175414 ao grupo (14o envio, 6.5s sem resposta)
+2026-11-07 01:20:04.851 [C1] REENVIA C1-175414 ao grupo (15o envio, 7.0s sem resposta)
+2026-11-07 01:20:05.352 [C1] REENVIA C1-175414 ao grupo (16o envio, 7.5s sem resposta)
+2026-11-07 01:20:05.853 [C1] REENVIA C1-175414 ao grupo (17o envio, 8.0s sem resposta)
+2026-11-07 01:20:06.354 [C1] REENVIA C1-175414 ao grupo (18o envio, 8.5s sem resposta)
+2026-11-07 01:20:06.855 [C1] REENVIA C1-175414 ao grupo (19o envio, 9.0s sem resposta)
+2026-11-07 01:20:07.356 [C1] REENVIA C1-175414 ao grupo (20o envio, 9.5s sem resposta)
+2026-11-07 01:20:07.857 [C1] REENVIA C1-175414 ao grupo (21o envio, 10.0s sem resposta)
+2026-11-07 01:20:08.359 [C1] REENVIA C1-175414 ao grupo (22o envio, 10.5s sem resposta)
+2026-11-07 01:20:08.865 [C1] REENVIA C1-175414 ao grupo (23o envio, 11.0s sem resposta)
+2026-11-07 01:20:09.366 [C1] REENVIA C1-175414 ao grupo (24o envio, 11.5s sem resposta)
+2026-11-07 01:20:09.867 [C1] FALHA: nenhum servidor respondeu a C1-175414 apos 12s (24 envios)

@@ -1,12 +1,12 @@
-2026-11-04 14:59:45.754 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
-2026-11-04 14:59:45.956 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
-2026-11-04 14:59:45.956 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
-2026-11-04 14:59:45.956 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
-2026-11-04 14:59:48.757 [S1 127.0.0.1:6001] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
-2026-11-04 14:59:48.759 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
-2026-11-04 14:59:49.738 [S1 127.0.0.1:6001] INFO    REQ C1-96d261 DEPOSITO 100 de 127.0.0.1:44296: SOU O LIDER (vivos=[1, 2, 3])
-2026-11-04 14:59:49.739 [S1 127.0.0.1:6001] INFO    ESCRITA C1-96d261 executada localmente: deposito de 100 realizado, saldo=100
-2026-11-04 14:59:49.739 [S1 127.0.0.1:6001] INFO    REPLICA C1-96d261 enviada ao grupo; aguardando ACK de {S2, S3}
-2026-11-04 14:59:49.740 [S1 127.0.0.1:6001] INFO    ACK recebido de S2 para C1-96d261
-2026-11-04 14:59:49.740 [S1 127.0.0.1:6001] INFO    ACK recebido de S3 para C1-96d261
-2026-11-04 14:59:50.239 [S1 127.0.0.1:6001] CRITICAL FALHA INJETADA: lider para (parada total) antes de responder ao cliente
+2026-11-07 01:19:18.510 [S1 127.0.0.1:6001] INFO    INICIANDO servidor S1 em 127.0.0.1:6001, grupo 224.1.1.1:5007, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 01:19:18.711 [S1 127.0.0.1:6001] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 01:19:18.711 [S1 127.0.0.1:6001] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-07 01:19:18.712 [S1 127.0.0.1:6001] INFO    VIVOS = [1, 2, 3]
+2026-11-07 01:19:20.012 [S1 127.0.0.1:6001] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-07 01:19:20.113 [S1 127.0.0.1:6001] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-07 01:19:22.471 [S1 127.0.0.1:6001] INFO    REQ C1-d186c5 DEPOSITO 100 de 127.0.0.1:44455: SOU O LIDER (vivos=[1, 2, 3])
+2026-11-07 01:19:22.471 [S1 127.0.0.1:6001] INFO    ESCRITA C1-d186c5 executada localmente: deposito de 100 realizado, saldo=100
+2026-11-07 01:19:22.471 [S1 127.0.0.1:6001] INFO    REPLICA C1-d186c5 enviada ao grupo; aguardando ACK de {S2, S3}
+2026-11-07 01:19:22.471 [S1 127.0.0.1:6001] INFO    ACK recebido de S3 para C1-d186c5
+2026-11-07 01:19:22.471 [S1 127.0.0.1:6001] INFO    ACK recebido de S2 para C1-d186c5
+2026-11-07 01:19:22.972 [S1 127.0.0.1:6001] CRITICAL FALHA INJETADA: lider para (parada total) antes de responder ao cliente

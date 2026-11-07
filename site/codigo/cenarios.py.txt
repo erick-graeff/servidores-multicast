@@ -48,15 +48,21 @@ class Cenario:
         self.roteiro.flush()
 
     def sobe(self, sid, falha=None):
-        args = [PY, os.path.join(AQUI, "servidor.py"), "--id", str(sid),
-                "--config", os.path.join(AQUI, "config.json"),
-                "--log", os.path.join(self.pasta, f"servidor_S{sid}.log")]
+        args = [
+            PY,
+            os.path.join(AQUI, "servidor.py"),
+            "--id",
+            str(sid),
+            "--config",
+            os.path.join(AQUI, "config.json"),
+            "--log",
+            os.path.join(self.pasta, f"servidor_S{sid}.log"),
+        ]
         if falha:
             args += ["--falha", falha]
         if os.path.exists(os.path.join(self.pasta, f"servidor_S{sid}.log")):
             # servidor reiniciado: guarda o log da execucao anterior
-            os.replace(os.path.join(self.pasta, f"servidor_S{sid}.log"),
-                       os.path.join(self.pasta, f"servidor_S{sid}_execucao1.log"))
+            os.replace(os.path.join(self.pasta, f"servidor_S{sid}.log"), os.path.join(self.pasta, f"servidor_S{sid}_execucao1.log"))
         p = subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         self.procs[sid] = p
         self.nota(f"inicia S{sid} (pid {p.pid})" + (f" com falha injetada '{falha}'" if falha else ""))
@@ -74,9 +80,20 @@ class Cenario:
     def cliente(self, op, valor=0, esperado_srv=None, esperado_saldo=None, nome=None):
         self.n_cli += 1
         nome = nome or "C1"
-        args = [PY, os.path.join(AQUI, "cliente.py"), op] + ([str(valor)] if op != "SALDO" else []) + \
-               ["--config", os.path.join(AQUI, "config.json"), "--iface", self.iface,
-                "--nome", nome, "--log", os.path.join(self.pasta, "cliente.log")]
+        args = (
+            [PY, os.path.join(AQUI, "cliente.py"), op]
+            + ([str(valor)] if op != "SALDO" else [])
+            + [
+                "--config",
+                os.path.join(AQUI, "config.json"),
+                "--iface",
+                self.iface,
+                "--nome",
+                nome,
+                "--log",
+                os.path.join(self.pasta, "cliente.log"),
+            ]
+        )
         desc = op if op == "SALDO" else f"{op} {valor}"
         self.nota(f"cliente {nome}: {desc}")
         out = subprocess.run(args, capture_output=True, text=True).stdout
@@ -105,8 +122,9 @@ class Cenario:
                 saldos = re.findall(r"saldo=(-?\d+)", f.read())
             s = int(saldos[-1]) if saldos else 0
             ok = s == saldo_esperado
-            self.checks.append({"req": f"estado da replica S{sid}", "esperado": f"saldo={saldo_esperado}",
-                                "obtido": f"saldo={s}", "ok": ok})
+            self.checks.append(
+                {"req": f"estado da replica S{sid}", "esperado": f"saldo={saldo_esperado}", "obtido": f"saldo={s}", "ok": ok}
+            )
             self.nota(f"estado de S{sid}: saldo={s} (esperado {saldo_esperado}) {'OK' if ok else 'ERRO'}")
 
     def encerra(self):
@@ -133,7 +151,7 @@ def sobe_tres(c):
     c.espera(4, "(heartbeats e eleicao inicial)")
 
 
-DETECCAO = 4  # timeout de 3 s + folga
+DETECCAO = 4  # timeout de 1,5 s + folga
 
 
 def c01(c):
@@ -141,7 +159,7 @@ def c01(c):
     c.cliente("SALDO", esperado_srv=1, esperado_saldo=0)
     c.cliente("DEPOSITO", 100, esperado_srv=1, esperado_saldo=100)
     c.cliente("SAQUE", 30, esperado_srv=1, esperado_saldo=70)
-    c.cliente("SAQUE", 500, esperado_srv=1, esperado_saldo=70)   # recusado: saldo insuficiente
+    c.cliente("SAQUE", 500, esperado_srv=1, esperado_saldo=70)  # recusado: saldo insuficiente
     c.cliente("SALDO", esperado_srv=1, esperado_saldo=70)
     c.confere_replicas(70)
 
@@ -249,8 +267,7 @@ def c11(c):
 
     def rajada():
         for k in range(6):
-            resultados.append(c.cliente("DEPOSITO", 10, esperado_srv=(1 if k == 0 else 2),
-                                        esperado_saldo=10 * (k + 1), nome="C2"))
+            resultados.append(c.cliente("DEPOSITO", 10, esperado_srv=(1 if k == 0 else 2), esperado_saldo=10 * (k + 1), nome="C2"))
             time.sleep(1)
 
     t = threading.Thread(target=rajada)
@@ -353,8 +370,7 @@ def main():
             fn(c)
         finally:
             c.encerra()
-        resumo.append({"num": num, "titulo": titulo, "checks": c.checks,
-                       "ok": all(x["ok"] for x in c.checks)})
+        resumo.append({"num": num, "titulo": titulo, "checks": c.checks, "ok": all(x["ok"] for x in c.checks)})
         time.sleep(1)
     with open(os.path.join(a.saida, "resumo.json"), "w", encoding="utf-8") as f:
         json.dump(resumo, f, indent=2, ensure_ascii=False)

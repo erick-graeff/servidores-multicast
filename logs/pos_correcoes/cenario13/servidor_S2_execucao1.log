@@ -1,9 +1,9 @@
-2026-11-04 15:00:41.567 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 1.0s, falha apos 3.0s sem heartbeat
-2026-11-04 15:00:41.769 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
-2026-11-04 15:00:41.769 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
-2026-11-04 15:00:41.769 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
-2026-11-04 15:00:44.571 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
-2026-11-04 15:00:44.572 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
-2026-11-04 15:00:45.601 [S2 127.0.0.1:6002] INFO    REQ C1-971c68 DEPOSITO 100 de 127.0.0.1:56249: lider e S1, nao respondo
-2026-11-04 15:00:45.603 [S2 127.0.0.1:6002] INFO    REPLICA C1-971c68 de S1: deposito de 100 realizado, saldo=100, versao=1
-2026-11-04 15:00:45.603 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-971c68
+2026-11-07 01:20:10.985 [S2 127.0.0.1:6002] INFO    INICIANDO servidor S2 em 127.0.0.1:6002, grupo 224.1.1.1:5007, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 01:20:11.186 [S2 127.0.0.1:6002] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-07 01:20:11.187 [S2 127.0.0.1:6002] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-07 01:20:11.187 [S2 127.0.0.1:6002] INFO    VIVOS = [1, 2, 3]
+2026-11-07 01:20:12.487 [S2 127.0.0.1:6002] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-07 01:20:12.588 [S2 127.0.0.1:6002] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-07 01:20:14.981 [S2 127.0.0.1:6002] INFO    REQ C1-544982 DEPOSITO 100 de 127.0.0.1:36843: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 01:20:14.981 [S2 127.0.0.1:6002] INFO    REPLICA C1-544982 de S1: deposito de 100 realizado, saldo=100, versao=1
+2026-11-07 01:20:14.981 [S2 127.0.0.1:6002] INFO    ACK enviado a S1 para C1-544982

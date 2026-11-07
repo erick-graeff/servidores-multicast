@@ -45,6 +45,13 @@ class MembrosTest(unittest.TestCase):
         self.assertIn(1, self.membros.vivos())
         self.assertEqual(1, self.membros.lider())
 
+    def test_idade_do_ultimo_heartbeat_e_informada(self):
+        self.membros.registrar_heartbeat(1, True)
+
+        self.avancar(1.3)
+        self.assertAlmostEqual(1.3, self.membros.idade_heartbeat(1))
+        self.assertIsNone(self.membros.idade_heartbeat(3))
+
     def test_membro_que_volta_a_enviar_heartbeat_reaparece(self):
         self.membros.registrar_heartbeat(1, True)
         self.avancar(3.1)
