@@ -28,7 +28,7 @@ svg{max-width:100%;height:auto}
 <p>Seções: <a href="#visao">1. Visão geral</a> | <a href="#servico">2. Serviço</a> |
 <a href="#arq">3. Arquitetura</a> | <a href="#proto">4. Protocolo</a> | <a href="#decisoes">5. Decisões</a> |
 <a href="#exec">6. Como executar</a> | <a href="#testes">7. Testes</a> | <a href="#lab">8. Execução em 3 hosts</a> |
-<a href="#limites">9. Limitações</a></p>
+<a href="#limites">9. Limitações</a> | <a href="#ia">10. Uso de IA</a></p>
 
 <h2 id="visao">1. Visão geral</h2>
 <p>O servidor do trabalho é na verdade um grupo de N processos (S1, S2, ..., SN) que entram no mesmo grupo
@@ -1213,6 +1213,12 @@ em parte das réplicas.</li>
 Não fizemos ressincronização automática para isso; é preciso reiniciar o processo.</li>
 <li>O multicast tem TTL 1, então todas as máquinas precisam estar na mesma rede local.</li>
 </ul>
+
+<h2 id="ia">10. Uso de IA</h2>
+<p>Usamos um assistente de IA (Claude, da Anthropic) durante o trabalho. Ele ajudou a comentar o código, em
+refatorações e correções, a montar os roteiros de teste (<code>cenarios.py</code> e <code>cenarios_lab.py</code>),
+a rodar os cenários nas máquinas do DInf e a redigir e formatar este relatório.</p>
+<p>Revisamos o código e os resultados, e sabemos explicar e executar o sistema.</p>
 
 <hr><p class="links">Eduardo Camargo Neves e Erick Graeff Petzold - 07/11/2026</p>
 </main></body></html>
