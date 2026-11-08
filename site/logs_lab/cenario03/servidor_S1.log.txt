@@ -1,0 +1,10 @@
+2026-11-07 13:52:06.893 [S1 10.17.110.26:6731] INFO    INICIANDO servidor S1 em 10.17.110.26:6731, grupo 224.1.19.73:5773, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 13:52:07.095 [S1 10.17.110.26:6731] INFO    VIVOS = [1]
+2026-11-07 13:52:08.296 [S1 10.17.110.26:6731] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 13:52:08.296 [S1 10.17.110.26:6731] INFO    VIVOS = [1, 2]
+2026-11-07 13:52:08.395 [S1 10.17.110.26:6731] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-07 13:52:08.497 [S1 10.17.110.26:6731] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-07 13:52:08.683 [S1 10.17.110.26:6731] INFO    ESTADO enviado a S2 (saldo=0)
+2026-11-07 13:52:09.477 [S1 10.17.110.26:6731] INFO    ESTADO enviado a S3 (saldo=0)
+2026-11-07 13:52:09.498 [S1 10.17.110.26:6731] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-07 13:52:09.498 [S1 10.17.110.26:6731] INFO    VIVOS = [1, 2, 3]

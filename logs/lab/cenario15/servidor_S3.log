@@ -1,0 +1,59 @@
+2026-11-07 13:56:42.748 [S3 10.17.110.71:6733] INFO    INICIANDO servidor S3 em 10.17.110.71:6733, grupo 224.1.19.73:5773, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 13:56:42.752 [S3 10.17.110.71:6733] INFO    ESTADO recebido de S1: saldo=0 versao=0 (0 escritas ja aplicadas)
+2026-11-07 13:56:42.951 [S3 10.17.110.71:6733] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 13:56:42.951 [S3 10.17.110.71:6733] INFO    VIVOS = [2, 3]
+2026-11-07 13:56:43.151 [S3 10.17.110.71:6733] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-07 13:56:43.151 [S3 10.17.110.71:6733] INFO    VIVOS = [1, 2, 3]
+2026-11-07 13:56:44.356 [S3 10.17.110.71:6733] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-07 13:56:46.592 [S3 10.17.110.71:6733] INFO    REQ C3-a52a1f DEPOSITO 10 de 10.17.110.6:54415: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.592 [S3 10.17.110.71:6733] INFO    REPLICA C3-a52a1f de S1: deposito de 10 realizado, saldo=10, versao=1
+2026-11-07 13:56:46.593 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C3-a52a1f
+2026-11-07 13:56:46.614 [S3 10.17.110.71:6733] INFO    REQ C2-92ea92 DEPOSITO 10 de 10.17.110.6:53083: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.614 [S3 10.17.110.71:6733] INFO    REPLICA C2-92ea92 de S1: deposito de 10 realizado, saldo=20, versao=2
+2026-11-07 13:56:46.614 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C2-92ea92
+2026-11-07 13:56:46.635 [S3 10.17.110.71:6733] INFO    REQ C4-69dd13 DEPOSITO 10 de 10.17.110.6:60024: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.635 [S3 10.17.110.71:6733] INFO    REPLICA C4-69dd13 de S1: deposito de 10 realizado, saldo=30, versao=3
+2026-11-07 13:56:46.635 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C4-69dd13
+2026-11-07 13:56:46.710 [S3 10.17.110.71:6733] INFO    REQ C2-2bd955 DEPOSITO 10 de 10.17.110.6:39664: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.710 [S3 10.17.110.71:6733] INFO    REPLICA C2-2bd955 de S1: deposito de 10 realizado, saldo=40, versao=4
+2026-11-07 13:56:46.711 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C2-2bd955
+2026-11-07 13:56:46.740 [S3 10.17.110.71:6733] INFO    REQ C3-71ddda DEPOSITO 10 de 10.17.110.6:58477: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.741 [S3 10.17.110.71:6733] INFO    REPLICA C3-71ddda de S1: deposito de 10 realizado, saldo=50, versao=5
+2026-11-07 13:56:46.741 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C3-71ddda
+2026-11-07 13:56:46.774 [S3 10.17.110.71:6733] INFO    REQ C4-d240c2 DEPOSITO 10 de 10.17.110.6:51915: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.775 [S3 10.17.110.71:6733] INFO    REPLICA C4-d240c2 de S1: deposito de 10 realizado, saldo=60, versao=6
+2026-11-07 13:56:46.775 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C4-d240c2
+2026-11-07 13:56:46.834 [S3 10.17.110.71:6733] INFO    REQ C2-3b671f DEPOSITO 10 de 10.17.110.6:56355: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.834 [S3 10.17.110.71:6733] INFO    REPLICA C2-3b671f de S1: deposito de 10 realizado, saldo=70, versao=7
+2026-11-07 13:56:46.835 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C2-3b671f
+2026-11-07 13:56:46.883 [S3 10.17.110.71:6733] INFO    REQ C4-9a7288 DEPOSITO 10 de 10.17.110.6:35666: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.884 [S3 10.17.110.71:6733] INFO    REPLICA C4-9a7288 de S1: deposito de 10 realizado, saldo=80, versao=8
+2026-11-07 13:56:46.884 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C4-9a7288
+2026-11-07 13:56:46.886 [S3 10.17.110.71:6733] INFO    REQ C3-e1ffcf DEPOSITO 10 de 10.17.110.6:35737: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.887 [S3 10.17.110.71:6733] INFO    REPLICA C3-e1ffcf de S1: deposito de 10 realizado, saldo=90, versao=9
+2026-11-07 13:56:46.887 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C3-e1ffcf
+2026-11-07 13:56:46.957 [S3 10.17.110.71:6733] INFO    REQ C2-af1ab7 DEPOSITO 10 de 10.17.110.6:34637: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:46.958 [S3 10.17.110.71:6733] INFO    REPLICA C2-af1ab7 de S1: deposito de 10 realizado, saldo=100, versao=10
+2026-11-07 13:56:46.958 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C2-af1ab7
+2026-11-07 13:56:47.001 [S3 10.17.110.71:6733] INFO    REQ C4-17c4a2 DEPOSITO 10 de 10.17.110.6:50119: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:47.002 [S3 10.17.110.71:6733] INFO    REPLICA C4-17c4a2 de S1: deposito de 10 realizado, saldo=110, versao=11
+2026-11-07 13:56:47.002 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C4-17c4a2
+2026-11-07 13:56:47.021 [S3 10.17.110.71:6733] INFO    REQ C3-b93def DEPOSITO 10 de 10.17.110.6:39694: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:47.021 [S3 10.17.110.71:6733] INFO    REPLICA C3-b93def de S1: deposito de 10 realizado, saldo=120, versao=12
+2026-11-07 13:56:47.022 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C3-b93def
+2026-11-07 13:56:47.089 [S3 10.17.110.71:6733] INFO    REQ C2-0618ea DEPOSITO 10 de 10.17.110.6:45800: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:47.090 [S3 10.17.110.71:6733] INFO    REPLICA C2-0618ea de S1: deposito de 10 realizado, saldo=130, versao=13
+2026-11-07 13:56:47.090 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C2-0618ea
+2026-11-07 13:56:47.124 [S3 10.17.110.71:6733] INFO    REQ C4-60e2dd DEPOSITO 10 de 10.17.110.6:44392: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:47.125 [S3 10.17.110.71:6733] INFO    REPLICA C4-60e2dd de S1: deposito de 10 realizado, saldo=140, versao=14
+2026-11-07 13:56:47.125 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C4-60e2dd
+2026-11-07 13:56:47.151 [S3 10.17.110.71:6733] INFO    REQ C3-2a7bc5 DEPOSITO 10 de 10.17.110.6:55601: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:47.152 [S3 10.17.110.71:6733] INFO    REPLICA C3-2a7bc5 de S1: deposito de 10 realizado, saldo=150, versao=15
+2026-11-07 13:56:47.152 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C3-2a7bc5
+2026-11-07 13:56:47.246 [S3 10.17.110.71:6733] INFO    REQ C1-2d166b SALDO  de 10.17.110.6:60476: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:56:59.580 [S3 10.17.110.71:6733] WARNING FALHA detectada: S1 sem heartbeat ha mais de 1.5s
+2026-11-07 13:56:59.580 [S3 10.17.110.71:6733] INFO    VIVOS = [2, 3]
+2026-11-07 13:56:59.580 [S3 10.17.110.71:6733] INFO    LIDER eleito = S2 (menor ID sem falha) -> sou replica
+2026-11-07 13:57:01.582 [S3 10.17.110.71:6733] WARNING FALHA detectada: S2 sem heartbeat ha mais de 1.5s
+2026-11-07 13:57:01.582 [S3 10.17.110.71:6733] INFO    VIVOS = [3]
+2026-11-07 13:57:01.582 [S3 10.17.110.71:6733] INFO    LIDER eleito = S3 (menor ID sem falha) -> EU SOU O LIDER

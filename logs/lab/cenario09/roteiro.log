@@ -1,0 +1,14 @@
+2026-11-07 13:53:54.139 [ROTEIRO] ===== CENARIO 9: Lider para depois de replicar e antes de responder (sem execucao dupla) =====
+2026-11-07 13:53:54.480 [ROTEIRO] inicia S1 em orval com falha injetada 'lider-antes-de-responder'
+2026-11-07 13:53:54.729 [ROTEIRO] inicia S2 em cpu1
+2026-11-07 13:53:54.989 [ROTEIRO] inicia S3 em cpu2
+2026-11-07 13:53:54.989 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-07 13:53:58.990 [ROTEIRO] S1 vai executar e replicar a escrita e parar ANTES de responder ao cliente
+2026-11-07 13:53:58.990 [ROTEIRO] cliente C1: DEPOSITO 100
+2026-11-07 13:54:00.827 [ROTEIRO]   -> esperado: S2, saldo=100 | obtido: S2, saldo=100 | OK
+2026-11-07 13:54:00.827 [ROTEIRO] o deposito NAO pode ter sido aplicado duas vezes: saldo deve ser 100, nao 200
+2026-11-07 13:54:00.827 [ROTEIRO] cliente C1: SALDO
+2026-11-07 13:54:00.936 [ROTEIRO]   -> esperado: S2, saldo=100 | obtido: S2, saldo=100 | OK
+2026-11-07 13:54:02.965 [ROTEIRO] estado de S2: saldo=100 (esperado 100) OK
+2026-11-07 13:54:04.546 [ROTEIRO] estado de S3: saldo=100 (esperado 100) OK
+2026-11-07 13:54:07.269 [ROTEIRO] fim do cenario

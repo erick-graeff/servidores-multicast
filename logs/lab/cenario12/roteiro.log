@@ -1,0 +1,13 @@
+2026-11-07 13:54:48.113 [ROTEIRO] ===== CENARIO 12: Todos os servidores falhos: cliente fica sem resposta =====
+2026-11-07 13:54:49.303 [ROTEIRO] inicia S1 em orval
+2026-11-07 13:54:49.642 [ROTEIRO] inicia S2 em cpu1
+2026-11-07 13:54:50.044 [ROTEIRO] inicia S3 em cpu2
+2026-11-07 13:54:50.044 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-07 13:54:54.044 [ROTEIRO] cliente C1: DEPOSITO 30
+2026-11-07 13:54:54.145 [ROTEIRO]   -> esperado: S1, saldo=30 | obtido: S1, saldo=30 | OK
+2026-11-07 13:54:54.145 [ROTEIRO] kill -9 em orval -> S1 sofre PARADA TOTAL
+2026-11-07 13:54:55.407 [ROTEIRO] kill -9 em cpu1 -> S2 sofre PARADA TOTAL
+2026-11-07 13:54:56.036 [ROTEIRO] kill -9 em cpu2 -> S3 sofre PARADA TOTAL
+2026-11-07 13:54:58.061 [ROTEIRO] cliente C1: SALDO
+2026-11-07 13:55:10.235 [ROTEIRO]   -> esperado: nenhuma resposta | obtido: nenhuma resposta | OK
+2026-11-07 13:55:15.142 [ROTEIRO] fim do cenario

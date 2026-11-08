@@ -4,8 +4,9 @@
 #  Dupla .................: Eduardo Camargo Neves e Erick Graeff Petzold
 #  Funcionalidade ........: Monta a pasta site/ (index.html, relatorio.html,
 #                           codigo/*.txt e logs/*.txt) a partir do codigo e
-#                           dos logs gerados por cenarios.py.
-#  Ultima modificacao ....: 02/11/2026
+#                           dos logs gerados por cenarios.py e, no
+#                           laboratorio, por cenarios_lab.py.
+#  Ultima modificacao ....: 07/11/2026
 # =============================================================================
 import argparse
 import html
@@ -26,49 +27,31 @@ CODIGOS = [
     ("conta.py", "Conta bancária: operações, idempotência, versões e snapshots"),
     ("membros.py", "Monitoramento de membros vivos e eleição do menor ID"),
     ("config.json", "Configuração usada nos testes locais (3 servidores)"),
-    ("config_lab.json", "Modelo de configuração para 3 hosts diferentes no laboratório"),
+    ("config_lab.json", "Configuração dos 3 hosts do DInf (orval, cpu1 e cpu2)"),
     ("cenarios.py", "Roteiro automático dos 15 cenários de teste (sobe, mata e confere)"),
+    ("cenarios_lab.py", "Os mesmos 15 cenários com cada servidor num host diferente, via ssh"),
     ("gera_pagina.py", "Gerador desta página"),
-    ("tests/doubles.py", "CanalFake e dublês usados somente nos testes"),
-    ("tests/test_comunicacao.py", "Testes unitários do transporte UDP/JSON"),
-    ("tests/test_conta.py", "Testes unitários da conta, versões e snapshots"),
-    ("tests/test_membros.py", "Testes unitários de heartbeat, timeout e eleição"),
-    ("tests/test_cliente.py", "Testes unitários das requisições e retransmissões do cliente"),
-    ("tests/test_replicacao.py", "Testes unitários de ACKs, timeout e idempotência"),
-    ("tests/test_troca_lider.py", "Testes unitários da fila de requisições durante a troca de líder"),
-    ("tests/test_ordenacao.py", "Testes de regressão de ordenação e sincronização"),
-    ("tests/test_injecao.py", "Testes da injeção dos canais no cliente e servidor"),
-    ("tests/test_entrega.py", "Testes da geração, links e cópias da página de entrega"),
 ]
 
 RUIDO = ("detectado sem falha", "VIVOS =", "INICIANDO", "nenhum membro vivo", "] cliente em ", "ignorada: ainda em inicializacao")
 
 CSS = """
-:root{--fg:#1d2433;--muted:#5b6475;--line:#d9dde5;--bg:#fff;--soft:#f4f6f9;--acc:#1f5fbf;--ok:#1d7a3e;--bad:#b42318}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:920px;margin:0 auto;padding:40px 20px 80px}
-h1{font-size:2rem;line-height:1.2;margin:0 0 6px}
-h2{font-size:1.4rem;margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line)}
-h3{font-size:1.1rem;margin:28px 0 8px}
-.sub{color:var(--muted);margin:0 0 24px}
-a{color:var(--acc)}
-code{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace;font-size:.88em;background:var(--soft);padding:1px 5px;border-radius:4px}
-pre{font-family:"JetBrains Mono",ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.5;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:pre}
-table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.95rem}
-th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
-th{background:var(--soft);font-weight:600}
-.ok{color:var(--ok);font-weight:600}.bad{color:var(--bad);font-weight:600}
-figure{margin:20px 0}figcaption{color:var(--muted);font-size:.92rem;margin-top:6px}
-svg{max-width:100%;height:auto;display:block}
-.nota{background:#fff8e6;border:1px solid #f0d58a;border-radius:8px;padding:12px 16px;margin:16px 0}
-.card{border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:14px 0}
-.card h3{margin-top:0}
-nav.toc{background:var(--soft);border-radius:10px;padding:14px 20px;margin:20px 0}
-nav.toc ol{margin:0;padding-left:20px}
-details summary{cursor:pointer;color:var(--acc);margin:6px 0}
-.links{font-size:.92rem;color:var(--muted)}
-@media (max-width:640px){table{display:block;overflow-x:auto}main{padding:24px 16px 60px}h1{font-size:1.6rem}}
+body{font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.5;color:#111;background:#fff;margin:0}
+main{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:26px;margin-bottom:4px}
+h2{font-size:21px;margin-top:36px}
+h3{font-size:18px;margin-top:24px}
+code,pre{font-family:"Courier New",monospace;font-size:14px}
+pre{background:#f3f3f3;border:1px solid #ccc;padding:8px;overflow-x:auto}
+table{border-collapse:collapse;margin:10px 0}
+th,td{border:1px solid #999;padding:4px 8px;text-align:left;vertical-align:top}
+th{background:#eee}
+.ok{color:green}.bad{color:#b00}
+figure{margin:16px 0}figcaption{font-size:15px;font-style:italic}
+svg{max-width:100%;height:auto}
+.nota{border:1px solid #c90;background:#fff6dd;padding:8px}
+.links{font-size:15px}
+@media (max-width:640px){table{display:block;overflow-x:auto}}
 """
 
 
@@ -80,7 +63,7 @@ def pagina(titulo, corpo):
 <!-- Dupla: {DUPLA} | Funcionalidade: {titulo} | Ultima modificacao: {DATA} -->
 <style>{CSS}</style></head><body><main>
 {corpo}
-<p class="links" style="margin-top:60px">Dupla: {DUPLA} · Última modificação: {DATA}</p>
+<hr><p class="links">{DUPLA} - {DATA}</p>
 </main></body></html>
 """
 
@@ -88,64 +71,64 @@ def pagina(titulo, corpo):
 # ----------------------------------------------------------------- diagramas
 SVG_ARQ = """<svg viewBox="0 0 860 330" role="img" aria-label="Arquitetura" font-family="system-ui,sans-serif" font-size="14">
 <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b6475"/></marker>
-<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1f5fbf"/></marker></defs>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#000"/></marker></defs>
 <rect x="20" y="120" width="170" height="80" rx="8" fill="none" stroke="#5b6475"/>
 <text x="105" y="152" text-anchor="middle" font-weight="600">Cliente</text>
 <text x="105" y="172" text-anchor="middle" font-size="12" fill="#5b6475">envia ao endereço</text>
 <text x="105" y="188" text-anchor="middle" font-size="12" fill="#5b6475">do grupo</text>
 <rect x="250" y="20" width="590" height="290" rx="10" fill="none" stroke="#5b6475" stroke-dasharray="5 4"/>
 <text x="268" y="46" font-weight="600">Grupo multicast 224.1.1.1:5007</text>
-<rect x="270" y="90" width="170" height="110" rx="8" fill="#1f5fbf" fill-opacity=".10" stroke="#1f5fbf" stroke-width="2"/>
-<text x="355" y="120" text-anchor="middle" font-weight="600">S1 · líder</text>
+<rect x="270" y="90" width="170" height="110" rx="8" fill="none" stroke="#000" stroke-width="2"/>
+<text x="355" y="120" text-anchor="middle" font-weight="600">S1 (líder)</text>
 <text x="355" y="142" text-anchor="middle" font-size="12">menor ID sem falha</text>
 <text x="355" y="160" text-anchor="middle" font-size="12">responde ao cliente</text>
 <text x="355" y="178" text-anchor="middle" font-size="12">coordena as escritas</text>
 <rect x="465" y="90" width="170" height="110" rx="8" fill="none" stroke="#5b6475"/>
-<text x="550" y="120" text-anchor="middle" font-weight="600">S2 · réplica</text>
+<text x="550" y="120" text-anchor="middle" font-weight="600">S2 (réplica)</text>
 <text x="550" y="142" text-anchor="middle" font-size="12" fill="#5b6475">recebe a requisição</text>
 <text x="550" y="160" text-anchor="middle" font-size="12" fill="#5b6475">e não responde;</text>
 <text x="550" y="178" text-anchor="middle" font-size="12" fill="#5b6475">executa REPLICA + ACK</text>
 <rect x="660" y="90" width="170" height="110" rx="8" fill="none" stroke="#5b6475"/>
-<text x="745" y="120" text-anchor="middle" font-weight="600">S3 · réplica</text>
+<text x="745" y="120" text-anchor="middle" font-weight="600">S3 (réplica)</text>
 <text x="745" y="142" text-anchor="middle" font-size="12" fill="#5b6475">recebe a requisição</text>
 <text x="745" y="160" text-anchor="middle" font-size="12" fill="#5b6475">e não responde;</text>
 <text x="745" y="178" text-anchor="middle" font-size="12" fill="#5b6475">executa REPLICA + ACK</text>
-<rect x="270" y="235" width="560" height="54" rx="8" fill="#eef1f6" stroke="#5b6475"/>
+<rect x="270" y="235" width="560" height="54" rx="8" fill="#fff" stroke="#5b6475"/>
 <text x="550" y="258" text-anchor="middle" font-size="13">HEARTBEAT por multicast a cada 0,5 s, de todos para todos</text>
 <text x="550" y="277" text-anchor="middle" font-size="12" fill="#5b6475">1,5 s sem heartbeat de um membro = falha (parada total)</text>
 <path d="M190 140H268" stroke="#5b6475" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
 <text x="229" y="130" text-anchor="middle" font-size="12" fill="#5b6475">REQ</text>
-<path d="M270 185H192" stroke="#1f5fbf" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
-<text x="229" y="205" text-anchor="middle" font-size="12" fill="#1f5fbf">RESPOSTA</text>
-<text x="229" y="221" text-anchor="middle" font-size="11" fill="#1f5fbf">(unicast)</text>
+<path d="M270 185H192" stroke="#000" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
+<text x="229" y="205" text-anchor="middle" font-size="12" fill="#000">RESPOSTA</text>
+<text x="229" y="221" text-anchor="middle" font-size="11" fill="#000">(unicast)</text>
 </svg>"""
 
 SVG_SEQ = """<svg viewBox="0 0 860 470" role="img" aria-label="Sequência de uma escrita" font-family="system-ui,sans-serif" font-size="13">
 <defs><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d2433"/></marker></defs>
 <g font-weight="600" text-anchor="middle">
-<rect x="40" y="16" width="120" height="34" rx="6" fill="#eef1f6" stroke="#5b6475"/><text x="100" y="38">Cliente</text>
-<rect x="260" y="16" width="120" height="34" rx="6" fill="#1f5fbf" fill-opacity=".12" stroke="#1f5fbf"/><text x="320" y="38">S1 (líder)</text>
-<rect x="480" y="16" width="120" height="34" rx="6" fill="#eef1f6" stroke="#5b6475"/><text x="540" y="38">S2</text>
-<rect x="680" y="16" width="120" height="34" rx="6" fill="#eef1f6" stroke="#5b6475"/><text x="740" y="38">S3</text></g>
+<rect x="40" y="16" width="120" height="34" rx="6" fill="#fff" stroke="#5b6475"/><text x="100" y="38">Cliente</text>
+<rect x="260" y="16" width="120" height="34" rx="6" fill="none" stroke="#000"/><text x="320" y="38">S1 (líder)</text>
+<rect x="480" y="16" width="120" height="34" rx="6" fill="#fff" stroke="#5b6475"/><text x="540" y="38">S2</text>
+<rect x="680" y="16" width="120" height="34" rx="6" fill="#fff" stroke="#5b6475"/><text x="740" y="38">S3</text></g>
 <g stroke="#b8bfcc" stroke-dasharray="4 4"><path d="M100 50V450"/><path d="M320 50V450"/><path d="M540 50V450"/><path d="M740 50V450"/></g>
 <g stroke="#1d2433" stroke-width="1.4" fill="none">
 <path d="M100 90H318" marker-end="url(#s)"/><path d="M100 90H538" marker-end="url(#s)" stroke-dasharray="2 3"/><path d="M100 90H738" marker-end="url(#s)" stroke-dasharray="2 3"/>
 <path d="M320 190H538" marker-end="url(#s)"/><path d="M320 190H738" marker-end="url(#s)"/>
 <path d="M540 270H322" marker-end="url(#s)"/><path d="M740 300H322" marker-end="url(#s)"/>
-<path d="M320 400H102" marker-end="url(#s)" stroke="#1f5fbf"/></g>
+<path d="M320 400H102" marker-end="url(#s)" stroke="#000"/></g>
 <text x="108" y="76">1. REQ {req_id, DEPOSITO, 100} → grupo multicast</text>
 <text x="560" y="120" fill="#5b6475">S2 e S3 também recebem:</text>
 <text x="560" y="136" fill="#5b6475">"líder é S1, não respondo"</text>
-<rect x="250" y="130" width="140" height="34" rx="5" fill="#fff" stroke="#1f5fbf"/>
+<rect x="250" y="130" width="140" height="34" rx="5" fill="#fff" stroke="#000"/>
 <text x="320" y="152" text-anchor="middle">2. executa: saldo 100</text>
 <text x="335" y="176">3. REPLICA {req_id, op, valor, saldo_lider} → grupo</text>
 <rect x="470" y="212" width="140" height="30" rx="5" fill="#fff" stroke="#5b6475"/><text x="540" y="232" text-anchor="middle">executa: saldo 100</text>
 <rect x="670" y="212" width="140" height="30" rx="5" fill="#fff" stroke="#5b6475"/><text x="740" y="232" text-anchor="middle">executa: saldo 100</text>
 <text x="430" y="259" text-anchor="middle">4. ACK (unicast)</text>
 <text x="640" y="289" text-anchor="middle">4. ACK (unicast)</text>
-<rect x="225" y="330" width="190" height="44" rx="5" fill="#fff" stroke="#1f5fbf"/>
+<rect x="225" y="330" width="190" height="44" rx="5" fill="#fff" stroke="#000"/>
 <text x="320" y="349" text-anchor="middle">5. tem ACK de todos os</text><text x="320" y="366" text-anchor="middle">membros sem falha?</text>
-<text x="108" y="388" fill="#1f5fbf">6. RESPOSTA {saldo 100, S1, IP, porta, replicado em [S1,S2,S3]}</text>
+<text x="108" y="388" fill="#000">6. RESPOSTA {saldo 100, S1, IP, porta, replicado em [S1,S2,S3]}</text>
 <rect x="0" y="424" width="860" height="40" fill="#fff"/><text x="430" y="446" text-anchor="middle" font-size="12" fill="#5b6475">Se uma réplica falha no meio, ela sai da lista de vivos (heartbeat) e o líder deixa de esperar o ACK dela.</text>
 </svg>"""
 
@@ -155,13 +138,13 @@ SVG_FAILOVER = """<svg viewBox="0 0 860 230" role="img" aria-label="Linha do tem
 <path d="M60 180H830" stroke="#5b6475" stroke-width="1.4" marker-end="url(#f)"/>
 <g font-size="12" fill="#5b6475" text-anchor="middle"><text x="80" y="200">t = 0</text><text x="260" y="200">0,5 s</text><text x="440" y="200">1,0 s</text><text x="620" y="200">1,5 s</text><text x="800" y="200">2,0 s</text></g>
 <text x="20" y="74" font-weight="600">S1</text><text x="20" y="144" font-weight="600">S2</text>
-<circle cx="80" cy="70" r="6" fill="#1d7a3e"/>
-<text x="80" y="52" text-anchor="middle" font-size="12" fill="#1d7a3e">último heartbeat</text>
-<path d="M110 58V82" stroke="#b42318" stroke-width="2.5"/>
-<text x="120" y="96" font-size="12" fill="#b42318" font-weight="600">kill -9 (parada total)</text>
+<circle cx="80" cy="70" r="6" fill="#000"/>
+<text x="80" y="52" text-anchor="middle" font-size="12" fill="#000">último heartbeat</text>
+<path d="M110 58V82" stroke="#000" stroke-width="2.5"/>
+<text x="120" y="96" font-size="12" fill="#000" font-weight="600">kill -9 (parada total)</text>
 <path d="M86 118H616" stroke="#5b6475" stroke-dasharray="5 4" marker-end="url(#f)"/>
 <text x="350" y="110" text-anchor="middle" font-size="12" fill="#5b6475">1,5 s sem heartbeat de S1; o cliente reenvia a mesma REQ a cada 0,5 s</text>
-<rect x="620" y="126" width="236" height="40" rx="6" fill="#1f5fbf" fill-opacity=".12" stroke="#1f5fbf"/>
+<rect x="620" y="126" width="236" height="40" rx="6" fill="none" stroke="#000"/>
 <text x="738" y="143" text-anchor="middle" font-size="12">S2 detecta a falha e assume;</text>
 <text x="738" y="159" text-anchor="middle" font-size="11.5">a REQ guardada é atendida em seguida</text>
 </svg>"""
@@ -175,7 +158,63 @@ def trecho(caminho, max_linhas=60):
     return html.escape("\n".join(linhas))
 
 
-def gera(diretorio_logs=None):
+def secao_lab(diretorio_lab):
+    """Copia os logs dos 3 hosts para site/logs_lab e monta a secao 8."""
+    with open(os.path.join(diretorio_lab, "resumo.json"), encoding="utf-8") as f:
+        resumo = json.load(f)
+    with open(os.path.join(AQUI, "config_lab.json"), encoding="utf-8") as f:
+        cfg = json.load(f)
+    linhas = []
+    for r in resumo:
+        pasta = f"cenario{r['num']:02d}"
+        dest = os.path.join(SITE, "logs_lab", pasta)
+        os.makedirs(dest)
+        arquivos = sorted(os.listdir(os.path.join(diretorio_lab, pasta)))
+        for nome in arquivos:
+            shutil.copy(os.path.join(diretorio_lab, pasta, nome), os.path.join(dest, nome + ".txt"))
+        ordem = ["linha_do_tempo.log", "roteiro.log", "cliente.log"]
+        arquivos.sort(key=lambda n: (ordem.index(n) if n in ordem else 9, n))
+        links = ", ".join(f'<a href="logs_lab/{pasta}/{n}.txt">{n}</a>' for n in arquivos)
+        n_ok = sum(c["ok"] for c in r["checks"])
+        linhas.append(
+            f"<tr><td>{r['num']}</td><td>{html.escape(TITULOS.get(r['num'], r['titulo']))}</td>"
+            f"<td>{n_ok}/{len(r['checks'])}</td>"
+            f'<td class="{"ok" if r["ok"] else "bad"}">{"passou" if r["ok"] else "falhou"}</td>'
+            f'<td class="links">{links}</td></tr>'
+        )
+    total = sum(len(r["checks"]) for r in resumo)
+    total_ok = sum(c["ok"] for r in resumo for c in r["checks"])
+    hosts = {1: "orval", 2: "cpu1", 3: "cpu2"}
+    tab_hosts = "".join(
+        f"<tr><td>S{s['id']}</td><td>{hosts.get(s['id'], '')}</td><td><code>{s['ip']}:{s['porta']}</code></td></tr>"
+        for s in cfg["servidores"]
+    )
+    return f"""<p>Rodamos os mesmos {len(resumo)} cenários da seção 7 com cada servidor numa máquina diferente do
+DInf. As três máquinas estão na mesma rede (10.17.110.0/24). O cliente e o script de testes rodaram numa
+quarta máquina, o macalan. O <code>cenarios_lab.py</code> sobe cada servidor na sua máquina por ssh e,
+nos cenários de falha, dá <code>kill -9</code> no processo lá mesmo. Usamos o grupo
+<code>{cfg['grupo']}:{cfg['porta_grupo']}</code> em vez do padrão, porque as máquinas são usadas por outros
+alunos e poderia ter outra dupla usando o mesmo grupo.</p>
+<table><tr><th>Servidor</th><th>Máquina</th><th>IP:porta</th></tr>{tab_hosts}
+<tr><td>clientes</td><td>macalan</td><td><code>10.17.110.6</code></td></tr></table>
+<p>Resultado: {len(resumo)} cenários, {total_ok} de {total} verificações certas. Os relógios das máquinas
+estavam sincronizados (NTP), então dá para juntar os logs das três máquinas numa linha do tempo só.</p>
+<p>Um problema que tivemos: os logs ficam na home, que é compartilhada por NFS, e o macalan às vezes lia uma
+versão desatualizada do log de um servidor que ainda estava rodando em outra máquina. Por isso, no lab, o
+script lê o log pelo próprio host do servidor (com ssh) na hora de conferir o saldo.</p>
+<table><tr><th>#</th><th>Cenário</th><th>Verificações</th><th>Resultado</th><th>Logs</th></tr>{"".join(linhas)}</table>
+<details><summary>Trecho da linha do tempo do cenário 10 (S1 cai, S2 assume, S1 volta e vira líder de novo)</summary>
+<pre>{trecho(os.path.join(diretorio_lab, "cenario10", "linha_do_tempo.log"))}</pre></details>"""
+
+
+AVISO_LAB = """<div class="nota"><b>[A COMPLETAR PELA DUPLA]</b> Os logs da seção 7 foram gerados numa única máquina
+(3 processos em portas diferentes, multicast pela interface local). O enunciado exige logs com 3 servidores
+em hosts diferentes. Rodem os cenários principais no laboratório com o <code>config_lab.json</code>
+(preenchido com os IPs das máquinas), coloquem os logs em <code>logs/lab/</code> e substituam este aviso
+por uma tabela com os resultados e os links.</div>"""
+
+
+def gera(diretorio_logs=None, diretorio_lab=None):
     logs = os.path.abspath(diretorio_logs or os.path.join(AQUI, "logs"))
     if os.path.isdir(SITE):
         shutil.rmtree(SITE)
@@ -207,7 +246,7 @@ def gera(diretorio_logs=None):
             arquivos.append(nome)
         ordem = ["linha_do_tempo.log", "roteiro.log", "cliente.log"]
         arquivos.sort(key=lambda n: (ordem.index(n) if n in ordem else 9, n))
-        links = " · ".join(f'<a href="logs/{pasta}/{n}.txt">{n}</a>' for n in arquivos)
+        links = ", ".join(f'<a href="logs/{pasta}/{n}.txt">{n}</a>' for n in arquivos)
         checks = "".join(
             f"<tr><td>{html.escape(c['req'])}</td><td>{html.escape(c['esperado'])}</td>"
             f"<td>{html.escape(c['obtido'])}</td>"
@@ -220,13 +259,12 @@ def gera(diretorio_logs=None):
             f"<td>{n_ok}/{len(r['checks'])}</td>"
             f'<td class="{"ok" if r["ok"] else "bad"}">{"passou" if r["ok"] else "falhou"}</td></tr>'
         )
-        cards.append(f"""<div class="card" id="c{r["num"]}">
-<h3>Cenário {r["num"]} · {html.escape(r["titulo"])}</h3>
+        cards.append(f"""<h3 id="c{r["num"]}">Cenário {r["num"]}: {html.escape(r["titulo"])}</h3>
 <p>{DESCR.get(r["num"], "")}</p>
 <table><tr><th>Requisição / verificação</th><th>Esperado</th><th>Obtido</th><th></th></tr>{checks}</table>
-<details><summary>Ver trecho da linha do tempo (todos os processos)</summary>
+<details><summary>Trecho da linha do tempo</summary>
 <pre>{trecho(os.path.join(orig, "linha_do_tempo.log"))}</pre></details>
-<p class="links">Logs completos: {links}</p></div>""")
+<p class="links">Logs: {links}</p>""")
 
     total = sum(len(r["checks"]) for r in resumo)
     total_ok = sum(c["ok"] for r in resumo for c in r["checks"])
@@ -235,163 +273,177 @@ def gera(diretorio_logs=None):
 
     rel = f"""
 <h1>Servidor tolerante a falhas com grupo multicast</h1>
-<p class="sub">TP Redes II 2026 · Dupla: {DUPLA} · {DATA}</p>
+<p>Trabalho Prático de Redes II, 2026<br>Dupla: {DUPLA}</p>
 
-<nav class="toc"><ol>
-<li><a href="#visao">Visão geral</a></li><li><a href="#servico">Serviço oferecido</a></li>
-<li><a href="#arq">Arquitetura</a></li><li><a href="#proto">Protocolo</a></li>
-<li><a href="#decisoes">Decisões de projeto</a></li><li><a href="#exec">Como executar</a></li>
-<li><a href="#testes">Testes e resultados</a></li><li><a href="#lab">Execução em 3 hosts</a></li>
-<li><a href="#limites">Limitações</a></li></ol></nav>
+<p>Seções: <a href="#visao">1. Visão geral</a> | <a href="#servico">2. Serviço</a> |
+<a href="#arq">3. Arquitetura</a> | <a href="#proto">4. Protocolo</a> | <a href="#decisoes">5. Decisões</a> |
+<a href="#exec">6. Como executar</a> | <a href="#testes">7. Testes</a> | <a href="#lab">8. Execução em 3 hosts</a> |
+<a href="#limites">9. Limitações</a></p>
 
 <h2 id="visao">1. Visão geral</h2>
-<p>O "servidor" é um grupo de N processos servidores (S1, S2, …, SN) que participam do mesmo grupo
-multicast IP. Todos conhecem o identificador, o IP e a porta de todos os outros (arquivo
-<code>config.json</code>). O cliente envia a requisição para o <b>endereço do grupo</b>; todos os servidores a
-recebem, mas apenas o <b>líder</b>, o servidor sem falha de <b>menor identificador</b>, responde. A resposta
-contém o resultado do serviço e o identificador, o IP e a porta do servidor que atendeu.</p>
-<p>Cada servidor envia periodicamente um <b>heartbeat</b> por multicast (a cada 0,5 s). Quem fica 1,5 s sem
-enviar é considerado falho. As falhas consideradas são de parada total: nos testes os processos são mortos com
-<code>kill -9</code>. Com esse limite, a detecção da falha e a eleição do novo líder acabam
-<b>antes</b> do tempo de espera do cliente, e a resposta chega a tempo (cenários 3 e 11). Implementação em
-Python 3, só com a biblioteca padrão (<code>socket</code>, <code>threading</code>, <code>json</code>).</p>
-<p>Resultado: <b>{len(resumo)} cenários</b> de teste, <b>{total_ok} de {total}</b> verificações corretas.</p>
+<p>O servidor do trabalho é na verdade um grupo de N processos (S1, S2, ..., SN) que entram no mesmo grupo
+multicast. Cada um conhece o id, o IP e a porta dos outros, que ficam no <code>config.json</code>.
+O cliente manda a requisição para o endereço do grupo, então todos os servidores recebem, mas só quem é o líder
+responde. O líder é o servidor sem falha com o menor id. Na resposta vai o resultado e também o id, o IP e a
+porta de quem atendeu.</p>
+<p>Para saber quem está vivo, cada servidor manda um heartbeat no grupo a cada 0,5 s. Se um servidor fica 1,5 s
+sem mandar heartbeat, os outros consideram que ele falhou. Só tratamos falha por parada total; nos testes
+matamos os processos com <code>kill -9</code>. Como a troca de líder leva por volta de 1,5 s, ela termina
+antes do cliente desistir de esperar (ver cenários 3 e 11).</p>
+<p>Fizemos em Python 3 usando só a biblioteca padrão (<code>socket</code>, <code>threading</code> e <code>json</code>).
+Rodamos {len(resumo)} cenários de teste e as {total} verificações deram certo ({total_ok} de {total}).</p>
 
-<h2 id="servico">2. Serviço oferecido: conta bancária</h2>
-<table><tr><th>Operação</th><th>Tipo</th><th>Efeito</th></tr>
-<tr><td><code>SALDO</code></td><td>consulta (leitura)</td><td>o líder responde imediatamente com o saldo</td></tr>
-<tr><td><code>DEPOSITO v</code></td><td>alteração (escrita)</td><td>soma v ao saldo, replicado em todos</td></tr>
-<tr><td><code>SAQUE v</code></td><td>alteração (escrita)</td><td>subtrai v; recusado se o saldo for insuficiente</td></tr></table>
-<p>Escolhemos uma conta porque nela uma escrita duplicada causa um erro visível (um depósito contado duas
-vezes), o que torna fácil demonstrar a correção da estratégia nos testes.</p>
+<h2 id="servico">2. Serviço: conta bancária</h2>
+<table><tr><th>Operação</th><th>Tipo</th><th>O que faz</th></tr>
+<tr><td><code>SALDO</code></td><td>consulta</td><td>o líder devolve o saldo</td></tr>
+<tr><td><code>DEPOSITO v</code></td><td>alteração</td><td>soma v ao saldo e replica nos outros</td></tr>
+<tr><td><code>SAQUE v</code></td><td>alteração</td><td>tira v do saldo; se não tiver saldo suficiente, é recusado</td></tr></table>
+<p>Escolhemos conta bancária porque se uma escrita for executada duas vezes dá para ver na hora
+(o depósito aparece em dobro), o que ajuda a mostrar nos testes que isso não acontece.</p>
 
 <h2 id="arq">3. Arquitetura</h2>
-<figure>{SVG_ARQ}<figcaption>Figura 1 · Todos recebem a requisição pelo grupo; só o líder responde, por unicast, ao IP:porta de origem do cliente.</figcaption></figure>
-<p>O código é dividido por responsabilidades: <code>comunicacao.py</code> encapsula UDP/JSON e os canais;
-<code>conta.py</code> contém o estado, a idempotência, as versões e os snapshots; <code>membros.py</code>
-controla heartbeats recebidos, membros vivos e eleição; <code>servidor.py</code> coordena o protocolo;
-e <code>cliente.py</code> implementa requisições e retransmissões. Os canais são criados no <code>main</code>
-e injetados, permitindo testes com <code>CanalFake</code> sem rede real.</p>
-<p>Cada servidor tem quatro <i>threads</i>:</p>
+<figure>{SVG_ARQ}<figcaption>Figura 1: todos recebem a requisição pelo grupo, mas só o líder responde (por unicast, para o IP e porta do cliente).</figcaption></figure>
+<p>Dividimos o código assim:</p>
+<ul>
+<li><code>comunicacao.py</code>: sockets UDP, envio/recebimento em JSON e entrada no grupo multicast;</li>
+<li><code>conta.py</code>: saldo, cache de requisições já feitas, versões e cópia do estado;</li>
+<li><code>membros.py</code>: guarda os heartbeats recebidos e calcula quem está vivo e quem é o líder;</li>
+<li><code>servidor.py</code>: o protocolo em si (requisições, replicação, sincronização);</li>
+<li><code>cliente.py</code>: manda as requisições e reenvia se não vier resposta.</li>
+</ul>
+<p>Cada servidor roda quatro threads:</p>
 <table><tr><th>Thread</th><th>Função</th></tr>
-<tr><td>heartbeat</td><td>envia <code>HEARTBEAT</code> ao grupo a cada 0,5 s</td></tr>
-<tr><td>monitor</td><td>a cada 0,2 s recalcula a lista de vivos e o líder e registra no log falhas, novos membros e troca de líder</td></tr>
-<tr><td>grupo</td><td>recebe o tráfego multicast: <code>HEARTBEAT</code>, <code>REQ</code>, <code>REPLICA</code>, <code>SYNC_REQ</code></td></tr>
-<tr><td>unicast</td><td>recebe na porta do servidor: <code>ACK</code> das réplicas e <code>STATE</code> (sincronização)</td></tr></table>
-<p>A eleição não precisa de troca de mensagens extra: como todos veem os mesmos heartbeats, cada servidor
-calcula sozinho <code>lider = min(vivos)</code>. Quando chega uma requisição, cada um verifica se ele mesmo é o líder.</p>
+<tr><td>heartbeat</td><td>manda <code>HEARTBEAT</code> no grupo a cada 0,5 s</td></tr>
+<tr><td>monitor</td><td>a cada 0,2 s recalcula os vivos e o líder e escreve no log quando algo muda</td></tr>
+<tr><td>grupo</td><td>recebe o que chega pelo multicast: <code>HEARTBEAT</code>, <code>REQ</code>, <code>REPLICA</code> e <code>SYNC_REQ</code></td></tr>
+<tr><td>unicast</td><td>recebe na porta do servidor os <code>ACK</code> e o <code>STATE</code></td></tr></table>
+<p>A eleição não usa mensagens próprias. Como todos recebem os mesmos heartbeats, cada servidor calcula
+<code>lider = min(vivos)</code> e, quando chega uma requisição, vê se ele é o líder ou não.</p>
 
 <h2 id="proto">4. Protocolo</h2>
-<table><tr><th>Mensagem</th><th>Via</th><th>Campos</th><th>Uso</th></tr>
-<tr><td>HEARTBEAT</td><td>multicast</td><td>id, sinc</td><td>"estou sem falha" e se já tenho o estado da conta</td></tr>
-<tr><td>REQ</td><td>multicast</td><td>req_id, op, valor</td><td>requisição do cliente ao grupo</td></tr>
-<tr><td>REPLICA</td><td>multicast</td><td>req_id, op, valor, lider, versao, saldo_lider</td><td>líder pede às réplicas que executem a escrita na próxima versão</td></tr>
-<tr><td>ACK</td><td>unicast → líder</td><td>req_id, id</td><td>réplica confirma que executou</td></tr>
-<tr><td>RESPOSTA</td><td>unicast → cliente</td><td>req_id, ok, resultado, saldo, servidor{{id, ip, porta}}, replicado_em</td><td>resposta do líder</td></tr>
-<tr><td>SYNC_REQ</td><td>multicast</td><td>id</td><td>servidor que (re)iniciou pede o estado</td></tr>
-<tr><td>STATE</td><td>unicast</td><td>saldo, cache, versao, versoes</td><td>estado atual versionado enviado a quem pediu</td></tr></table>
+<table><tr><th>Mensagem</th><th>Como vai</th><th>Campos</th><th>Para que serve</th></tr>
+<tr><td>HEARTBEAT</td><td>multicast</td><td>id, sinc</td><td>avisa que está vivo e se já tem o estado da conta</td></tr>
+<tr><td>REQ</td><td>multicast</td><td>req_id, op, valor</td><td>requisição do cliente</td></tr>
+<tr><td>REPLICA</td><td>multicast</td><td>req_id, op, valor, lider, versao, saldo_lider</td><td>líder manda as réplicas executarem a escrita</td></tr>
+<tr><td>ACK</td><td>unicast para o líder</td><td>req_id, id</td><td>réplica avisa que executou</td></tr>
+<tr><td>RESPOSTA</td><td>unicast para o cliente</td><td>req_id, ok, resultado, saldo, servidor{{id, ip, porta}}, replicado_em</td><td>resposta do líder</td></tr>
+<tr><td>SYNC_REQ</td><td>multicast</td><td>id</td><td>servidor que voltou pede o estado</td></tr>
+<tr><td>STATE</td><td>unicast</td><td>saldo, cache, versao, versoes</td><td>estado atual mandado para quem pediu</td></tr></table>
 
-<h3>Escrita</h3>
-<figure>{SVG_SEQ}<figcaption>Figura 2 · O líder executa, replica, espera o ACK de todos os membros sem falha e só então responde.</figcaption></figure>
-<ol><li>O cliente envia <code>REQ</code> ao grupo com um <code>req_id</code> único.</li>
-<li>O líder executa a operação localmente.</li>
-<li>O líder envia <code>REPLICA</code> ao grupo.</li>
-<li>Cada réplica executa e responde <code>ACK</code> ao líder (unicast, IP:porta do <code>config.json</code>).</li>
-<li>O líder espera o ACK de todos os membros que continuam sem falha, reenviando a REPLICA a cada 1 s (o UDP pode perder pacotes). Um membro que falha no meio sai da lista de vivos e deixa de ser esperado.</li>
-<li>O líder responde ao cliente, informando em quais servidores a escrita foi replicada.</li></ol>
-<p>Uma leitura é respondida diretamente pelo líder. As escritas são executadas uma de cada vez pelo líder (um <i>lock</i>), o que garante que todas as réplicas recebam as alterações na mesma ordem.</p>
+<h3>4.1 Escrita</h3>
+<figure>{SVG_SEQ}<figcaption>Figura 2: o líder executa, manda a REPLICA, espera os ACKs e só depois responde.</figcaption></figure>
+<ol><li>O cliente manda <code>REQ</code> para o grupo, com um <code>req_id</code> único.</li>
+<li>O líder executa a operação.</li>
+<li>O líder manda <code>REPLICA</code> para o grupo.</li>
+<li>Cada réplica executa e manda <code>ACK</code> para o líder.</li>
+<li>O líder espera o ACK de todos que ainda estão vivos. Como UDP pode perder pacote, ele reenvia a REPLICA a cada 1 s.
+Se uma réplica morre no meio, ela sai da lista de vivos e o líder para de esperar por ela.</li>
+<li>O líder responde ao cliente dizendo em quais servidores a escrita ficou.</li></ol>
+<p>Consultas o líder responde direto. As escritas passam por um lock no líder, uma de cada vez, e por isso todas
+as réplicas aplicam na mesma ordem.</p>
 
-<h3>Detecção de falha e troca de líder</h3>
-<figure>{SVG_FAILOVER}<figcaption>Figura 3 · Com heartbeat de 0,5 s e limite de 1,5 s, a troca de líder acontece após cerca de 1,5 s — antes de o orçamento de espera do cliente expirar (2 s por janela de resposta).</figcaption></figure>
-<p>Na janela entre a parada do líder e a detecção da falha, uma requisição pode não ser atendida por ninguém
-(o líder anterior por estar morto; os demais porque ainda são réplicas). Nesse intervalo, cada réplica
-<b>guarda</b> a requisição com um prazo curto (timeout + 1 s, excluída se expirar), em vez de descartá-la.
-Quando a falha é detectada, o novo líder (menor ID) assume e atende as requisições guardadas de imediato. No
-lado cliente, a mesma requisição (mesmo <code>req_id</code>) é retransmitida a cada 0,5 s durante todo o
-orçamento de espera, cobrindo também a perda de um datagrama. Juntas, as duas medidas fazem a resposta
-chegar em cerca de 2 s após a queda do líder — dentro do primeiro ciclo de espera do cliente (cenários 3 e 11).</p>
+<h3>4.2 Falha do líder</h3>
+<figure>{SVG_FAILOVER}<figcaption>Figura 3: com heartbeat de 0,5 s e limite de 1,5 s, S2 assume cerca de 1,5 s depois da queda de S1.</figcaption></figure>
+<p>Entre a morte do líder e a detecção, ninguém responde: o líder está morto e os outros ainda acham que são
+réplicas. Para não perder as requisições que chegam nesse intervalo, as réplicas guardam a requisição por
+um tempo (timeout + 1 s). Se uma delas virar líder, atende na hora o que guardou. Além disso o cliente reenvia a
+mesma requisição (mesmo <code>req_id</code>) a cada 0,5 s. Nos testes a resposta chegou uns 2 s depois da queda
+do líder.</p>
 
-<h2 id="decisoes">5. Decisões de projeto</h2>
+<h2 id="decisoes">5. Decisões que tomamos</h2>
 <ul>
-<li><b>Reenvio pelo cliente com o mesmo <code>req_id</code>.</b> O cliente tem um orçamento total de espera (padrão: 6 &times; 2 s = 12 s) e, dentro dele, reenvia a mesma requisição a cada 0,5 s. Isso cobre o intervalo em que o líder já morreu mas a falha ainda não foi detectada, e a perda de um datagrama no multicast.</li>
-<li><b>Requisição não é descartada durante a troca de líder.</b> Uma réplica que recebe a REQ guarda-a com um prazo (timeout + 1 s); quando a eleição escolhe a réplica como novo líder, as requisições guardadas são atendidas imediatamente, antes do cliente precisar de outra tentativa. Em operação normal, a cópia guardada apenas expira em silêncio.</li>
-<li><b>Sem execução dupla.</b> Todo servidor guarda um <i>cache</i> <code>req_id → resultado</code>. Se o líder morre depois de replicar e antes de responder, o novo líder já executou aquela escrita como réplica e, ao receber o reenvio, devolve o resultado guardado, sem executar de novo (cenário 9).</li>
-<li><b>Período de inicialização.</b> Um servidor recém-iniciado não sabe quem está vivo. Por isso, nos primeiros 1,5 s ele não atende clientes, para não se considerar líder por engano.</li>
-<li><b>Sincronização ao voltar de uma falha.</b> O heartbeat informa se o servidor já tem estado (<code>sinc</code>). Um servidor que reinicia envia <code>SYNC_REQ</code>; o membro sem falha de menor ID que tem estado responde com <code>STATE</code>. Só depois disso o servidor que voltou pode assumir como líder (cenário 10). Se todos estão começando juntos, ninguém tem estado e todos começam com saldo 0.</li>
-<li><b>Ordenação por versão.</b> Cada escrita recebe uma versão sequencial. Uma REPLICA antiga recebe ACK sem alterar o estado; somente a próxima versão é aplicada; uma lacuna não é confirmada. Assim, uma retransmissão atrasada não faz o saldo regredir.</li>
-<li><b>Timeout sem falso sucesso.</b> Se uma réplica sem-falha não confirmar em 8 s, o líder responde <code>ok=false</code> e <code>REPLICACAO_NAO_CONFIRMADA</code>. Nunca transforma falta de ACK em confirmação de sucesso.</li>
-<li><b>Sincronização versionada.</b> Réplicas ainda não sincronizadas não aplicam escritas. STATE contém a versão do estado e snapshots antigos são rejeitados. Os cenários 13 e 14 escrevem enquanto S2 e S3 retornam.</li>
-<li><b>Bug encontrado nos testes.</b> Na primeira versão, um servidor que voltava de uma falha assumia a liderança com saldo 0 e respondia errado. O cenário 10 detectou o problema, e a correção foi a sincronização descrita acima.</li>
+<li>O cliente reenvia sempre com o mesmo <code>req_id</code>. Ele espera no total 12 s (6 tentativas de 2 s) e
+reenvia a cada 0,5 s. Isso cobre o tempo da troca de líder e também perda de pacote.</li>
+<li>As réplicas guardam a requisição durante a troca de líder (explicado na seção 4.2). Quando o líder está
+normal, essa cópia só expira.</li>
+<li>Para não executar a mesma escrita duas vezes, cada servidor guarda um cache <code>req_id → resultado</code>.
+Se o líder morre depois de replicar e antes de responder, o novo líder já tem aquela escrita no cache e
+só devolve o resultado (cenário 9).</li>
+<li>Quando um servidor acabou de subir ele ainda não sabe quem está vivo, então nos primeiros 1,5 s ele não
+atende cliente. Senão ele poderia achar que é o líder.</li>
+<li>Quando um servidor volta de uma falha, ele manda <code>SYNC_REQ</code> e o servidor vivo de menor id que já tem
+estado responde com <code>STATE</code>. Só depois disso ele pode virar líder (cenário 10). O campo <code>sinc</code>
+do heartbeat diz quem já tem estado; se ninguém tem, todos começam com saldo 0.</li>
+<li>Cada escrita tem um número de versão. A réplica só aplica a próxima versão; se receber uma versão velha ela
+manda ACK sem mudar nada. Assim uma REPLICA atrasada não volta o saldo para trás.</li>
+<li>Se alguma réplica viva não confirmar em 8 s, o líder responde com <code>ok=false</code> e
+<code>REPLICACAO_NAO_CONFIRMADA</code>. Não respondemos sucesso sem ter os ACKs.</li>
+<li>Réplica que ainda não recebeu o estado não aplica escritas, e um <code>STATE</code> mais velho que o estado
+atual é ignorado. Os cenários 13 e 14 testam escrita enquanto S2 ou S3 estão voltando.</li>
+<li>Na primeira versão tinha um erro: o servidor que voltava de uma falha virava líder com saldo 0. Achamos pelo
+cenário 10 e corrigimos com a sincronização acima.</li>
 </ul>
 
 <h2 id="exec">6. Como executar</h2>
-<pre># em cada host (um servidor por host), com o IP de cada máquina no config
-python3 servidor.py --id 1 --config config.json --log logs/s1.log
-python3 servidor.py --id 2 --config config.json --log logs/s2.log
-python3 servidor.py --id 3 --config config.json --log logs/s3.log
+<pre># um servidor em cada host (os IPs ficam no arquivo de config)
+python3 servidor.py --id 1 --config config_lab.json --log logs/s1.log
+python3 servidor.py --id 2 --config config_lab.json --log logs/s2.log
+python3 servidor.py --id 3 --config config_lab.json --log logs/s3.log
 
-# cliente (em qualquer host da mesma rede); --iface = IP da máquina do cliente
-python3 cliente.py SALDO --iface 192.168.0.10
-python3 cliente.py DEPOSITO 100 --iface 192.168.0.10
-python3 cliente.py --iface 192.168.0.10        # modo interativo
+# cliente, em qualquer máquina da mesma rede (--iface = IP dessa máquina)
+python3 cliente.py SALDO --config config_lab.json --iface 10.17.110.6
+python3 cliente.py DEPOSITO 100 --config config_lab.json --iface 10.17.110.6
+python3 cliente.py --config config_lab.json --iface 10.17.110.6    # modo interativo
 
-# simular falha (parada total) de um servidor
-kill -9 &lt;pid do servidor&gt;
+# derrubar um servidor (parada total)
+kill -9 PID
 
-# testes unitários, sem rede real
-python3 -m unittest discover -s tests -v
-
-# todos os cenários automaticamente, numa máquina só
+# cenários numa máquina só (3 processos em 127.0.0.1)
 python3 cenarios.py --saida logs/pos_correcoes
 
-# gerar esta página a partir dos resultados locais finais
-python3 gera_pagina.py --logs logs/pos_correcoes</pre>
-<p>Código-fonte comentado:</p>
+# cenários nos 3 hosts (rodado no macalan, com ssh para orval, cpu1 e cpu2)
+python3 cenarios_lab.py --iface 10.17.110.6 --saida logs/lab
+
+# gerar esta página
+python3 gera_pagina.py --logs logs/pos_correcoes --lab logs/lab</pre>
+<p>Código fonte:</p>
 <table><tr><th>Arquivo</th><th>Conteúdo</th></tr>{codigos_html}</table>
 
-<h2 id="testes">7. Testes e resultados</h2>
-<p><b>52/52 testes unitários</b> verificam conta, snapshots, comunicação, eleição, retransmissões,
-ACKs, ordenação, troca de líder, sincronização e a própria geração desta página. Eles usam dublês e relógio
-controlado, sem sleeps longos nem rede real. A suíte de integração abaixo usa UDP/multicast reais.</p>
-<p>Cada cenário sobe os servidores do zero, executa requisições, mata processos com <code>SIGKILL</code>
-(<code>kill -9</code>) e confere duas coisas: qual servidor respondeu e o saldo. No fim, confere no log de cada
-réplica sem falha se o saldo é igual em todas. Para cada cenário há o log de cada processo, o roteiro e uma
-<b>linha do tempo</b> que junta todos os logs em ordem de horário.</p>
-<p>Nos cenários 8 e 9 a parada é feita pelo próprio processo (<code>os._exit</code>, opção <code>--falha</code>)
-num ponto exato do protocolo, que seria difícil de acertar com <code>kill</code> manual. O efeito é o mesmo:
-o processo para completamente.</p>
+<h2 id="testes">7. Testes</h2>
+<p>Para testar fizemos o <code>cenarios.py</code>, que usa UDP e multicast de verdade. Em cada cenário ele sobe os
+servidores, manda requisições com o cliente, mata processos com <code>kill -9</code> e confere qual servidor
+respondeu e qual o saldo. No final confere se o saldo é o mesmo em todas as réplicas vivas. Para cada cenário
+ficam os logs de cada processo, o roteiro do que foi feito e uma linha do tempo com todos os logs juntos em ordem
+de horário.</p>
+<p>Nos cenários 8 e 9 quem faz o processo parar é ele mesmo (<code>os._exit</code>, com a opção <code>--falha</code>),
+porque precisávamos que ele parasse num ponto exato do protocolo e com <code>kill</code> na mão não dá para
+acertar o momento. Para os outros processos é igual a uma parada total.</p>
+<p>Esta seção mostra a execução numa máquina só. A execução nos 3 hosts está na <a href="#lab">seção 8</a>.</p>
 <table><tr><th>#</th><th>Cenário</th><th>Verificações</th><th>Resultado</th></tr>{"".join(linhas_tab)}</table>
 {"".join(cards)}
 
 <h2 id="lab">8. Execução em 3 hosts diferentes</h2>
-<div class="nota"><b>[A COMPLETAR PELA DUPLA]</b> Os logs da seção 7 foram gerados numa única máquina
-(3 processos em portas diferentes, multicast pela interface local). O enunciado exige logs com 3 servidores
-em hosts diferentes. Rodem os cenários principais no laboratório com o <code>config_lab.json</code>
-(preenchido com os IPs das máquinas), coloquem os logs em <code>logs/lab/</code> e substituam este aviso
-por uma tabela com os resultados e os links.</div>
+{secao_lab(diretorio_lab) if diretorio_lab else AVISO_LAB}
 
 <h2 id="limites">9. Limitações</h2>
 <ul>
-<li>O modelo considera só falhas de parada total, como pede o enunciado; partição de rede não é tratada. Se a rede se dividir, cada parte elegeria seu próprio líder.</li>
-<li>Com perda de heartbeats, dois servidores podem se considerar líder por um instante. O cliente usa a primeira resposta e descarta a outra pelo <code>req_id</code>; a fila de requisições guardadas na troca de líder amplia um pouco essa janela de divergência.</li>
-<li>O estado fica em memória: se todos os servidores param, o saldo se perde (cenário 12).</li>
-<li>Se o timeout de replicação terminar, o resultado da escrita é desconhecido: ela pode ter sido aplicada no líder e em parte das réplicas, mas o cliente recebe falha, nunca sucesso.</li>
-<li>Uma réplica que fica com lacuna de versão após perdas prolongadas deixa de confirmar escritas posteriores. Ainda não há ressincronização automática dessa lacuna; o processo deve ser reiniciado para obter um novo snapshot.</li>
-<li>O multicast usa TTL 1, então todos os hosts precisam estar na mesma rede local.</li>
+<li>Só tratamos parada total, como pede o enunciado. Se a rede se dividir, cada lado vai eleger um líder.</li>
+<li>Se heartbeats se perderem, por um instante dois servidores podem achar que são líder. O cliente usa a
+primeira resposta e descarta a outra pelo <code>req_id</code>.</li>
+<li>O saldo fica só na memória. Se todos os servidores caírem, o estado se perde (cenário 12).</li>
+<li>Se der o timeout de 8 s da replicação, o cliente recebe erro, mas a escrita pode ter sido aplicada no líder e
+em parte das réplicas.</li>
+<li>Se uma réplica perder várias REPLICA seguidas e ficar com um buraco nas versões, ela para de confirmar.
+Não fizemos ressincronização automática para isso; é preciso reiniciar o processo.</li>
+<li>O multicast tem TTL 1, então todas as máquinas precisam estar na mesma rede local.</li>
 </ul>
 """
     with open(os.path.join(SITE, "relatorio.html"), "w", encoding="utf-8") as f:
-        f.write(pagina("Relatório · TP Redes II 2026", rel))
+        f.write(pagina("Relatório - TP Redes II 2026", rel))
 
     idx = f"""
 <h1>TP Redes II 2026</h1>
-<p class="sub">Servidor tolerante a falhas com grupo multicast · Dupla: {DUPLA}</p>
-<div class="card"><h3><a href="relatorio.html">Relatório</a></h3>
-<p>Como o trabalho foi feito, diagramas da arquitetura e do protocolo, e os resultados dos {len(resumo)} cenários de teste.</p></div>
-<div class="card"><h3>Código-fonte comentado</h3><table>{codigos_html}</table></div>
-<div class="card"><h3>Logs de execução</h3><ul>
-{"".join(f'<li><a href="relatorio.html#c{r["num"]}">Cenário {r["num"]}</a> · {html.escape(r["titulo"])} · <a href="logs/cenario{r["num"]:02d}/linha_do_tempo.log.txt">linha do tempo</a></li>' for r in resumo)}
-</ul></div>
+<p>Servidor tolerante a falhas com grupo multicast<br>Dupla: {DUPLA}</p>
+<ul>
+<li><a href="relatorio.html">Relatório</a></li>
+{'<li><a href="relatorio.html#lab">Execução em 3 hosts diferentes (orval, cpu1 e cpu2)</a></li>' if diretorio_lab else ''}
+</ul>
+<h2>Código fonte</h2>
+<table>{codigos_html}</table>
+<h2>Logs</h2>
+<ul>
+{"".join(f'<li><a href="relatorio.html#c{r["num"]}">Cenário {r["num"]}</a>: {html.escape(r["titulo"])} (<a href="logs/cenario{r["num"]:02d}/linha_do_tempo.log.txt">linha do tempo</a>)</li>' for r in resumo)}
+</ul>
 """
     with open(os.path.join(SITE, "index.html"), "w", encoding="utf-8") as f:
         f.write(pagina("TP Redes II 2026", idx))
@@ -419,7 +471,7 @@ TITULOS = {
 DESCR = {
     1: "Os três servidores estão sem falha. S1, de menor ID, responde a tudo. As escritas são replicadas em S1, S2 e S3. O saque maior que o saldo é recusado, e o saldo não muda.",
     2: "Depois de um depósito, S1 é morto. S2 e S3 detectam a falha pelo heartbeat, S2 passa a ser o líder, mantém o saldo de 100 e atende às novas requisições.",
-    3: "O cliente envia a requisição logo após a morte de S1, antes de a falha ser detectada. Ninguém atende na hora, mas S2 e S3 guardam a requisição; em até 1,5 s a falha é detectada, S2 assume e atende a requisição guardada — a resposta chega ao cliente em ~2 s, na primeira janela de espera.",
+    3: "O cliente envia a requisição logo após a morte de S1, antes de a falha ser detectada. Na hora ninguém atende, mas S2 e S3 guardam a requisição. Em até 1,5 s a falha é detectada, S2 vira líder e atende o que guardou. A resposta chega ao cliente em uns 2 s.",
     4: "Uma réplica (S2) é morta. S1 continua líder e, nas escritas, espera apenas o ACK de S3.",
     5: "S1 e S2 são mortos. S3 é o único sem falha, vira líder e atende sozinho com o saldo correto.",
     6: "S1 e S3 são mortos. S2 atende sozinho.",
@@ -427,15 +479,16 @@ DESCR = {
     8: "S3 para no instante em que recebe a REPLICA, sem executar nem confirmar. S1 detecta a falha pelo heartbeat, deixa de esperar o ACK de S3 e responde ao cliente.",
     9: "S1 executa e replica um depósito de 100 e para antes de responder. O cliente reenvia o mesmo req_id, S2 assume e reconhece a escrita já executada. O saldo fica em 100, e não 200.",
     10: "S1 é morto e S2 assume. Depois S1 é reiniciado, pede o estado ao grupo, recebe o saldo de S2 e volta a ser o líder por ter o menor ID, com o saldo correto.",
-    11: "Um cliente faz 6 depósitos, um por segundo, e S1 é morto durante a sequência. O depósito que estava em andamento é atendido por S2 (guardado na troca de líder ou reenviado pelo cliente), e nenhum é perdido ou duplicado: o saldo final é 60.",
-    12: "Todos os servidores são mortos. O cliente tenta 6 vezes e informa que nenhum servidor respondeu.",
+    11: "Um cliente faz 6 depósitos, um por segundo, e S1 é morto durante a sequência. O depósito que estava em andamento acaba sendo atendido por S2. Nenhum se perde nem é contado duas vezes, e o saldo final é 60.",
+    12: "Todos os servidores são mortos. O cliente fica reenviando por 12 s e no fim avisa que nenhum servidor respondeu.",
     13: "Depois de duas escritas sem S2, ele é reiniciado e uma terceira escrita ocorre durante sua sincronização. O saldo final é 175 em S1, S2 e S3.",
-    14: "O mesmo teste de reintegração é feito com S3: uma escrita ocorre durante seu retorno e todas as réplicas terminam com saldo 175.",
-    15: "Três clientes fazem cinco depósitos de 10 cada, simultaneamente. S1 serializa as escritas e o saldo final é 150 em todos os servidores.",
+    14: "Igual ao 13, mas com S3. Todas as réplicas terminam com saldo 175.",
+    15: "Três clientes fazem 5 depósitos de 10 ao mesmo tempo. S1 faz uma escrita por vez e o saldo final é 150 em todos os servidores.",
 }
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Gera a página HTML do TP")
     ap.add_argument("--logs", default=os.path.join(AQUI, "logs"), help="diretório que contém resumo.json e os cenários")
+    ap.add_argument("--lab", default=None, help="diretório com os logs dos 3 hosts (resumo.json e cenários)")
     args = ap.parse_args()
-    gera(args.logs)
+    gera(args.logs, args.lab)

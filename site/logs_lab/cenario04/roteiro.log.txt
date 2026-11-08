@@ -1,0 +1,16 @@
+2026-11-07 13:52:28.060 [ROTEIRO] ===== CENARIO 4: Falha de uma replica (S2): S1 continua lider e nao espera S2 =====
+2026-11-07 13:52:28.293 [ROTEIRO] inicia S1 em orval
+2026-11-07 13:52:28.663 [ROTEIRO] inicia S2 em cpu1
+2026-11-07 13:52:29.021 [ROTEIRO] inicia S3 em cpu2
+2026-11-07 13:52:29.021 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-07 13:52:33.021 [ROTEIRO] cliente C1: DEPOSITO 200
+2026-11-07 13:52:33.152 [ROTEIRO]   -> esperado: S1, saldo=200 | obtido: S1, saldo=200 | OK
+2026-11-07 13:52:33.152 [ROTEIRO] kill -9 em cpu1 -> S2 sofre PARADA TOTAL
+2026-11-07 13:52:34.044 [ROTEIRO] aguarda 4s (S1 e S3 detectam a falha de S2)
+2026-11-07 13:52:38.044 [ROTEIRO] cliente C1: SAQUE 20
+2026-11-07 13:52:38.150 [ROTEIRO]   -> esperado: S1, saldo=180 | obtido: S1, saldo=180 | OK
+2026-11-07 13:52:38.150 [ROTEIRO] cliente C1: SALDO
+2026-11-07 13:52:38.244 [ROTEIRO]   -> esperado: S1, saldo=180 | obtido: S1, saldo=180 | OK
+2026-11-07 13:52:39.887 [ROTEIRO] estado de S1: saldo=180 (esperado 180) OK
+2026-11-07 13:52:41.178 [ROTEIRO] estado de S3: saldo=180 (esperado 180) OK
+2026-11-07 13:52:45.313 [ROTEIRO] fim do cenario

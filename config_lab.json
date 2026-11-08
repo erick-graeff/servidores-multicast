@@ -1,12 +1,12 @@
 {
-  "grupo": "224.1.1.1",
-  "porta_grupo": 5007,
+  "grupo": "224.1.19.73",
+  "porta_grupo": 5773,
   "intervalo_heartbeat": 0.5,
   "timeout_falha": 1.5,
   "timeout_escrita": 8.0,
   "servidores": [
-    {"id": 1, "ip": "IP_DA_MAQUINA_A", "porta": 6001},
-    {"id": 2, "ip": "IP_DA_MAQUINA_B", "porta": 6002},
-    {"id": 3, "ip": "IP_DA_MAQUINA_C", "porta": 6003}
+    {"id": 1, "ip": "10.17.110.26", "porta": 6731},
+    {"id": 2, "ip": "10.17.110.70", "porta": 6732},
+    {"id": 3, "ip": "10.17.110.71", "porta": 6733}
   ]
 }

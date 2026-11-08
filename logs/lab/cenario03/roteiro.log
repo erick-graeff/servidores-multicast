@@ -1,0 +1,12 @@
+2026-11-07 13:52:03.464 [ROTEIRO] ===== CENARIO 3: Requisicao enviada logo apos a falha do lider (antes da deteccao) =====
+2026-11-07 13:52:06.684 [ROTEIRO] inicia S1 em orval
+2026-11-07 13:52:07.781 [ROTEIRO] inicia S2 em cpu1
+2026-11-07 13:52:09.147 [ROTEIRO] inicia S3 em cpu2
+2026-11-07 13:52:09.147 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-07 13:52:13.147 [ROTEIRO] kill -9 em orval -> S1 sofre PARADA TOTAL
+2026-11-07 13:52:14.625 [ROTEIRO] cliente envia IMEDIATAMENTE, antes de a falha ser detectada
+2026-11-07 13:52:14.625 [ROTEIRO] cliente C1: DEPOSITO 40
+2026-11-07 13:52:16.010 [ROTEIRO]   -> esperado: S2, saldo=40 | obtido: S2, saldo=40 | OK
+2026-11-07 13:52:19.247 [ROTEIRO] estado de S2: saldo=40 (esperado 40) OK
+2026-11-07 13:52:21.878 [ROTEIRO] estado de S3: saldo=40 (esperado 40) OK
+2026-11-07 13:52:27.048 [ROTEIRO] fim do cenario

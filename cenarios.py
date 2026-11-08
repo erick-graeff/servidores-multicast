@@ -9,7 +9,7 @@
 #                           de cada processo + uma linha do tempo unificada.
 #                           Uso para testes numa unica maquina; no laboratorio
 #                           os mesmos cenarios sao feitos a mao em 3 hosts.
-#  Ultima modificacao ....: 02/11/2026
+#  Ultima modificacao ....: 07/11/2026
 # =============================================================================
 #
 #  Uso: python3 cenarios.py [--iface 127.0.0.1] [--saida logs]
@@ -31,6 +31,8 @@ PY = sys.executable
 
 
 class Cenario:
+    config = os.path.join(AQUI, "config.json")
+
     def __init__(self, num, titulo, pasta, iface):
         self.num, self.titulo, self.iface = num, titulo, iface
         self.pasta = pasta
@@ -54,7 +56,7 @@ class Cenario:
             "--id",
             str(sid),
             "--config",
-            os.path.join(AQUI, "config.json"),
+            self.config,
             "--log",
             os.path.join(self.pasta, f"servidor_S{sid}.log"),
         ]
@@ -85,7 +87,7 @@ class Cenario:
             + ([str(valor)] if op != "SALDO" else [])
             + [
                 "--config",
-                os.path.join(AQUI, "config.json"),
+                self.config,
                 "--iface",
                 self.iface,
                 "--nome",
@@ -111,6 +113,10 @@ class Cenario:
         self.nota(f"  -> esperado: {exp} | obtido: {obt} | {'OK' if ok else 'ERRO'}")
         return srv, saldo
 
+    def le_log(self, sid):
+        with open(os.path.join(self.pasta, f"servidor_S{sid}.log"), encoding="utf-8") as f:
+            return f.read()
+
     def confere_replicas(self, saldo_esperado):
         """Confere no log de cada servidor vivo o ultimo saldo registrado:
         todas as replicas sem falha devem ter o mesmo estado."""
@@ -118,8 +124,7 @@ class Cenario:
         for sid, p in sorted(self.procs.items()):
             if p.poll() is not None:
                 continue
-            with open(os.path.join(self.pasta, f"servidor_S{sid}.log"), encoding="utf-8") as f:
-                saldos = re.findall(r"saldo=(-?\d+)", f.read())
+            saldos = re.findall(r"saldo=(-?\d+)", self.le_log(sid))
             s = int(saldos[-1]) if saldos else 0
             ok = s == saldo_esperado
             self.checks.append(

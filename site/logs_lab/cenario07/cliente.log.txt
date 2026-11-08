@@ -1,0 +1,6 @@
+2026-11-07 13:53:29.321 [C1] cliente em 10.17.110.6:53778, grupo 224.1.19.73:5773
+2026-11-07 13:53:29.321 [C1] ENVIA C1-3d1ae0 'DEPOSITO 60' ao grupo (reenvio a cada 0.5s, orcamento 12s)
+2026-11-07 13:53:29.323 [C1] RESPOSTA C1-3d1ae0 do servidor S1 (10.17.110.26:6731): OK - deposito de 60 realizado, saldo=60, replicado em ['S1']
+2026-11-07 13:53:29.419 [C1] cliente em 10.17.110.6:59143, grupo 224.1.19.73:5773
+2026-11-07 13:53:29.419 [C1] ENVIA C1-5bb99c 'SALDO' ao grupo (reenvio a cada 0.5s, orcamento 12s)
+2026-11-07 13:53:29.420 [C1] RESPOSTA C1-5bb99c do servidor S1 (10.17.110.26:6731): OK - consulta de saldo, saldo=60

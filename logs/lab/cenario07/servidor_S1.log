@@ -1,0 +1,20 @@
+2026-11-07 13:53:20.096 [S1 10.17.110.26:6731] INFO    INICIANDO servidor S1 em 10.17.110.26:6731, grupo 224.1.19.73:5773, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 13:53:20.298 [S1 10.17.110.26:6731] INFO    VIVOS = [1]
+2026-11-07 13:53:20.498 [S1 10.17.110.26:6731] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 13:53:20.498 [S1 10.17.110.26:6731] INFO    VIVOS = [1, 2]
+2026-11-07 13:53:20.699 [S1 10.17.110.26:6731] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-07 13:53:20.699 [S1 10.17.110.26:6731] INFO    VIVOS = [1, 2, 3]
+2026-11-07 13:53:21.598 [S1 10.17.110.26:6731] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-07 13:53:21.700 [S1 10.17.110.26:6731] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-07 13:53:21.816 [S1 10.17.110.26:6731] INFO    ESTADO enviado a S2 (saldo=0)
+2026-11-07 13:53:22.074 [S1 10.17.110.26:6731] INFO    ESTADO enviado a S3 (saldo=0)
+2026-11-07 13:53:25.904 [S1 10.17.110.26:6731] WARNING FALHA detectada: S2 sem heartbeat ha mais de 1.5s
+2026-11-07 13:53:25.904 [S1 10.17.110.26:6731] INFO    VIVOS = [1, 3]
+2026-11-07 13:53:26.705 [S1 10.17.110.26:6731] WARNING FALHA detectada: S3 sem heartbeat ha mais de 1.5s
+2026-11-07 13:53:26.705 [S1 10.17.110.26:6731] INFO    VIVOS = [1]
+2026-11-07 13:53:29.322 [S1 10.17.110.26:6731] INFO    REQ C1-3d1ae0 DEPOSITO 60 de 10.17.110.6:53778: SOU O LIDER (vivos=[1])
+2026-11-07 13:53:29.322 [S1 10.17.110.26:6731] INFO    ESCRITA C1-3d1ae0 executada localmente: deposito de 60 realizado, saldo=60
+2026-11-07 13:53:29.322 [S1 10.17.110.26:6731] INFO    REPLICA C1-3d1ae0 enviada ao grupo; aguardando ACK de {}
+2026-11-07 13:53:29.323 [S1 10.17.110.26:6731] INFO    RESPOSTA C1-3d1ae0 -> 10.17.110.6:53778: deposito de 60 realizado, saldo=60 (replicado em {S1})
+2026-11-07 13:53:29.420 [S1 10.17.110.26:6731] INFO    REQ C1-5bb99c SALDO  de 10.17.110.6:59143: SOU O LIDER (vivos=[1])
+2026-11-07 13:53:29.420 [S1 10.17.110.26:6731] INFO    RESPOSTA C1-5bb99c -> 10.17.110.6:59143: saldo=60

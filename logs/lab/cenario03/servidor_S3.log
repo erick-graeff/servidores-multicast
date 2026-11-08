@@ -1,0 +1,19 @@
+2026-11-07 13:52:09.474 [S3 10.17.110.71:6733] INFO    INICIANDO servidor S3 em 10.17.110.71:6733, grupo 224.1.19.73:5773, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 13:52:09.477 [S3 10.17.110.71:6733] INFO    ESTADO recebido de S1: saldo=0 versao=0 (0 escritas ja aplicadas)
+2026-11-07 13:52:09.676 [S3 10.17.110.71:6733] INFO    VIVOS = [3]
+2026-11-07 13:52:09.880 [S3 10.17.110.71:6733] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 13:52:09.880 [S3 10.17.110.71:6733] INFO    VIVOS = [2, 3]
+2026-11-07 13:52:10.080 [S3 10.17.110.71:6733] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-07 13:52:10.081 [S3 10.17.110.71:6733] INFO    VIVOS = [1, 2, 3]
+2026-11-07 13:52:11.081 [S3 10.17.110.71:6733] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-07 13:52:14.745 [S3 10.17.110.71:6733] INFO    REQ C1-d0e826 DEPOSITO 40 de 10.17.110.6:51527: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:52:15.248 [S3 10.17.110.71:6733] INFO    REQ C1-d0e826 DEPOSITO 40 de 10.17.110.6:51527: lider aparente S1 (sem novo heartbeat ha 0.8s); guardada, sera atendida se assumir a lideranca
+2026-11-07 13:52:15.751 [S3 10.17.110.71:6733] INFO    REQ C1-d0e826 DEPOSITO 40 de 10.17.110.6:51527: lider aparente S1 (sem novo heartbeat ha 1.4s); guardada, sera atendida se assumir a lideranca
+2026-11-07 13:52:15.999 [S3 10.17.110.71:6733] INFO    REPLICA C1-d0e826 de S2: deposito de 40 realizado, saldo=40, versao=1
+2026-11-07 13:52:15.999 [S3 10.17.110.71:6733] INFO    ACK enviado a S2 para C1-d0e826
+2026-11-07 13:52:16.087 [S3 10.17.110.71:6733] WARNING FALHA detectada: S1 sem heartbeat ha mais de 1.5s
+2026-11-07 13:52:16.087 [S3 10.17.110.71:6733] INFO    VIVOS = [2, 3]
+2026-11-07 13:52:16.088 [S3 10.17.110.71:6733] INFO    LIDER eleito = S2 (menor ID sem falha) -> sou replica
+2026-11-07 13:52:26.299 [S3 10.17.110.71:6733] WARNING FALHA detectada: S2 sem heartbeat ha mais de 1.5s
+2026-11-07 13:52:26.299 [S3 10.17.110.71:6733] INFO    VIVOS = [3]
+2026-11-07 13:52:26.299 [S3 10.17.110.71:6733] INFO    LIDER eleito = S3 (menor ID sem falha) -> EU SOU O LIDER

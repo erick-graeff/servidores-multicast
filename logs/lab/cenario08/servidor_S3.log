@@ -1,0 +1,11 @@
+2026-11-07 13:53:39.004 [S3 10.17.110.71:6733] INFO    INICIANDO servidor S3 em 10.17.110.71:6733, grupo 224.1.19.73:5773, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 13:53:39.007 [S3 10.17.110.71:6733] INFO    ESTADO recebido de S1: saldo=0 versao=0 (0 escritas ja aplicadas)
+2026-11-07 13:53:39.206 [S3 10.17.110.71:6733] INFO    VIVOS = [3]
+2026-11-07 13:53:39.245 [S3 10.17.110.71:6733] INFO    ESTADO enviado a S2 (saldo=0)
+2026-11-07 13:53:39.406 [S3 10.17.110.71:6733] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 13:53:39.406 [S3 10.17.110.71:6733] INFO    VIVOS = [2, 3]
+2026-11-07 13:53:39.607 [S3 10.17.110.71:6733] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-07 13:53:39.607 [S3 10.17.110.71:6733] INFO    VIVOS = [1, 2, 3]
+2026-11-07 13:53:40.608 [S3 10.17.110.71:6733] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-07 13:53:42.822 [S3 10.17.110.71:6733] INFO    REQ C1-f1d723 DEPOSITO 80 de 10.17.110.6:42072: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:53:42.823 [S3 10.17.110.71:6733] CRITICAL FALHA INJETADA: REPLICA C1-f1d723 recebida, replica para (parada total) antes de executar e confirmar

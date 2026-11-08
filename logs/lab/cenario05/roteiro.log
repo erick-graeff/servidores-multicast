@@ -1,0 +1,16 @@
+2026-11-07 13:52:46.324 [ROTEIRO] ===== CENARIO 5: Falhas de S1 e S2: S3 atende sozinho =====
+2026-11-07 13:52:46.824 [ROTEIRO] inicia S1 em orval
+2026-11-07 13:52:47.446 [ROTEIRO] inicia S2 em cpu1
+2026-11-07 13:52:48.297 [ROTEIRO] inicia S3 em cpu2
+2026-11-07 13:52:48.297 [ROTEIRO] aguarda 4s (heartbeats e eleicao inicial)
+2026-11-07 13:52:52.298 [ROTEIRO] cliente C1: DEPOSITO 10
+2026-11-07 13:52:52.407 [ROTEIRO]   -> esperado: S1, saldo=10 | obtido: S1, saldo=10 | OK
+2026-11-07 13:52:52.407 [ROTEIRO] kill -9 em orval -> S1 sofre PARADA TOTAL
+2026-11-07 13:52:53.296 [ROTEIRO] kill -9 em cpu1 -> S2 sofre PARADA TOTAL
+2026-11-07 13:52:54.147 [ROTEIRO] aguarda 4s (S3 detecta as falhas de S1 e S2)
+2026-11-07 13:52:58.147 [ROTEIRO] cliente C1: DEPOSITO 5
+2026-11-07 13:52:58.255 [ROTEIRO]   -> esperado: S3, saldo=15 | obtido: S3, saldo=15 | OK
+2026-11-07 13:52:58.255 [ROTEIRO] cliente C1: SALDO
+2026-11-07 13:52:58.381 [ROTEIRO]   -> esperado: S3, saldo=15 | obtido: S3, saldo=15 | OK
+2026-11-07 13:53:00.977 [ROTEIRO] estado de S3: saldo=15 (esperado 15) OK
+2026-11-07 13:53:03.255 [ROTEIRO] fim do cenario

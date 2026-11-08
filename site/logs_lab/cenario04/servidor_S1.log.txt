@@ -1,0 +1,25 @@
+2026-11-07 13:52:28.507 [S1 10.17.110.26:6731] INFO    INICIANDO servidor S1 em 10.17.110.26:6731, grupo 224.1.19.73:5773, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 13:52:28.709 [S1 10.17.110.26:6731] INFO    VIVOS = [1]
+2026-11-07 13:52:29.110 [S1 10.17.110.26:6731] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 13:52:29.110 [S1 10.17.110.26:6731] INFO    VIVOS = [1, 2]
+2026-11-07 13:52:29.310 [S1 10.17.110.26:6731] INFO    MEMBRO S3 detectado sem falha (heartbeat recebido)
+2026-11-07 13:52:29.310 [S1 10.17.110.26:6731] INFO    VIVOS = [1, 2, 3]
+2026-11-07 13:52:30.010 [S1 10.17.110.26:6731] INFO    nenhum membro vivo tem estado anterior: comeca com saldo 0
+2026-11-07 13:52:30.015 [S1 10.17.110.26:6731] INFO    ESTADO enviado a S2 (saldo=0)
+2026-11-07 13:52:30.111 [S1 10.17.110.26:6731] INFO    LIDER eleito = S1 (menor ID sem falha) -> EU SOU O LIDER
+2026-11-07 13:52:30.299 [S1 10.17.110.26:6731] INFO    ESTADO enviado a S3 (saldo=0)
+2026-11-07 13:52:33.142 [S1 10.17.110.26:6731] INFO    REQ C1-6d326e DEPOSITO 200 de 10.17.110.6:34854: SOU O LIDER (vivos=[1, 2, 3])
+2026-11-07 13:52:33.142 [S1 10.17.110.26:6731] INFO    ESCRITA C1-6d326e executada localmente: deposito de 200 realizado, saldo=200
+2026-11-07 13:52:33.142 [S1 10.17.110.26:6731] INFO    REPLICA C1-6d326e enviada ao grupo; aguardando ACK de {S2, S3}
+2026-11-07 13:52:33.143 [S1 10.17.110.26:6731] INFO    ACK recebido de S2 para C1-6d326e
+2026-11-07 13:52:33.143 [S1 10.17.110.26:6731] INFO    ACK recebido de S3 para C1-6d326e
+2026-11-07 13:52:33.143 [S1 10.17.110.26:6731] INFO    RESPOSTA C1-6d326e -> 10.17.110.6:34854: deposito de 200 realizado, saldo=200 (replicado em {S1, S2, S3})
+2026-11-07 13:52:35.716 [S1 10.17.110.26:6731] WARNING FALHA detectada: S2 sem heartbeat ha mais de 1.5s
+2026-11-07 13:52:35.716 [S1 10.17.110.26:6731] INFO    VIVOS = [1, 3]
+2026-11-07 13:52:38.140 [S1 10.17.110.26:6731] INFO    REQ C1-aff858 SAQUE 20 de 10.17.110.6:37731: SOU O LIDER (vivos=[1, 3])
+2026-11-07 13:52:38.141 [S1 10.17.110.26:6731] INFO    ESCRITA C1-aff858 executada localmente: saque de 20 realizado, saldo=180
+2026-11-07 13:52:38.141 [S1 10.17.110.26:6731] INFO    REPLICA C1-aff858 enviada ao grupo; aguardando ACK de {S3}
+2026-11-07 13:52:38.142 [S1 10.17.110.26:6731] INFO    ACK recebido de S3 para C1-aff858
+2026-11-07 13:52:38.142 [S1 10.17.110.26:6731] INFO    RESPOSTA C1-aff858 -> 10.17.110.6:37731: saque de 20 realizado, saldo=180 (replicado em {S1, S3})
+2026-11-07 13:52:38.235 [S1 10.17.110.26:6731] INFO    REQ C1-02b40b SALDO  de 10.17.110.6:40005: SOU O LIDER (vivos=[1, 3])
+2026-11-07 13:52:38.236 [S1 10.17.110.26:6731] INFO    RESPOSTA C1-02b40b -> 10.17.110.6:40005: saldo=180

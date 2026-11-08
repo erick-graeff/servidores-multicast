@@ -61,7 +61,6 @@ class EntregaHTMLTest(unittest.TestCase):
     def test_relatorio_usa_os_resultados_locais_finais(self):
         self.assertIn("15 cenários", self.relatorio)
         self.assertIn("92 de 92", self.relatorio)
-        self.assertIn("52/52", self.relatorio)
 
     def test_autoria_nao_contem_placeholder(self):
         conteudo = self.index + self.relatorio

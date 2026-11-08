@@ -1,0 +1,21 @@
+2026-11-07 13:51:37.117 [S3 10.17.110.71:6733] INFO    INICIANDO servidor S3 em 10.17.110.71:6733, grupo 224.1.19.73:5773, heartbeat a cada 0.5s, falha apos 1.5s sem heartbeat
+2026-11-07 13:51:37.322 [S3 10.17.110.71:6733] INFO    MEMBRO S1 detectado sem falha (heartbeat recebido)
+2026-11-07 13:51:37.322 [S3 10.17.110.71:6733] INFO    VIVOS = [1, 3]
+2026-11-07 13:51:37.524 [S3 10.17.110.71:6733] INFO    MEMBRO S2 detectado sem falha (heartbeat recebido)
+2026-11-07 13:51:37.524 [S3 10.17.110.71:6733] INFO    VIVOS = [1, 2, 3]
+2026-11-07 13:51:38.124 [S3 10.17.110.71:6733] INFO    ESTADO recebido de S1: saldo=0 versao=0 (0 escritas ja aplicadas)
+2026-11-07 13:51:38.725 [S3 10.17.110.71:6733] INFO    LIDER eleito = S1 (menor ID sem falha) -> sou replica
+2026-11-07 13:51:40.924 [S3 10.17.110.71:6733] INFO    REQ C1-b76688 DEPOSITO 100 de 10.17.110.6:47496: lider e S1, ele respondera (este processo nao responde)
+2026-11-07 13:51:40.925 [S3 10.17.110.71:6733] INFO    REPLICA C1-b76688 de S1: deposito de 100 realizado, saldo=100, versao=1
+2026-11-07 13:51:40.925 [S3 10.17.110.71:6733] INFO    ACK enviado a S1 para C1-b76688
+2026-11-07 13:51:44.731 [S3 10.17.110.71:6733] WARNING FALHA detectada: S1 sem heartbeat ha mais de 1.5s
+2026-11-07 13:51:44.731 [S3 10.17.110.71:6733] INFO    VIVOS = [2, 3]
+2026-11-07 13:51:44.731 [S3 10.17.110.71:6733] INFO    LIDER eleito = S2 (menor ID sem falha) -> sou replica
+2026-11-07 13:51:47.402 [S3 10.17.110.71:6733] INFO    REQ C1-3bace9 SALDO  de 10.17.110.6:60936: lider e S2, ele respondera (este processo nao responde)
+2026-11-07 13:51:47.514 [S3 10.17.110.71:6733] INFO    REQ C1-dfb1d0 DEPOSITO 50 de 10.17.110.6:49986: lider e S2, ele respondera (este processo nao responde)
+2026-11-07 13:51:47.518 [S3 10.17.110.71:6733] INFO    REPLICA C1-dfb1d0 de S2: deposito de 50 realizado, saldo=150, versao=2
+2026-11-07 13:51:47.518 [S3 10.17.110.71:6733] INFO    ACK enviado a S2 para C1-dfb1d0
+2026-11-07 13:51:47.628 [S3 10.17.110.71:6733] INFO    REQ C1-cb9649 SALDO  de 10.17.110.6:41135: lider e S2, ele respondera (este processo nao responde)
+2026-11-07 13:52:00.556 [S3 10.17.110.71:6733] WARNING FALHA detectada: S2 sem heartbeat ha mais de 1.5s
+2026-11-07 13:52:00.556 [S3 10.17.110.71:6733] INFO    VIVOS = [3]
+2026-11-07 13:52:00.556 [S3 10.17.110.71:6733] INFO    LIDER eleito = S3 (menor ID sem falha) -> EU SOU O LIDER
